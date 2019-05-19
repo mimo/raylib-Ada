@@ -1,0 +1,22 @@
+with "../raylib";
+
+project raylib.examples is
+
+for Main use ("core_3d_camera_first_person.adb");
+for Source_Dirs use ("core");
+for Object_Dir use "build";
+for Exec_Dir use ".";
+
+package Builder is
+  for Executable ("exec.adb") use "nautilus";
+end Builder;
+
+package Linker is
+  for Default_Switches ("ada") use ("-lraylib", "-g");
+end Linker;
+
+package Compiler is
+  for Default_Switches ("ada") use ("-O2", "-gnat12");
+end Compiler;
+
+end raylib.examples;
