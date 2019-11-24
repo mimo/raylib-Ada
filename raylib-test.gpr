@@ -1,0 +1,22 @@
+with "raylib.gpr";
+
+project raylib.test is
+
+for Main use ("test.adb");
+for Source_Dirs use (".");
+for Object_Dir use "build";
+for Exec_Dir use ".";
+
+package Builder is
+  for Executable ("test.adb") use "test_rlada";
+end Builder;
+
+package Linker is
+  for Default_Switches ("ada") use ("-lraylib", "-L/usr/local/lib", "-g");
+end Linker;
+
+package Compiler is
+  for Default_Switches ("ada") use ("-g", "-gnat12");
+end Compiler;
+
+end raylib.test;

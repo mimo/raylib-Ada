@@ -1,7 +1,4 @@
 with raylib;
-with Ada.Numerics.Float_Random;
-with Ada.Numerics.Discrete_Random;
-with interfaces.C;
 
 procedure core_3d_camera_first_person is
    screen_width  : Integer := 800;

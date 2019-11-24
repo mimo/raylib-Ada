@@ -74,8 +74,15 @@ package body text is
 end text; ---
 
 package body core is
+   function is_key_pressed (key : keys) return boolean is
+      function IsKeyPressed (key : keys) return int;
+      pragma import (C, IsKeyPressed, "IsKeyPressed");
+      pressed : int := IsKeyPressed (key);
+   begin
+      return to_boolean (pressed);
+   end is_key_pressed;
    function is_gamepad_available (gamepad : int) return boolean is
-   function IsGamepadAvailable (gamepad : int) return int;
+      function IsGamepadAvailable (gamepad : int) return int;
       pragma import (C, IsGamepadAvailable, "IsGamepadAvailable");
       available : int := IsGamepadAvailable (gamepad);
    begin
