@@ -267,6 +267,18 @@ package raylib is
 
    for Keys'size use Int'size;
 
+   type Mouse_Button is (
+       MOUSE_LEFT_BUTTON,
+       MOUSE_RIGHT_BUTTON,
+       MOUSE_MIDDLE_BUTTON);
+
+   for Mouse_Button use (
+      MOUSE_LEFT_BUTTON   => 0,
+      MOUSE_RIGHT_BUTTON  => 1,
+      MOUSE_MIDDLE_BUTTON => 2);
+
+   for Mouse_Button'size use Int'size;
+
    type Pixel_Format is (
      UNCOMPRESSED_GRAYSCALE,     -- 8 bit per pixel (no alpha)
      UNCOMPRESSED_GRAY_ALPHA,        -- 8*2 bpp (2 channels)
@@ -428,6 +440,8 @@ package raylib is
     function get_gamepad_axis_count(gamepad : int) return int;  -- Return gamepad axis count for a gamepad
     function get_gamepad_axis_movement(gamepad, axis : int) return float; -- Return axis movement value for a gamepad axis
     -- Input-related functions: mouse
+    function is_mouse_button_down (button : Mouse_Button) return Boolean;
+    function is_mouse_button_released (button : Mouse_Button) return boolean;
     function get_mouse_position return Vector2;
     --
     procedure trace_log (ltype : Log ; text : String);
@@ -437,6 +451,8 @@ package raylib is
     pragma import (C, get_gamepad_axis_count, "GetGamepadAxisCount");
     pragma import (C, get_gamepad_axis_movement, "GetGamepadAxisMovement");
     pragma import (C, get_mouse_position, "GetMousePosition");
+    pragma import (C, is_mouse_button_down, "IsMouseButtonDown");
+    pragma import (C, is_mouse_button_released, "IsMouseButtonReleased");
   end core;
 
   package camera is
@@ -452,6 +468,7 @@ package raylib is
     procedure draw_line_ex (start_pos, end_pos : Vector2 ; thick : C_float ; c : Color);
     procedure draw_rectangle (posX, posY, width, height : int ; c : Color);
     procedure draw_rectangle_lines (posX, posY, width, height : int ; c : Color);
+    procedure draw_rectangle_lines_ex (rec : Rectangle ; line_thick : int ; c :Color);
     function  check_collision_point_rec (point : Vector2 ; rec : Rectangle) return Boolean;
     ------
     pragma import (C, draw_line, "DrawLine");
@@ -459,6 +476,7 @@ package raylib is
     pragma import (C, draw_line_ex, "DrawLineEx");
     pragma import (C, draw_rectangle, "DrawRectangle");
     pragma import (C, draw_rectangle_lines, "DrawRectangleLines");
+    pragma import (C, draw_rectangle_lines_ex, "DrawRectangleLinesEx");
     pragma import (C, check_collision_point_rec, "CheckCollisionPointRec");
   end Shapes;
 
@@ -470,6 +488,13 @@ package raylib is
      pragma import (C, end_mode3D, "EndMode3D");
   end drawing;
 
+  package colors is
+    function get_color (hexvalue : unsigned) return Color;
+    function fade (c : Color ; alpha : float) return Color;
+    ------
+    pragma import (C, get_color, "GetColor");
+    pragma import (C, fade, "Fade");
+  end colors;
   ---
   -- Texture Loading and Drawing Functions
   --

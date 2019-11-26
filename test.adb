@@ -1,4 +1,5 @@
 with raylib;
+with raylib.UI;
 with Ada.strings.fixed;
 with Ada.Text_IO;
 
@@ -15,12 +16,13 @@ procedure test is
    padding : constant Int := 10;
    font_size : constant Int := 18;
 
+   line_test : Boolean := FALSE;
 begin
 
    raylib.window.init (800, 400, "test");
 
    raylib.set_target_FPS (FPS);
-   raylib.window.hide_cursor;
+   --raylib.window.hide_cursor;
 
    while not raylib.window.should_close loop
 
@@ -29,6 +31,9 @@ begin
       raylib.begin_drawing;
       raylib.clear_background (raylib.RAYWHITE);
 
+    if raylib.UI.button ((600.0, 50.0, 100.0, 48.0), "Toggle lines") then line_test := not line_test; end if;
+
+    if line_test then
       --
       raylib.text.draw ("raylib.shapes.draw_line", padding, 10, font_size, raylib.BLACK);
       raylib.shapes.draw_line (start_posX => padding,
@@ -49,6 +54,7 @@ begin
                                   thick => 2.5,
                                   c => raylib.RED);
 
+      end if;
 
       raylib.end_drawing;
    end loop;
