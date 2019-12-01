@@ -10,6 +10,8 @@ package raylib is
    subtype c_float is interfaces.C.C_float;
    subtype unsigned is interfaces.C.unsigned;
    subtype unsigned_char is interfaces.C.unsigned_char;
+   type bool is new Boolean;
+   for bool'Size use interfaces.C.char'Size;
 
    type Vector2 is record
       x, y : c_float;
@@ -319,7 +321,28 @@ package raylib is
    end record;
    pragma Convention (C_Pass_By_Copy, Image);
 
-   -- Camera system modes
+   --  Font character info
+   type CharInfo is record
+       value : int;              -- Character value (Unicode)
+       rec : Rectangle;          -- Character rectangle in sprite font
+       offsetX : int;            -- Character offset X when drawing
+       offsetY : int;            -- Character offset Y when drawing
+       advanceX : int;           -- Character advance position X
+       data : System.Address;    -- Character pixel data (grayscale)
+       --unsigned char * data;
+   end record;
+   pragma Convention (C_Pass_By_Copy, CharInfo);
+
+   type Font  is record
+      texture  : Texture2D;   -- Font texture
+      baseSize : int;         -- Base size (default chars height)
+      charsCount : int;       -- Number of characters
+      chars : System.Address; -- Characters info data
+      --  CharInfo *chars;
+   end record;
+   pragma Convention (C_Pass_By_Copy, Font);
+
+   --  Camera system modes
    type CameraMode is (
       CAMERA_CUSTOM,
       CAMERA_FREE,
@@ -428,11 +451,11 @@ package raylib is
   function fade (c : color ; alpha : float) return Color;
 
   package core is
-    -- Input-related functions: keyboard
-    function is_key_pressed (key : keys) return boolean;
-    -- Input-related functions: gamepads
-    function is_gamepad_available (gamepad : int) return boolean; -- Detect if a gamepad is available
-    function is_gamepad_available2 (gamepad : int) return int; -- Detect if a gamepad is available
+      --  Input-related functions: keyboard
+      function is_key_pressed (key : keys) return boolean;
+      --  Input-related functions: gamepads
+      function is_gamepad_available (gamepad : int) return boolean; -- Detect if a gamepad is available
+    function is_gamepad_available2 (gamepad : int) return bool; -- Detect if a gamepad is available
     -- RLAPI bool IsGamepadName(int gamepad, const char *name);      -- Check gamepad name (if available)
     -- RLAPI const char *GetGamepadName(int gamepad);                - Return gamepad internal name id
     function is_gamepad_button_pressed (gamepad, button : int) return Boolean; -- Detect if a gamepad button has been pressed once
@@ -440,8 +463,8 @@ package raylib is
     function get_gamepad_axis_count(gamepad : int) return int;  -- Return gamepad axis count for a gamepad
     function get_gamepad_axis_movement(gamepad, axis : int) return float; -- Return axis movement value for a gamepad axis
     -- Input-related functions: mouse
-    function is_mouse_button_down (button : Mouse_Button) return Boolean;
-    function is_mouse_button_released (button : Mouse_Button) return boolean;
+    function is_mouse_button_down (button : Mouse_Button) return bool;
+    function is_mouse_button_released (button : Mouse_Button) return bool;
     function get_mouse_position return Vector2;
     --
     procedure trace_log (ltype : Log ; text : String);
@@ -469,7 +492,7 @@ package raylib is
     procedure draw_rectangle (posX, posY, width, height : int ; c : Color);
     procedure draw_rectangle_lines (posX, posY, width, height : int ; c : Color);
     procedure draw_rectangle_lines_ex (rec : Rectangle ; line_thick : int ; c :Color);
-    function  check_collision_point_rec (point : Vector2 ; rec : Rectangle) return Boolean;
+    function  check_collision_point_rec (point : Vector2 ; rec : Rectangle) return bool;
     ------
     pragma import (C, draw_line, "DrawLine");
     pragma import (C, draw_line_v, "DrawLineV");
@@ -514,13 +537,26 @@ package raylib is
   --
   package text is
     -- Font loading/unloading functions
-    procedure get_default_font;
+    function get_font_default return Font;
     -- Text drawing functions
     procedure draw_FPS (x, y : Int);
     procedure draw (text : String ; posX, posY, fontSize : Int; c : Color);
-    ------
-    pragma import (C, get_default_font, "GetDefaultFont");
-    pragma import (C, draw_FPS, "DrawFPS");
+    -- Draw text using font and additional parameters
+    procedure draw_ex (f : Font ; text : String ; position : Vector2 ; fontSize, spacing : c_float ; tint : Color);
+
+    -- Text misc. functions
+    --RLAPI int MeasureText(const char *text, int fontSize);                                      // Measure string width for default font
+      --  Measure string size for Font
+      function measure_ex (f : Font ; text : string ; fontSize, spacing : C_Float) return Vector2;
+      --  Get index position for a unicode character on font
+      --  RLAPI int GetGlyphIndex(Font font, int character);
+      --  Returns next codepoint in a UTF8 encoded string
+      --  RLAPI int GetNextCodepoint(const char *text, int *count);
+      --  NOTE: 0x3f(`?`) is returned on failure,
+      --  `count` will hold the total number of bytes processed
+      ------
+      pragma Import (C, get_font_default, "GetFontDefault");
+      pragma Import (C, draw_FPS, "DrawFPS");
   end text;
 
   ---

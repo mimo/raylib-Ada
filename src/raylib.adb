@@ -71,6 +71,30 @@ package body text is
       DrawText (ctext, int(posX), int(posY), int(fontSize), c);
    end draw;
 
+   procedure draw_ex (f : Font ; text : String ; position : Vector2 ; fontSize, spacing : c_float ; tint : Color) is
+      procedure DrawTextEx (
+         f :Font ;
+         text : strings.Chars_Ptr;
+         p : Vector2 ;
+         fontSize, spacing : c_float ;
+         tint : Color);
+      pragma Import (C, DrawTextEx, "DrawTextEx");
+
+      ctext : strings.Chars_Ptr := strings.new_string (text);
+   begin
+      DrawTextEx (f, ctext, position, fontSize, spacing, tint);
+   end draw_ex;
+
+   function measure_ex (f : Font ; text : string ; fontSize, spacing : C_Float)
+      return Vector2
+   is
+      function MeasureTextEx (f : Font ; text : Strings.Chars_Ptr ; fontSize, spacing : C_Float) return Vector2;
+      ------
+      pragma Import (C, MeasureTextEx, "MeasureTextEx");
+      ctext : strings.Chars_Ptr := strings.new_string (text);
+   begin
+      return MeasureTextEx (f, ctext, fontSize, spacing);
+   end measure_ex;
 end text; ---
 
 package body core is
