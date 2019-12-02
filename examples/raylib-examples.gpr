@@ -2,7 +2,10 @@ with "../raylib";
 
 project raylib.examples is
 
-for Main use ("core_3d_camera_first_person.adb");
+for Main use (
+   "core_3d_camera_first_person.adb",
+   "core_input_gamepad.adb"
+);
 for Source_Dirs use ("core");
 for Object_Dir use "build";
 for Exec_Dir use ".";
