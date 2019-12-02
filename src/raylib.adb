@@ -1,19 +1,13 @@
-with interfaces.C;
-with interfaces.C.strings;
+with Interfaces.C;
+with Interfaces.C.Strings;
 with System.Address_To_Access_Conversions;
 
 package body raylib is
 
-package Conv is new System.Address_To_Access_Conversions (Camera3D);
+   use Interfaces.C;
 
-   function to_boolean (value : int) return boolean is (if value = 0 then FALSE else TRUE);
-
-   function fade (c : color ; alpha : float) return Color is
-      function fade (c : color ; alpha : C_float) return Color;
-      pragma import (C, fade, "Fade");
-   begin
-      return fade (c, C_float (alpha));
-   end fade;
+   function to_boolean (value : int) return Boolean
+      is (if value = 0 then False else True);
 
 ---
 -- Window-related functions
@@ -47,18 +41,18 @@ package body window is
 
 end window;
 
-package body textures is
+   package body textures is
 
-   function LoadTexture(filename : strings.Chars_Ptr) return Texture2D;
-   pragma import (C, LoadTexture, "LoadTexture" );
+      function LoadTexture (filename : strings.Chars_Ptr) return Texture2D
+         with Import, Convention => C, External_Name => "LoadTexture";
 
-   function load_texture(filename : String) return Texture2D is
-      cfilename : strings.Chars_Ptr := strings.new_string (filename);
-   begin
-      return LoadTexture (cfilename);
-   end load_texture;
+      function load (filename : String) return Texture2D is
+         cfilename : Strings.Chars_Ptr := Strings.New_String (filename);
+      begin
+         return LoadTexture (cfilename);
+      end load;
 
-end textures;
+   end textures;
 
 package body text is
 
@@ -71,47 +65,56 @@ package body text is
       DrawText (ctext, int(posX), int(posY), int(fontSize), c);
    end draw;
 
-   procedure draw_ex (f : Font ; text : String ; position : Vector2 ; fontSize, spacing : c_float ; tint : Color) is
+   procedure draw_ex (F : Font; text : String; position : Vector2; fontSize, spacing : Float; tint : Color) is
       procedure DrawTextEx (
          f :Font ;
          text : strings.Chars_Ptr;
          p : Vector2 ;
-         fontSize, spacing : c_float ;
+         fontSize, spacing : Float;
          tint : Color);
       pragma Import (C, DrawTextEx, "DrawTextEx");
 
       ctext : strings.Chars_Ptr := strings.new_string (text);
    begin
-      DrawTextEx (f, ctext, position, fontSize, spacing, tint);
+      DrawTextEx (F, ctext, position, fontSize, spacing, tint);
    end draw_ex;
 
-   function measure_ex (f : Font ; text : string ; fontSize, spacing : C_Float)
+   function measure (text : String; fontSize : int) return int is
+      function MeasureText (text : Strings.chars_ptr; fontSize : int) return int
+         with Import, Convention => C, External_Name => "MeasureText";
+
+      ctext : Strings.chars_ptr := Strings.New_String (text);
+   begin
+      return MeasureText (ctext, fontSize);
+   end measure;
+
+   function measure_ex (f : Font; text : String; fontSize, spacing : Float)
       return Vector2
    is
-      function MeasureTextEx (f : Font ; text : Strings.Chars_Ptr ; fontSize, spacing : C_Float) return Vector2;
+      function MeasureTextEx (f : Font; text : Strings.Chars_Ptr; fontSize, spacing : Float) return Vector2;
       ------
       pragma Import (C, MeasureTextEx, "MeasureTextEx");
-      ctext : strings.Chars_Ptr := strings.new_string (text);
+      ctext : Strings.Chars_Ptr := Strings.New_String (text);
    begin
       return MeasureTextEx (f, ctext, fontSize, spacing);
    end measure_ex;
 end text; ---
 
-package body core is
-   function is_key_pressed (key : keys) return boolean is
-      function IsKeyPressed (key : keys) return int;
-      pragma import (C, IsKeyPressed, "IsKeyPressed");
-      pressed : int := IsKeyPressed (key);
-   begin
-      return to_boolean (pressed);
-   end is_key_pressed;
-   function is_gamepad_available (gamepad : int) return boolean is
-      function IsGamepadAvailable (gamepad : int) return int;
-      pragma import (C, IsGamepadAvailable, "IsGamepadAvailable");
-      available : int := IsGamepadAvailable (gamepad);
-   begin
-      return to_boolean (available);
-   end is_gamepad_available;
+   package body core is
+      function is_key_pressed (key : keys) return boolean is
+         function IsKeyPressed (key : keys) return int;
+         pragma import (C, IsKeyPressed, "IsKeyPressed");
+         pressed : int := IsKeyPressed (key);
+      begin
+         return to_boolean (pressed);
+      end is_key_pressed;
+      function get_gamepad_name (gamepad : Gamepad_Number) return string is
+         function GetGamepadName (arg1 : Gamepad_Number)
+            return Interfaces.C.Strings.chars_ptr
+         with Import, Convention => C, External_Name => "GetGamepadName";
+      begin
+         return Interfaces.C.Strings.Value (GetGamepadName (gamepad));
+      end get_gamepad_name;
    function is_gamepad_button_pressed (gamepad, button : int) return Boolean is
       function IsGamepadButtonPressed (gamepad, button : int) return int;
       pragma import (C, IsGamepadButtonPressed, "IsGamepadButtonPressed");
@@ -129,14 +132,5 @@ package body core is
       TraceLog (ltype, ctext);
    end trace_log;
 end core;
-
-package body camera is
-   procedure UpdateCamera (camera : System.address);
-   pragma import (C, UpdateCamera, "UpdateCamera");
-   procedure update (camera : P_Camera) is
-   begin
-      UpdateCamera (conv.to_address (conv.object_pointer(camera)));
-   end update;
-end camera;
 
 end raylib;

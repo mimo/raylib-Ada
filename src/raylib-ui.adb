@@ -20,6 +20,7 @@ package body raylib.UI is
       alignment : Text_Alignment_Type;
       tint : Color)
    is
+      use type int;
       ICON_TEXT_PADDING : constant := 4;
       --  Vertical alignment for pixel perfect
       TEXT_VALIGN_PIXEL_OFFSET : constant int := int (bounds.height) mod 2;
@@ -54,25 +55,25 @@ package body raylib.UI is
          when TEXT_ALIGN_LEFT =>
             position.x := bounds.x;
             position.y := bounds.y + bounds.height / 2.0
-                                   - c_float (textHeight / 2)
-                                   + c_float (TEXT_VALIGN_PIXEL_OFFSET);
+                                   - Float (textHeight / 2)
+                                   + Float (TEXT_VALIGN_PIXEL_OFFSET);
          when TEXT_ALIGN_CENTER =>
             position.x := bounds.x + bounds.width / 2.0
-                                    - c_float (textWidth / 2);
+                                    - Float (textWidth / 2);
             position.y := bounds.y + bounds.height / 2.0
-                                   - c_float (textHeight / 2)
-                                   + c_float (TEXT_VALIGN_PIXEL_OFFSET);
+                                   - Float (textHeight / 2)
+                                   + Float (TEXT_VALIGN_PIXEL_OFFSET);
          when TEXT_ALIGN_RIGHT =>
-            position.x := bounds.x + bounds.width - c_float (textWidth);
+            position.x := bounds.x + bounds.width - Float (textWidth);
             position.y := bounds.y + bounds.height / 2.0
-                                   - c_float (textHeight / 2)
-                                   + c_float (TEXT_VALIGN_PIXEL_OFFSET);
+                                   - Float (textHeight / 2)
+                                   + Float (TEXT_VALIGN_PIXEL_OFFSET);
          end case;
 
          --  NOTE: Make sure we get pixel-perfect coordinates,
          --  In case of decimals we got weird text positioning
-         position.x := c_float (int (position.x));
-         position.y := c_float (int (position.y));
+         position.x := Float (int (position.x));
+         position.y := Float (int (position.y));
 
          ----------------------------------------------------------------------
          --  Draw text (with icon if available)
@@ -95,8 +96,8 @@ package body raylib.UI is
                global_font,
                text,
                position,
-               c_float (size),
-               c_float (spacing),
+               Float (size),
+               Float (spacing),
                tint);
          end DRAW_TEXT;
          ----------------------------------------------------------------------
@@ -140,10 +141,10 @@ package body raylib.UI is
    function get_text_bounds (control : Controls; bounds : Rectangle)
       return Rectangle
    is
-      CONTROL_BORDER_WIDTH : c_float;
+      CONTROL_BORDER_WIDTH : Float;
       textBounds : Rectangle := bounds;
    begin
-      CONTROL_BORDER_WIDTH := c_float (get_style (control, BORDER_WIDTH));
+      CONTROL_BORDER_WIDTH := Float (get_style (control, BORDER_WIDTH));
       textBounds.x := bounds.x + CONTROL_BORDER_WIDTH;
       textBounds.y := bounds.y + CONTROL_BORDER_WIDTH;
       textBounds.width  := bounds.width  - 2.0 * CONTROL_BORDER_WIDTH;
@@ -154,8 +155,8 @@ package body raylib.UI is
       case control is
       when COMBOBOX =>
          textBounds.width := textBounds.width
-                         - c_float (get_style (control, COMBO_BUTTON_WIDTH))
-                         + c_float (get_style (control, COMBO_BUTTON_PADDING));
+                         - Float (get_style (control, COMBO_BUTTON_WIDTH))
+                         + Float (get_style (control, COMBO_BUTTON_PADDING));
       when VALUEBOX =>
          --  NOTE: ValueBox text value always centered,
          --  text padding applies to label
@@ -163,9 +164,9 @@ package body raylib.UI is
       when others =>
          if Text_Alignment_Type'Val (get_style (control, TEXT_ALIGNMENT)) = TEXT_ALIGN_RIGHT
          then textBounds.x := textBounds.x
-                              - c_float (get_style (control, TEXT_PADDING));
+                              - Float (get_style (control, TEXT_PADDING));
          else textBounds.x := textBounds.x
-                              + c_float (get_style (control, TEXT_PADDING));
+                              + Float (get_style (control, TEXT_PADDING));
          end if;
       end case;
 
@@ -185,8 +186,8 @@ package body raylib.UI is
          size := raylib.text.measure_ex (
             global_font,
             text,
-            c_float (get_style (DEFAULT, TEXT_SIZE)),
-            c_float (get_style (DEFAULT, TEXT_SPACING)));
+            Float (get_style (DEFAULT, TEXT_SIZE)),
+            Float (get_style (DEFAULT, TEXT_SPACING)));
       end if;
       --  TODO: Consider text icon width here???
       return int (size.x);
@@ -196,13 +197,13 @@ package body raylib.UI is
    --  UI elements
    ----------------------------------------------------------------------------
 
-   function button (bounds : raylib.Rectangle ; label : String)
+   function button (bounds : raylib.Rectangle; label : String)
       return Boolean
    is
       button_state : Control_State := global_state;
       pressed : Boolean := False;
       mouse_point : Vector2;
-      style_border_width : unsigned := get_style (BUTTON, BORDER_WIDTH);
+      style_border_width : constant unsigned := get_style (BUTTON, BORDER_WIDTH);
    begin
       if global_state /= DISABLED and not global_locked then
          mouse_point := raylib.core.get_mouse_position;
@@ -232,12 +233,12 @@ package body raylib.UI is
                                           + (control_state'pos(button_state) * 3);
          fill_property : Properties := Properties'Val (fill_property_index);
 
-         style_bordercolor : Color := fade (raylib.colors.get_color (
+         style_bordercolor : Color := colors.fade (raylib.colors.get_color (
                                             get_style (DEFAULT,
                                             border_property)),
                                             global_alpha);
 
-         style_fillcolor : Color := fade (raylib.colors.get_color (
+         style_fillcolor : Color := colors.fade (raylib.colors.get_color (
                                           get_style (DEFAULT, fill_property)),
                                           global_alpha);
 
@@ -247,6 +248,9 @@ package body raylib.UI is
          text_color_val : unsigned := get_style (BUTTON, text_color_property);
 
          text_color : Color := raylib.colors.get_color (text_color_val);
+
+         use type unsigned;
+         use type int;
       begin
          raylib.shapes.draw_rectangle_lines_ex (
             bounds,

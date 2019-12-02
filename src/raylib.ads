@@ -1,48 +1,50 @@
-with interfaces.C;
-with system;
+with Interfaces.C;
+with Interfaces.C.Extensions;
+with Interfaces.C.Strings;
+with System;
 ---
--- for reference use :
---   https://www.adaic.org/resources/add_content/standards/05rm/html/RM-B-3.html
+--  for reference use :
+--  https://www.adaic.org/resources/add_content/standards/05rm/html/RM-B-3.html
 
 package raylib is
 
-   subtype int is interfaces.C.int;
-   subtype c_float is interfaces.C.C_float;
-   subtype unsigned is interfaces.C.unsigned;
-   subtype unsigned_char is interfaces.C.unsigned_char;
-   type bool is new Boolean;
-   for bool'Size use interfaces.C.char'Size;
+   subtype int           is Interfaces.C.int;
+   subtype c_float       is Interfaces.C.C_float;
+   subtype unsigned      is Interfaces.C.unsigned;
+   subtype unsigned_char is Interfaces.C.unsigned_char;
+   subtype bool          is Interfaces.C.Extensions.bool;
+   subtype chars_ptr     is Interfaces.C.Strings.chars_ptr;
 
    type Vector2 is record
-      x, y : c_float;
-   end record;
-   pragma Convention (C_Pass_By_Copy, Vector2);
+      x, y : Float;
+   end record
+      with Convention => C_Pass_By_Copy;
 
    type Vector3 is record
-      x, y, z : C_float;
-   end record;
-   pragma Convention (C_Pass_By_Copy, Vector3);
+      x, y, z : Float;
+   end record
+      with Convention => C_Pass_By_Copy;
 
    type Vector4 is record
-      x, y, z, w : C_float;
-   end record;
-   pragma Convention (C_Pass_By_Copy, Vector4);
+      x, y, z, w : Float;
+   end record
+      with Convention => C_Pass_By_Copy;
 
    type Color is record
       r, g, b, a : unsigned_char;
-   end record;
-   pragma Convention (C_Pass_By_Copy, Color);
+   end record
+      with Convention => C_Pass_By_Copy;
 
    type Rectangle is record
-     x, y, width, height : c_float;
-   end record;
-   pragma Convention (C_Pass_By_Copy, Rectangle);
+     x, y, width, height : Float;
+   end record
+      with Convention => C_Pass_By_Copy;
 
-   -- Keyboard Function Keys
-   type keys is (
+   --  Keyboard Function Keys
+   type Keys is (
       KEY_SPACE,
 
-      -- Alphanumeric keys
+      --  Alphanumeric keys
       KEY_APOSTROPHE,
       KEY_COMMA,
       KEY_MINUS,
@@ -92,7 +94,7 @@ package raylib is
       KEY_RIGHT_BRACKET,
       KEY_GRAVE,
 
-      -- Function keys
+      --  Function keys
       KEY_ESCAPE,
       KEY_ENTER,
       KEY_TAB,
@@ -125,7 +127,7 @@ package raylib is
       KEY_F11,
       KEY_F12,
 
-      -- Keypad keys
+      --  Keypad keys
       KEY_KP_0,
       KEY_KP_1,
       KEY_KP_2,
@@ -152,10 +154,10 @@ package raylib is
       KEY_RIGHT_CONTROL,
       KEY_RIGHT_ALT,
       KEY_RIGHT_SUPER,
-      KEY_KB_MENU
-      );
+      KEY_KB_MENU)
+   with Convention => C;
 
-   for keys use (
+   for Keys use (
       KEY_SPACE  => 32,
 
       KEY_APOSTROPHE => 39,
@@ -267,59 +269,88 @@ package raylib is
       KEY_RIGHT_SUPER   => 347,
       KEY_KB_MENU       => 348);
 
-   for Keys'size use Int'size;
-
    type Mouse_Button is (
        MOUSE_LEFT_BUTTON,
        MOUSE_RIGHT_BUTTON,
-       MOUSE_MIDDLE_BUTTON);
+       MOUSE_MIDDLE_BUTTON)
+   with Convention => C;
 
-   for Mouse_Button use (
-      MOUSE_LEFT_BUTTON   => 0,
-      MOUSE_RIGHT_BUTTON  => 1,
-      MOUSE_MIDDLE_BUTTON => 2);
+   type Gamepad_Number is (
+      GAMEPAD_PLAYER1,
+      GAMEPAD_PLAYER2,
+      GAMEPAD_PLAYER3,
+      GAMEPAD_PLAYER4)
+   with Convention => C;
 
-   for Mouse_Button'size use Int'size;
+   type Gamepad_Button is (
+      GAMEPAD_BUTTON_UNKNOWN,
+      GAMEPAD_BUTTON_LEFT_FACE_UP,
+      GAMEPAD_BUTTON_LEFT_FACE_RIGHT,
+      GAMEPAD_BUTTON_LEFT_FACE_DOWN,
+      GAMEPAD_BUTTON_LEFT_FACE_LEFT,
+      GAMEPAD_BUTTON_RIGHT_FACE_UP,
+      GAMEPAD_BUTTON_RIGHT_FACE_RIGHT,
+      GAMEPAD_BUTTON_RIGHT_FACE_DOWN,
+      GAMEPAD_BUTTON_RIGHT_FACE_LEFT,
+      GAMEPAD_BUTTON_LEFT_TRIGGER_1,
+      GAMEPAD_BUTTON_LEFT_TRIGGER_2,
+      GAMEPAD_BUTTON_RIGHT_TRIGGER_1,
+      GAMEPAD_BUTTON_RIGHT_TRIGGER_2,
+      GAMEPAD_BUTTON_MIDDLE_LEFT,
+      GAMEPAD_BUTTON_MIDDLE,
+      GAMEPAD_BUTTON_MIDDLE_RIGHT,
+      GAMEPAD_BUTTON_LEFT_THUMB,
+      GAMEPAD_BUTTON_RIGHT_THUMB)
+   with Convention => C;
+
+   type Gamepad_Axis is
+     (GAMEPAD_AXIS_UNKNOWN,
+      GAMEPAD_AXIS_LEFT_X,
+      GAMEPAD_AXIS_LEFT_Y,
+      GAMEPAD_AXIS_RIGHT_X,
+      GAMEPAD_AXIS_RIGHT_Y,
+      GAMEPAD_AXIS_LEFT_TRIGGER,
+      GAMEPAD_AXIS_RIGHT_TRIGGER)
+   with Convention => C;
 
    type Pixel_Format is (
-     UNCOMPRESSED_GRAYSCALE,     -- 8 bit per pixel (no alpha)
-     UNCOMPRESSED_GRAY_ALPHA,        -- 8*2 bpp (2 channels)
-     UNCOMPRESSED_R5G6B5,            -- 16 bpp
-     UNCOMPRESSED_R8G8B8,            -- 24 bpp
-     UNCOMPRESSED_R5G5B5A1,          -- 16 bpp (1 bit alpha)
-     UNCOMPRESSED_R4G4B4A4,          -- 16 bpp (4 bit alpha)
-     UNCOMPRESSED_R8G8B8A8,          -- 32 bpp
-     UNCOMPRESSED_R32,               -- 32 bpp (1 channel - float)
-     UNCOMPRESSED_R32G32B32,         -- 32*3 bpp (3 channels - float)
-     UNCOMPRESSED_R32G32B32A32,      -- 32*4 bpp (4 channels - float)
-     COMPRESSED_DXT1_RGB,            -- 4 bpp (no alpha)
-     COMPRESSED_DXT1_RGBA,           -- 4 bpp (1 bit alpha)
-     COMPRESSED_DXT3_RGBA,           -- 8 bpp
-     COMPRESSED_DXT5_RGBA,           -- 8 bpp
-     COMPRESSED_ETC1_RGB,            -- 4 bpp
-     COMPRESSED_ETC2_RGB,            -- 4 bpp
-     COMPRESSED_ETC2_EAC_RGBA,       -- 8 bpp
-     COMPRESSED_PVRT_RGB,            -- 4 bpp
-     COMPRESSED_PVRT_RGBA,           -- 4 bpp
-     COMPRESSED_ASTC_4x4_RGBA,       -- 8 bpp
-     COMPRESSED_ASTC_8x8_RGBA);      -- 2 bpp
-
-   for Pixel_Format'Size use int'Size;
+      UNCOMPRESSED_GRAYSCALE,     -- 8 bit per pixel (no alpha)
+      UNCOMPRESSED_GRAY_ALPHA,        -- 8*2 bpp (2 channels)
+      UNCOMPRESSED_R5G6B5,            -- 16 bpp
+      UNCOMPRESSED_R8G8B8,            -- 24 bpp
+      UNCOMPRESSED_R5G5B5A1,          -- 16 bpp (1 bit alpha)
+      UNCOMPRESSED_R4G4B4A4,          -- 16 bpp (4 bit alpha)
+      UNCOMPRESSED_R8G8B8A8,          -- 32 bpp
+      UNCOMPRESSED_R32,               -- 32 bpp (1 channel - float)
+      UNCOMPRESSED_R32G32B32,         -- 32*3 bpp (3 channels - float)
+      UNCOMPRESSED_R32G32B32A32,      -- 32*4 bpp (4 channels - float)
+      COMPRESSED_DXT1_RGB,            -- 4 bpp (no alpha)
+      COMPRESSED_DXT1_RGBA,           -- 4 bpp (1 bit alpha)
+      COMPRESSED_DXT3_RGBA,           -- 8 bpp
+      COMPRESSED_DXT5_RGBA,           -- 8 bpp
+      COMPRESSED_ETC1_RGB,            -- 4 bpp
+      COMPRESSED_ETC2_RGB,            -- 4 bpp
+      COMPRESSED_ETC2_EAC_RGBA,       -- 8 bpp
+      COMPRESSED_PVRT_RGB,            -- 4 bpp
+      COMPRESSED_PVRT_RGBA,           -- 4 bpp
+      COMPRESSED_ASTC_4x4_RGBA,       -- 8 bpp
+      COMPRESSED_ASTC_8x8_RGBA)       -- 2 bpp
+   with Convention => C;
 
    type Texture2D is record
      id : unsigned;
      width, height : int;
      mimaps : int;
      format : Pixel_Format;
-   end record;
-   pragma Convention (C_Pass_By_Copy, Texture2D);
+   end record
+      with Convention => C_Pass_By_Copy;
 
    type Image is record
-     data : system.Address;
+     data : System.Address;
      width, height, mipmaps : int;
      format : Pixel_Format;
-   end record;
-   pragma Convention (C_Pass_By_Copy, Image);
+   end record
+      with Convention => C_Pass_By_Copy;
 
    --  Font character info
    type CharInfo is record
@@ -330,8 +361,8 @@ package raylib is
        advanceX : int;           -- Character advance position X
        data : System.Address;    -- Character pixel data (grayscale)
        --unsigned char * data;
-   end record;
-   pragma Convention (C_Pass_By_Copy, CharInfo);
+   end record
+      with Convention => C_Pass_By_Copy;
 
    type Font  is record
       texture  : Texture2D;   -- Font texture
@@ -339,8 +370,8 @@ package raylib is
       charsCount : int;       -- Number of characters
       chars : System.Address; -- Characters info data
       --  CharInfo *chars;
-   end record;
-   pragma Convention (C_Pass_By_Copy, Font);
+   end record
+      with Convention => C_Pass_By_Copy;
 
    --  Camera system modes
    type CameraMode is (
@@ -348,35 +379,27 @@ package raylib is
       CAMERA_FREE,
       CAMERA_ORBITAL,
       CAMERA_FIRST_PERSON,
-      CAMERA_THIRD_PERSON);
+      CAMERA_THIRD_PERSON)
+   with Convention => C;
 
-   for CameraMode use (
-      CAMERA_CUSTOM  => 0,
-      CAMERA_FREE    => 1,
-      CAMERA_ORBITAL => 2,
-      CAMERA_FIRST_PERSON => 3,
-      CAMERA_THIRD_PERSON => 4);
-   for CameraMode'Size use int'Size;
-
-   -- Camera projection modes
+   --  Camera projection modes
    type CameraType is (
       CAMERA_PERSPECTIVE,
-      CAMERA_ORTHOGRAPHIC);
-   for CameraType use (
-      CAMERA_PERSPECTIVE => 0,
-      CAMERA_ORTHOGRAPHIC => 1);
-   for CameraType'size use int'size;
+      CAMERA_ORTHOGRAPHIC)
+   with Convention => C;
 
- -- Camera type, defines a camera position/orientation in 3d space
- type Camera3D is record
-    position : Vector3;  -- Camera position
-    target   : Vector3;  -- Camera target it looks-at
-    up   : Vector3;      -- Camera up vector (rotation over its axis)
-    fovy : C_float;      -- Camera field-of-view apperture in Y (degrees) in perspective, used as near plane width in orthographic
-    ctype : CameraType;  -- Camera type, defines projection type: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
- end record;
- pragma Convention (C_Pass_By_Copy, Camera3D);
- type P_Camera is access all Camera3D;
+   --  Camera type, defines a camera position/orientation in 3d space
+   type Camera3D is record
+      position : Vector3;  -- Camera position
+      target   : Vector3;  -- Camera target it looks-at
+      up   : Vector3;      -- Camera up vector (rotation over its axis)
+      --  Camera field-of-view apperture in Y (degrees) in perspective,
+      --  used as near plane width in orthographic
+      fovy : Float;
+      ctype : CameraType;  --  Camera type, defines projection type
+   end record
+      with Convention => C_Pass_By_Copy;
+   type P_Camera is access all Camera3D;
 
    type Log is (LOG_INFO, LOG_WARNING, LOG_ERROR, LOG_DEBUG, LOG_OTHER);
    for Log  use (
@@ -387,108 +410,201 @@ package raylib is
       LOG_OTHER   => 16);
    for Log'Size use int'Size;
 
-  LIGHTGRAY : constant Color := (200, 200, 200, 255);
-  GRAY      : constant Color := (130, 130, 130, 255);
-  DARKGRAY  : constant Color := (80,  80,  80,  255);
-  YELLOW    : constant Color := (253, 249, 0,   255);
-  GOLD      : constant Color := (255, 203, 0,   255);
-  ORANGE    : constant Color := (255, 161, 0,   255);
-  PINK      : constant Color := (255, 109, 194, 255);
-  RED       : constant Color := (230, 41,  55,  255);
-  MAROON    : constant Color := (190, 33,  55,  255);
-  GREEN     : constant Color := (0,   228, 48,  255);
-  LIME      : constant Color := (0, 158, 47, 255);
-  DARKGREEN : constant Color := (0, 117, 44, 255);
-  SKYBLUE   : constant Color := (102, 191, 255, 255);
-  BLUE      : constant Color := (0, 121, 241, 255);
-  DARKBLUE  : constant Color := (0, 82, 172, 255);
-  PURPLE    : constant Color := (200, 122, 255, 255);
-  VIOLET    : constant Color := (135, 60, 190, 255);
-  DARKPURPLE: constant Color := (112, 31, 126, 255);
-  BEIGE     : constant Color := (211, 176, 131, 255);
-  BROWN     : constant Color := (127, 106, 79, 255);
-  DARKBROWN : constant Color := (76, 63, 47, 255);
+   LIGHTGRAY : constant Color := (200, 200, 200, 255);
+   GRAY      : constant Color := (130, 130, 130, 255);
+   DARKGRAY  : constant Color := (80,  80,  80,  255);
+   YELLOW    : constant Color := (253, 249, 0,   255);
+   GOLD      : constant Color := (255, 203, 0,   255);
+   ORANGE    : constant Color := (255, 161, 0,   255);
+   PINK      : constant Color := (255, 109, 194, 255);
+   RED       : constant Color := (230, 41,  55,  255);
+   MAROON    : constant Color := (190, 33,  55,  255);
+   GREEN     : constant Color := (0,   228, 48,  255);
+   LIME      : constant Color := (0, 158, 47, 255);
+   DARKGREEN : constant Color := (0, 117, 44, 255);
+   SKYBLUE   : constant Color := (102, 191, 255, 255);
+   BLUE      : constant Color := (0, 121, 241, 255);
+   DARKBLUE  : constant Color := (0, 82, 172, 255);
+   PURPLE    : constant Color := (200, 122, 255, 255);
+   VIOLET    : constant Color := (135, 60, 190, 255);
+   DARKPURPLE : constant Color := (112, 31, 126, 255);
+   BEIGE     : constant Color := (211, 176, 131, 255);
+   BROWN     : constant Color := (127, 106, 79, 255);
+   DARKBROWN : constant Color := (76, 63, 47, 255);
 
-  WHITE     : constant Color := (255, 255, 255, 255);
-  BLACK     : constant Color := (0, 0, 0, 255);
-  BLANK     : constant Color := (0, 0, 0, 0);
-  MAGENTA   : constant Color := (255, 0, 255, 255);
-  RAYWHITE  : constant Color := (245, 245, 245, 255);
+   WHITE     : constant Color := (255, 255, 255, 255);
+   BLACK     : constant Color := (0, 0, 0, 255);
+   BLANK     : constant Color := (0, 0, 0, 0);
+   MAGENTA   : constant Color := (255, 0, 255, 255);
+   RAYWHITE  : constant Color := (245, 245, 245, 255);
 
-  function get_random_value (min, max : int) return int;
+   function get_random_value (min, max : int) return int
+   with
+      Import => True,
+      Convention => C,
+      External_Name => "GetRandomValue";
 
-  ---
-  -- Window and Graphics Device Functions
-  --
-  package window is
-    -- Window-related functions
-    procedure init (width, height : Positive ; title : String);
-    function  should_close return Boolean;
-    procedure close;
-    -- Cursor-related functions
-    procedure show_cursor; -- Shows cursor
-    procedure hide_cursor; -- Hides cursor
-    function is_cursor_hidden return Boolean; --                                 // Check if cursor is not visible
-    procedure enable_cursor;  --                                  // Enables cursor (unlock cursor)
-    procedure disable_cursor; --                                  // Disables cursor (lock cursor)
-    ------
-    pragma import (C, close, "CloseWindow");
-    pragma import (C, hide_cursor, "HideCursor");
-    pragma import (C, show_cursor, "ShowCursor");
-    pragma import (C, enable_cursor, "EnableCursor");
-    pragma import (C, disable_cursor, "DisableCursor");
-  end window;
+   ----------------------------------------------------------------------------
+   --  Window and Graphics Device Functions
+   ---
+   package window is
+      --  [[  Window-related functions ]]  --
+      procedure init (width, height : Positive; title : String);
+      function  should_close return Boolean;
+      procedure close
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "CloseWindow";
+      --  [[ Cursor-related functions ]] --
+      procedure show_cursor
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "ShowCursor";
+      procedure hide_cursor
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "HideCursor";
+      function is_cursor_hidden
+         return Boolean;
+      procedure enable_cursor
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "EnableCursor";
+      procedure disable_cursor
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "DisableCursor";
+   end window;
 
-  ---
-  -- Drawing-related functions
-  --
+   ----------------------------------------------------------------------------
+   --  Drawing-related functions
+   ---
+   procedure clear_background (bg_color : Color)
+      with
+         Import,
+         Convention => C,
+         External_Name => "ClearBackground";
+   procedure begin_drawing
+      with
+         Import,
+         Convention => C,
+         External_Name => "BeginDrawing";
+   procedure end_drawing
+      with
+         Import,
+         Convention => C,
+         External_Name => "EndDrawing";
+   procedure set_target_FPS (fps : int)
+      with
+         Import,
+         Convention => C,
+         External_Name => "SetTargetFPS";
 
-  procedure clear_background (bg_color : Color);
-  procedure begin_drawing;
-  procedure end_drawing;
-  procedure set_target_FPS (fps : int);
+   package core is
+      --  [[ Input-related functions: keyboard ]]  --
+      function is_key_pressed (key : Keys) return bool
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "IsKeyPressed";
+      --  [[ Input-related functions: gamepads  ]]  --
+      function is_gamepad_available (gamepad : int) return bool
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "IsGamepadAvailable";
+      function is_gamepad_name (gamepad : int; name : chars_ptr)
+         return bool
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "IsGamepadName";
+      function get_gamepad_name (gamepad : Gamepad_Number) return String;
+      --  Detect if a gamepad button has been pressed once
+      function is_gamepad_button_pressed (
+         gamepad : int;
+         button : Gamepad_Button)
+         return bool
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "IsGamepadButtonPressed";
+      function is_gamepad_button_down (
+         gamepad : Gamepad_Number;
+         button : Gamepad_Button)
+         return bool
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "IsGamepadButtonDown";
+      --  Get the last gamepad button pressed
+      function get_gamepad_button_pressed return Gamepad_Button
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "GetGamepadButtonPressed";
+      --  Return gamepad axis count for a gamepad
+      function get_gamepad_axis_count (gamepad : Gamepad_Number) return int
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "GetGamepadAxisCount";
+      --  Return axis movement value for a gamepad axis
+      function get_gamepad_axis_movement (
+         gamepad : Gamepad_Number;
+         axis : Gamepad_Axis)
+         return Float
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "GetGamepadAxisMovement";
+      --  [[ Input-related functions: mouse  ]] --
+      function is_mouse_button_down (button : Mouse_Button) return bool
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "IsMouseButtonDown";
+      function is_mouse_button_released (button : Mouse_Button) return bool
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "IsMouseButtonReleased";
+      function get_mouse_position return Vector2
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "GetMousePosition";
+      procedure trace_log (ltype : Log ; text : String);
+   end core;
 
-  function fade (c : color ; alpha : float) return Color;
+   package camera is
+      procedure set_mode (camera : Camera3D; mode : CameraMode)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "SetCameraMode";
+      procedure update (camera : access Camera3D)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "UpdateCamera";
+   end camera;
 
-  package core is
-      --  Input-related functions: keyboard
-      function is_key_pressed (key : keys) return boolean;
-      --  Input-related functions: gamepads
-      function is_gamepad_available (gamepad : int) return boolean; -- Detect if a gamepad is available
-    function is_gamepad_available2 (gamepad : int) return bool; -- Detect if a gamepad is available
-    -- RLAPI bool IsGamepadName(int gamepad, const char *name);      -- Check gamepad name (if available)
-    -- RLAPI const char *GetGamepadName(int gamepad);                - Return gamepad internal name id
-    function is_gamepad_button_pressed (gamepad, button : int) return Boolean; -- Detect if a gamepad button has been pressed once
-    function get_gamepad_button_pressed return int; -- Get the last gamepad button pressed
-    function get_gamepad_axis_count(gamepad : int) return int;  -- Return gamepad axis count for a gamepad
-    function get_gamepad_axis_movement(gamepad, axis : int) return float; -- Return axis movement value for a gamepad axis
-    -- Input-related functions: mouse
-    function is_mouse_button_down (button : Mouse_Button) return bool;
-    function is_mouse_button_released (button : Mouse_Button) return bool;
-    function get_mouse_position return Vector2;
-    --
-    procedure trace_log (ltype : Log ; text : String);
-    ------
-    pragma import (C, is_gamepad_available2, "IsGamepadAvailable");
-    pragma import (C, get_gamepad_button_pressed, "GetGamepadButtonPressed");
-    pragma import (C, get_gamepad_axis_count, "GetGamepadAxisCount");
-    pragma import (C, get_gamepad_axis_movement, "GetGamepadAxisMovement");
-    pragma import (C, get_mouse_position, "GetMousePosition");
-    pragma import (C, is_mouse_button_down, "IsMouseButtonDown");
-    pragma import (C, is_mouse_button_released, "IsMouseButtonReleased");
-  end core;
-
-  package camera is
-    procedure set_mode (camera : Camera3D; mode : CameraMode);
-    procedure update (camera : P_Camera);
-    ------
-    pragma import (C, set_mode, "SetCameraMode");
-  end camera;
-
-  package shapes is
-    procedure draw_line (start_posX, start_posY, end_posX, end_posy : int ; c : Color);
-    procedure draw_line_v (start_pos, end_pos : Vector2 ; c : Color);
-    procedure draw_line_ex (start_pos, end_pos : Vector2 ; thick : C_float ; c : Color);
+   package shapes is
+      procedure draw_line (start_posX, start_posY, end_posX, end_posy : int ; c : Color);
+      procedure draw_line_v (start_pos, end_pos : Vector2 ; c : Color);
+      procedure draw_line_ex (start_pos, end_pos : Vector2 ; thick : C_float ; c : Color);
+      -- Draw a color-filled circle
+      procedure draw_circle (centerX, centerY : int; radius : float; c : Color)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "DrawCircle";
     procedure draw_rectangle (posX, posY, width, height : int ; c : Color);
     procedure draw_rectangle_lines (posX, posY, width, height : int ; c : Color);
     procedure draw_rectangle_lines_ex (rec : Rectangle ; line_thick : int ; c :Color);
@@ -503,81 +619,116 @@ package raylib is
     pragma import (C, check_collision_point_rec, "CheckCollisionPointRec");
   end Shapes;
 
-  package drawing is
-     procedure begin_mode3D (camera : Camera3D);
-     procedure end_mode3D;
-     ------
-     pragma import (C, begin_mode3D, "BeginMode3D");
-     pragma import (C, end_mode3D, "EndMode3D");
-  end drawing;
+   package drawing is
+      procedure begin_mode3D (camera : Camera3D);
+      procedure end_mode3D;
+      ------
+      pragma Import (C, begin_mode3D, "BeginMode3D");
+      pragma Import (C, end_mode3D, "EndMode3D");
+   end drawing;
 
-  package colors is
-    function get_color (hexvalue : unsigned) return Color;
-    function fade (c : Color ; alpha : float) return Color;
-    ------
-    pragma import (C, get_color, "GetColor");
-    pragma import (C, fade, "Fade");
-  end colors;
-  ---
-  -- Texture Loading and Drawing Functions
-  --
-  package textures is
-    -- Image/Texture2D data loading/unloading/saving functions
-    function load_texture(filename : String) return Texture2D; -- Load texture from file into GPU memory (VRAM)
-    procedure unload_texture (texture : Texture2D);            -- Unload texture from GPU memory (VRAM)
-    -- Texture2D drawing functions
-    procedure draw_texture_rec (texture : Texture2D ; sourceRec : Rectangle ; position : Vector2 ; tint : Color);
-    ------
-    pragma import (C, unload_texture, "UnloadTexture");
-    pragma import (C, draw_texture_rec, "DrawTextureRec" );
-  end textures;
+   package colors is
+      function get_color (hexvalue : unsigned) return Color
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "GetColor";
+      function fade (c : Color; alpha : Float) return Color
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "Fade";
+   end colors;
+
+   ----------------------------------------------------------------------------
+   --  Texture Loading and Drawing Functions
+   ---
+   package textures is
+      --  [[ Image/Texture2D data loading/unloading/saving functions ]] --
+      --  Load texture from file into GPU memory (VRAM)
+      function load (filename : String) return Texture2D;
+      --  Unload texture from GPU memory (VRAM)
+      procedure unload (texture : Texture2D)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "UnloadTexture";
+      --  [[ Texture2D drawing functions ]]  --
+      procedure draw_texture (
+         texture : Texture2D;
+         posX, posY : int;
+         tint : Color)
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "DrawTexture";
+      procedure draw_texture_rec (
+         texture : Texture2D;
+         sourceRec : Rectangle;
+         position : Vector2;
+         tint : Color)
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "DrawTextureRec";
+   end textures;
 
   ---
   -- Font Loading and Text Drawing
   --
-  package text is
-    -- Font loading/unloading functions
-    function get_font_default return Font;
-    -- Text drawing functions
-    procedure draw_FPS (x, y : Int);
-    procedure draw (text : String ; posX, posY, fontSize : Int; c : Color);
-    -- Draw text using font and additional parameters
-    procedure draw_ex (f : Font ; text : String ; position : Vector2 ; fontSize, spacing : c_float ; tint : Color);
-
-    -- Text misc. functions
-    --RLAPI int MeasureText(const char *text, int fontSize);                                      // Measure string width for default font
+   package text is
+      --  Font loading/unloading functions
+      function get_font_default return Font;
+      pragma Import (C, get_font_default, "GetFontDefault");
+      --  Text drawing functions
+      procedure draw_FPS (x, y : int);
+      pragma Import (C, draw_FPS, "DrawFPS");
+      procedure draw (text : String; posX, posY, fontSize : int; c : Color);
+      --  Draw text using font and additional parameters
+      procedure draw_ex (
+         F : Font;
+         text : String;
+         position : Vector2;
+         fontSize, spacing : Float;
+         tint : Color);
+      --  [[ Text misc. functions ]]  --
+      --  Measure string width for default font
+      function measure (text : String; fontSize : int) return int;
       --  Measure string size for Font
-      function measure_ex (f : Font ; text : string ; fontSize, spacing : C_Float) return Vector2;
+      function measure_ex (f : Font; text : String; fontSize, spacing : Float)
+         return Vector2;
       --  Get index position for a unicode character on font
       --  RLAPI int GetGlyphIndex(Font font, int character);
       --  Returns next codepoint in a UTF8 encoded string
       --  RLAPI int GetNextCodepoint(const char *text, int *count);
       --  NOTE: 0x3f(`?`) is returned on failure,
       --  `count` will hold the total number of bytes processed
-      ------
-      pragma Import (C, get_font_default, "GetFontDefault");
-      pragma Import (C, draw_FPS, "DrawFPS");
-  end text;
+   end text;
 
-  ---
-  -- Basic 3d Shapes
-  package shapes3D is
-    procedure draw_plane (center_pos : Vector3 ; size : Vector2 ; c : Color);
-    procedure draw_cube_v (position, size : Vector3 ; c : Color );
-    procedure draw_cube_wires (position : Vector3 ; width, height, length : C_float ; c : Color);
-    ------
-    pragma import (C, draw_plane, "DrawPlane");
-    pragma import (C, draw_cube_v, "DrawCubeV");
-    pragma import (C, draw_cube_wires, "DrawCubeWires");
-  end shapes3D;
-private
+   ---
+   --  Basic 3d Shapes
+   package shapes3D is
+      procedure draw_plane (center : Vector3; size : Vector2; tint : Color)
+         with
+            Import,
+            Convention => C,
+            External_Name => "DrawPlane";
 
-  use interfaces.C;
+      procedure draw_cube_v (position, size : Vector3; tint : Color)
+         with
+            Import,
+            Convention => C,
+            External_Name => "DrawCubeV";
 
-  pragma import (C, get_random_value, "GetRandomValue");
-  pragma import (C, clear_background, "ClearBackground");
-  pragma import (C, begin_drawing, "BeginDrawing");
-  pragma import (C, end_drawing, "EndDrawing");
-  pragma import (C, set_target_FPS, "SetTargetFPS");
+      procedure draw_cube_wires (
+         position : Vector3;
+         width, height, length : Float;
+         tint : Color)
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "DrawCubeWires";
+   end shapes3D;
+
 
 end raylib;

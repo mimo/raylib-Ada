@@ -7,12 +7,11 @@ procedure core_3d_camera_first_person is
    view : aliased raylib.Camera3D;
 
    MAX_COLUMNS : constant Integer := 20;
-   heights : array (1..MAX_COLUMNS) of raylib.c_float;
+   heights : array (1..MAX_COLUMNS) of Float;
    positions : array (1..MAX_COLUMNS) of raylib.Vector3;
-   colors : array (1..MAX_COLUMNS) of raylib.Color;
+   random_colors : array (1..MAX_COLUMNS) of raylib.Color;
 
    use raylib;
-   use type raylib.c_float;
    use type raylib.int;
 begin
    raylib.window.init (screen_width, screen_height, "raylib [core] example - 3d camera first person");
@@ -24,45 +23,71 @@ begin
    view.ctype := CAMERA_PERSPECTIVE;
 
    for i in 1..MAX_COLUMNS loop
-      heights (i) := c_float(raylib.get_random_value (1, 12));
+      heights (i) := Float (raylib.get_random_value (1, 12));
       positions (i) := (
-            c_float(raylib.get_random_value (-15, 15)),
-            c_float (heights(i)/ 2.0),
-            c_float(raylib.get_random_value (-15, 15)));
-      colors (i) := (
-         r => unsigned_char(raylib.get_random_value(20, 255)),
-         g => unsigned_char (raylib.get_random_value(10, 55)),
-         b => 30, a => 255 );
+            Float (raylib.get_random_value (-15, 15)),
+            Float (heights (i) / 2.0),
+            Float (raylib.get_random_value (-15, 15)));
+      random_colors (i) := (
+         r => unsigned_char (raylib.get_random_value (20, 255)),
+         g => unsigned_char (raylib.get_random_value (10, 55)),
+         b => 30,
+         a => 255);
    end loop;
 
-   raylib.camera.set_mode (view, CAMERA_FIRST_PERSON);
+   camera.set_mode (view, CAMERA_FIRST_PERSON);
 
    raylib.set_target_FPS(60);
 
    while not raylib.window.should_close loop
-      raylib.camera.update (view'unchecked_access);
+      camera.update (view'unchecked_access);
 
       raylib.begin_drawing;
       raylib.clear_background (RAYWHITE);
 
-      raylib.drawing.begin_mode3D (view);
-         raylib.shapes3D.draw_plane( (0.0, 0.0, 0.0), ( 32.0, 32.0), LIGHTGRAY); -- Draw ground
-         raylib.shapes3D.draw_cube_v((-16.0, 2.5, 0.0), (1.0, 5.0, 32.0), BLUE); -- Draw a blue wall
-         raylib.shapes3D.draw_cube_v((16.0, 2.5, 0.0), (1.0, 5.0, 32.0), LIME);  -- Draw a green wall
-         raylib.shapes3D.draw_cube_v((0.0, 2.5, 16.0), (32.0, 5.0, 1.0), GOLD);  -- Draw a yellow wall
+      drawing.begin_mode3D (view);
+         --  Draw ground
+         shapes3D.draw_plane(
+            center => (0.0, 0.0, 0.0),
+            size   => (32.0, 32.0),
+            tint   => LIGHTGRAY);
+         --  Draw a blue wall
+         shapes3D.draw_cube_v(
+            position => (-16.0, 2.5, 0.0),
+            size     => (1.0, 5.0, 32.0),
+            tint     => BLUE);
+         --  Draw a green wall
+         shapes3D.draw_cube_v(
+            position => (16.0, 2.5, 0.0),
+            size     => (1.0, 5.0, 32.0),
+            tint     => LIME);
+         --  Draw a yellow wall
+         shapes3D.draw_cube_v(
+            position => (0.0, 2.5, 16.0),
+            size     => (32.0, 5.0, 1.0),
+            tint     => GOLD);
 
          for col in 1..MAX_COLUMNS loop
-            raylib.shapes3D.draw_cube_v (positions (col), (2.0, heights (col), 2.0), colors (col));
-            raylib.shapes3D.draw_cube_wires (positions (col), 2.0, heights (col), 2.0, MAROON);
-         end loop;
-      raylib.drawing.end_mode3D;
+            raylib.shapes3D.draw_cube_v (
+               positions (col),
+               size => (2.0, heights (col), 2.0),
+               tint => random_colors (col));
 
-      raylib.text.draw_FPS (250, 20);
-      raylib.shapes.draw_rectangle (10, 10, 220, 70, raylib.fade (SKYBLUE,0.5));
+            raylib.shapes3D.draw_cube_wires (
+               positions (col),
+               width  => 2.0,
+               height => Float (heights (col)),
+               length => 2.0,
+               tint   => MAROON);
+         end loop;
+      drawing.end_mode3D;
+
+      text.draw_FPS (250, 20);
+      shapes.draw_rectangle (10, 10, 220, 70, colors.fade (SKYBLUE, 0.5));
       raylib.shapes.draw_rectangle_lines (10, 10, 220, 70, BLUE);
-      raylib.text.draw ("First person camera default controls:", 20, 20, 10, BLACK);
-      raylib.text.draw ("- Move with keys: W, A, S, D", 40, 40, 10, DARKGRAY);
-      raylib.text.draw ("- Mouse move to look around", 40, 60, 10, DARKGRAY);
+      text.draw ("First person camera default controls:", 20, 20, 10, BLACK);
+      text.draw ("- Move with keys: W, A, S, D", 40, 40, 10, DARKGRAY);
+      text.draw ("- Mouse move to look around", 40, 60, 10, DARKGRAY);
       raylib.end_drawing;
    end loop;
 
