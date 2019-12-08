@@ -66,6 +66,7 @@ begin
       when Perspective =>
          text.draw ("Perspective test not yet implemented", 1, 38, font_size, BLACK);
       when GUI =>
+         raylib.UI.panel ((598.0, 48.0, 84.0, 36.0));
          if raylib.UI.button ((600.0, 50.0, 80.0, 32.0), "Next test")
          then current_test := tests'Succ (current_test);
          end if;

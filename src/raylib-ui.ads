@@ -42,7 +42,7 @@ package raylib.UI is
       TEXT_SIZE,
       TEXT_SPACING,
       LINE_COLOR,
-      BACKROUND_COLOR,
+      BACKGROUND_COLOR,
       --  Toggle Properties
       GROUP_PADDING,
       --  Slider / SliderBar
@@ -67,6 +67,7 @@ package raylib.UI is
    function get_text_width (text : String) return int;
 
    function button (bounds : raylib.Rectangle; label : String) return Boolean;
+   procedure panel (bounds : Rectangle);
 
 private
 

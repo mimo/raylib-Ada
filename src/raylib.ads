@@ -596,16 +596,25 @@ package raylib is
    end camera;
 
    package shapes is
-      procedure draw_line (start_posX, start_posY, end_posX, end_posy : int ; c : Color);
-      procedure draw_line_v (start_pos, end_pos : Vector2 ; c : Color);
-      procedure draw_line_ex (start_pos, end_pos : Vector2 ; thick : C_float ; c : Color);
-      -- Draw a color-filled circle
-      procedure draw_circle (centerX, centerY : int; radius : float; c : Color)
+      procedure draw_line (start_posX, start_posY, end_posX, end_posy : int;
+         c : Color);
+      procedure draw_line_v (start_pos, end_pos : Vector2; c : Color);
+      procedure draw_line_ex (
+         start_pos, end_pos : Vector2;
+         thick : C_Float;
+         c : Color);
+      --  Draw a color-filled circle
+      procedure draw_circle (centerX, centerY : int; radius : Float; c : Color)
          with
             Import => True,
             Convention => C,
             External_Name => "DrawCircle";
-    procedure draw_rectangle (posX, posY, width, height : int ; c : Color);
+      procedure draw_rectangle (posX, posY, width, height : int ; c : Color);
+      procedure draw_rectangle_rec (bounds : Rectangle; c : Color)
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "DrawRectangleRec";
     procedure draw_rectangle_lines (posX, posY, width, height : int ; c : Color);
     procedure draw_rectangle_lines_ex (rec : Rectangle ; line_thick : int ; c :Color);
     function  check_collision_point_rec (point : Vector2 ; rec : Rectangle) return bool;
@@ -671,6 +680,16 @@ package raylib is
          Import => True,
          Convention => C,
          External_Name => "DrawTextureRec";
+      procedure draw_texture_quad (
+         texture : Texture2D;
+         tiling : Vector2;
+         offset : Vector2;
+         quad : Rectangle;
+         tint : Color)
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "DrawTextureQuad";
    end textures;
 
   ---

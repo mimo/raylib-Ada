@@ -127,7 +127,7 @@ package body raylib.UI is
          when TEXT_SIZE       => 16,
          when TEXT_SPACING    => 17,
          when LINE_COLOR      => 18,
-         when BACKROUND_COLOR => 19,
+         when BACKGROUND_COLOR => 19,
          when GROUP_PADDING   => 16,
          when SLIDER_WIDTH    => 16,
          when SLIDER_PADDING  => 17,
@@ -274,6 +274,32 @@ package body raylib.UI is
       return pressed;
    end button;
 
+   procedure panel (bounds : Rectangle) is
+      PANEL_BORDER_WIDTH : constant := 1;
+      panel_state : constant Control_State := global_state;
+      BG_ELEMENT, BORDER_ELEMENT : Properties;
+   begin
+      BG_ELEMENT := (if panel_state = DISABLED
+                     then BASE_COLOR_DISABLED
+                     else BACKGROUND_COLOR);
+      BORDER_ELEMENT := (if panel_state = DISABLED
+                         then BORDER_COLOR_DISABLED
+                         else LINE_COLOR);
+      --  Draw control
+      -------------------------------------------------------------------------
+      shapes.draw_rectangle_rec (
+            bounds,
+            colors.fade (
+               colors.get_color (get_style (DEFAULT, BG_ELEMENT)),
+               global_alpha));
+      shapes.draw_rectangle_lines_ex (
+         bounds, PANEL_BORDER_WIDTH,
+         colors.fade (
+            colors.get_color (get_style (DEFAULT, BORDER_ELEMENT)),
+            global_alpha));
+      -------------------------------------------------------------------------
+   end panel;
+
    procedure set_style (
       control : Controls;
       property : Properties;
@@ -282,7 +308,7 @@ package body raylib.UI is
       global_style (control, get_property_index (property)) := value;
    end set_style;
 
-   function get_style (control : Controls ; property : Properties)
+   function get_style (control : Controls; property : Properties)
       return unsigned is
    begin
       if not global_style_loaded then
@@ -319,6 +345,7 @@ package body raylib.UI is
 
       set_style (DEFAULT, TEXT_SIZE, 10);
       set_style (DEFAULT, TEXT_SPACING, 1);
+      set_style (DEFAULT, BACKGROUND_COLOR, 16#f5f5f5ff#);
 
       global_font := raylib.text.get_font_default;
       global_style_loaded := TRUE;
