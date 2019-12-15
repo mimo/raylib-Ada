@@ -17,6 +17,13 @@ procedure test is
 
    type tests is (Lines, Perspective, GUI);
    current_test : tests := Lines;
+   procedure select_next_test is
+   begin
+      current_test := (if current_test = tests'Last
+                       then tests'First
+                       else tests'Succ (current_test));
+   end select_next_test;
+
 begin
 
    raylib.window.init (800, 400, "test");
@@ -27,7 +34,7 @@ begin
    while not window.should_close loop
 
       if is_key_pressed (raylib.KEY_TAB) then
-         current_test := tests'Succ (current_test);
+         select_next_test;
       end if;
 
       raylib.begin_drawing;
@@ -68,7 +75,7 @@ begin
       when GUI =>
          raylib.UI.panel ((598.0, 48.0, 84.0, 36.0));
          if raylib.UI.button ((600.0, 50.0, 80.0, 32.0), "Next test")
-         then current_test := tests'Succ (current_test);
+         then select_next_test;
          end if;
       end case;
 
