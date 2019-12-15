@@ -13,6 +13,7 @@ Many functions are missing and some are not tested !
 Porting examples (full list [here](https://www.raylib.com/examples.html)) :
 
 - core
+  - [ ] input gamepad (WIP)
   - [ ] input keys
   - [ ] input mouse
   - [ ] input mouse_wheel
@@ -23,7 +24,7 @@ Porting examples (full list [here](https://www.raylib.com/examples.html)) :
   - [ ] draw ring
   - [ ] draw rectangle_rounded
 - textures
-  - [ ] rectangle
+  - [x] rectangle
   - [ ] srcrec dstrec
   - [ ] sprite button
 - text

@@ -690,6 +690,17 @@ package raylib is
          Import => True,
          Convention => C,
          External_Name => "DrawTextureQuad";
+      procedure draw_texture_pro (
+         texture : Texture2D;
+         sourceRec : Rectangle;
+         destRec : Rectangle;
+         origin : Vector2;
+         rotation : Float;
+         tint : Color)
+      with
+         Import => True,
+         Convention => C,
+         External_Name => "DrawTexturePro";
    end textures;
 
   ---

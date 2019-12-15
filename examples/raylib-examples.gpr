@@ -4,9 +4,10 @@ project raylib.examples is
 
 for Main use (
    "core_3d_camera_first_person.adb",
-   "core_input_gamepad.adb"
+   "core_input_gamepad.adb",
+   "textures_rectangle.adb"
 );
-for Source_Dirs use ("core");
+for Source_Dirs use ("core","textures");
 for Object_Dir use "build";
 for Exec_Dir use ".";
 

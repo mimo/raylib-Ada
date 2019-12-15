@@ -1,3 +1,9 @@
+License
+=======
+
+Code
+----
+
 MIT License
 
 Copyright (c) 2019 Dupuis Alexis
@@ -19,3 +25,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Resources
+---------
+
+ * [Scarfy](https://github.com/raysan5/raylib/blob/master/examples/textures/resources/scarfy.png) - [Eiden Marsal](https://www.artstation.com/artist/marshall_z), licensed as [Creative Commons Attribution-NonCommercial 3.0]
