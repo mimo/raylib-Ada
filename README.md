@@ -6,7 +6,7 @@ Many functions are missing and some are not tested !
 ## Prerequisites
 
 - GNAT toolsuite : [www.adacore.com](https://www.adacore.com/community)
-- Raylib 2.0 : [raysan5/raylib](https://github.com/raysan5/raylib)
+- Raylib 2.5 : [raysan5/raylib](https://github.com/raysan5/raylib)
 
 ## Development
 

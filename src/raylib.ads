@@ -5,6 +5,7 @@ with System;
 ---
 --  for reference use :
 --  https://www.adaic.org/resources/add_content/standards/05rm/html/RM-B-3.html
+--  https://github.com/raysan5/raylib/blob/a9f33c9a8962735fed5dd1857709d159bc4056fc/src/raylib.h
 
 package raylib is
 
