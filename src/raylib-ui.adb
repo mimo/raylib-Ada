@@ -299,6 +299,76 @@ package body raylib.UI is
             global_alpha));
       -------------------------------------------------------------------------
    end panel;
+   
+   function toggle (bounds : Rectangle ; text : String ; active : Boolean) return Boolean is
+      toggle_state : Control_State := global_state;
+      mouse_point : Vector2;
+      is_active : Boolean := active;
+   begin
+      if global_state /= DISABLED and not global_locked then
+         mouse_point := core.get_mouse_position;
+         
+         if shapes.check_collision_point_rec (mouse_point, bounds) then
+         
+            if core.is_mouse_button_down (MOUSE_LEFT_BUTTON) then
+               toggle_state := PRESSED;
+            elsif core.is_mouse_button_released (MOUSE_LEFT_BUTTON) then
+               toggle_state := NORMAL;
+               is_active := not active;
+            else
+               toggle_state := FOCUSED;
+            end if;
+         end if;
+      end if;
+      
+      drawing : declare
+         line_thickness : int := int (get_style (TOGGLE, BORDER_WIDTH));
+         color_property : Properties;
+         color_prop_index : Integer;
+         bg_color_property : Properties;
+         bg_color_prop_index : Integer;
+         text_color_property : Properties;
+         text_color_prop_index : Integer;
+         outline, background, text_color : Color;
+
+         use type int;
+      begin
+         color_prop_index      := Property_Element'Pos (BORDER) + Control_State'Pos (toggle_state) * 3;
+         bg_color_prop_index   := Property_Element'Pos (BASE)   + Control_State'Pos (toggle_state) * 3;
+         text_color_prop_index := Property_Element'Pos (raylib.ui.TEXT) + Control_State'Pos (toggle_state) * 3;
+         
+         if toggle_state = NORMAL then
+            color_property := (if is_active then BORDER_COLOR_PRESSED
+                                            else Properties'Val (color_prop_index));
+            bg_color_property := (if is_active then BASE_COLOR_PRESSED
+                                               else Properties'Val (bg_color_prop_index));
+            text_color_property := (if is_active then TEXT_COLOR_PRESSED
+                                                 else Properties'Val (text_color_prop_index));
+         else
+            color_property := Properties'Val (color_prop_index);
+            bg_color_property := Properties'Val (bg_color_prop_index);
+            text_color_property := Properties'Val (text_color_prop_index);
+         end if;
+
+         background := colors.get_color (get_style (TOGGLE, bg_color_property));
+         outline    := colors.get_color (get_style (TOGGLE, color_property));
+         text_color := colors.get_color (get_style (TOGGLE, text_color_property));
+         shapes.draw_rectangle_lines_ex (bounds, line_thickness, colors.fade (outline, global_alpha));
+         shapes.draw_rectangle (
+            posX => int (bounds.x) + line_thickness,
+            posY => int (bounds.y) + line_thickness,
+            width  => int (bounds.width)  - 2 * line_thickness,
+            height => int (bounds.height) - 2 * line_thickness,
+            c => colors.fade (background, global_alpha));
+         draw_text (
+            text,
+            bounds,
+            Text_Alignment_Type'Val (get_style (TOGGLE, TEXT_ALIGNMENT)),
+            colors.fade (text_color, global_alpha));
+      end drawing;
+      
+      return is_active;
+   end toggle;
 
    procedure set_style (
       control : Controls;
@@ -310,11 +380,17 @@ package body raylib.UI is
 
    function get_style (control : Controls; property : Properties)
       return unsigned is
+      ctrl : Controls;
    begin
       if not global_style_loaded then
          load_style_default;
       end if;
-      return global_style (control, get_property_index (property));
+      
+      if control = TOGGLE
+      then ctrl := DEFAULT;
+      end if;
+      
+      return global_style (ctrl, get_property_index (property));
    end get_style;
 
    procedure load_style_default is
@@ -346,7 +422,14 @@ package body raylib.UI is
       set_style (DEFAULT, TEXT_SIZE, 10);
       set_style (DEFAULT, TEXT_SPACING, 1);
       set_style (DEFAULT, BACKGROUND_COLOR, 16#f5f5f5ff#);
-
+      
+      --  Initialize extended property values
+      set_style (DEFAULT, TEXT_SIZE, 10);
+      set_style (DEFAULT, TEXT_SPACING, 1);
+      set_style (DEFAULT, LINE_COLOR, 16#90abb5ff#);
+      set_style (DEFAULT, BACKGROUND_COLOR, 16#f5f5f5ff#);
+      set_style (TOGGLE, GROUP_PADDING, 2);
+      
       global_font := raylib.text.get_font_default;
       global_style_loaded := TRUE;
    end load_style_default;

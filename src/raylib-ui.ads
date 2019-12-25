@@ -1,3 +1,4 @@
+-- https://github.com/raysan5/raygui/blob/master/src/raygui.h
 
 package raylib.UI is
 
@@ -66,9 +67,9 @@ package raylib.UI is
 
    function get_text_width (text : String) return int;
 
-   function button (bounds : raylib.Rectangle; label : String) return Boolean;
+   function  button (bounds : raylib.Rectangle; label : String) return Boolean;
    procedure panel (bounds : Rectangle);
-
+   function  toggle (bounds : Rectangle ; text : String ; active : Boolean) return Boolean;
 private
 
    function get_property_index (P : Properties) return Integer;

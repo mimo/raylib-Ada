@@ -24,6 +24,7 @@ procedure test is
                        else tests'Succ (current_test));
    end select_next_test;
 
+   gui_ctrl_toggle : Boolean := False;
 begin
 
    raylib.window.init (800, 400, "test");
@@ -73,6 +74,12 @@ begin
       when Perspective =>
          text.draw ("Perspective test not yet implemented", 1, 38, font_size, BLACK);
       when GUI =>
+         
+         if gui_ctrl_toggle then
+            gui_ctrl_toggle := raylib.UI.toggle ((100.0, 48.0, 100.0, 24.0), "Active button", gui_ctrl_toggle);
+         else
+            gui_ctrl_toggle := raylib.UI.toggle ((100.0, 48.0, 100.0, 24.0), "Deactivated button", gui_ctrl_toggle);
+         end if;
          raylib.UI.panel ((598.0, 48.0, 84.0, 36.0));
          if raylib.UI.button ((600.0, 50.0, 80.0, 32.0), "Next test")
          then select_next_test;
