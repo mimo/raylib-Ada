@@ -300,10 +300,48 @@ package body raylib.UI is
       -------------------------------------------------------------------------
    end panel;
    
-   function toggle (bounds : Rectangle ; text : String ; active : Boolean) return Boolean is
+   procedure statusbar (bounds : Rectangle ; text : String) is
+      state : Control_State := global_state;
+      border_color : Color;
+      text_color: Color;
+      bg_color : Color;
+      bg_bounds : Rectangle;
+      use type raylib.unsigned;
+   begin    
+      bg_bounds.x := bounds.x + float (get_style (STATUSBAR, BORDER_WIDTH));
+      bg_bounds.y := bounds.y + float (get_style (STATUSBAR, BORDER_WIDTH));
+      bg_bounds.width  := bounds.width  - float (get_style (STATUSBAR, BORDER_WIDTH) * 2);
+      bg_bounds.height := bounds.height - float (get_style (STATUSBAR, BORDER_WIDTH) * 2);
+
+      text_color := colors.get_color (
+                       get_style (STATUSBAR, (if state /= DISABLED
+                                              then TEXT_COLOR_NORMAL
+                                              else TEXT_COLOR_DISABLED)));
+                 
+      border_color := colors.get_color (
+                         get_style (STATUSBAR, 
+                                    (if state /= DISABLED
+                                     then BORDER_COLOR_NORMAL
+                                     else BORDER_COLOR_DISABLED)));
+
+      bg_color := colors.get_color (
+                     get_style (STATUSBAR, 
+                                (if state /= DISABLED
+                                 then BASE_COLOR_NORMAL
+                                 else BASE_COLOR_DISABLED)));
+      
+      shapes.draw_rectangle_lines_ex (bounds, int (get_style (STATUSBAR, BORDER_WIDTH)), colors.fade (border_color, global_alpha));
+      shapes.draw_rectangle_rec (bg_bounds, colors.fade(bg_color, global_alpha));
+
+      draw_text (text,
+                 get_text_bounds (STATUSBAR, bounds),
+                 Text_Alignment_Type'Val (get_style (STATUSBAR, TEXT_ALIGNMENT)),
+                 colors.fade (text_color, global_alpha));
+   end statusbar;
+
+   procedure toggle (bounds : Rectangle ; text : String ; active : in out Boolean) is
       toggle_state : Control_State := global_state;
       mouse_point : Vector2;
-      is_active : Boolean := active;
    begin
       if global_state /= DISABLED and not global_locked then
          mouse_point := core.get_mouse_position;
@@ -314,7 +352,7 @@ package body raylib.UI is
                toggle_state := PRESSED;
             elsif core.is_mouse_button_released (MOUSE_LEFT_BUTTON) then
                toggle_state := NORMAL;
-               is_active := not active;
+               active := not active;
             else
                toggle_state := FOCUSED;
             end if;
@@ -338,12 +376,12 @@ package body raylib.UI is
          text_color_prop_index := Property_Element'Pos (raylib.ui.TEXT) + Control_State'Pos (toggle_state) * 3;
          
          if toggle_state = NORMAL then
-            color_property := (if is_active then BORDER_COLOR_PRESSED
-                                            else Properties'Val (color_prop_index));
-            bg_color_property := (if is_active then BASE_COLOR_PRESSED
-                                               else Properties'Val (bg_color_prop_index));
-            text_color_property := (if is_active then TEXT_COLOR_PRESSED
-                                                 else Properties'Val (text_color_prop_index));
+            color_property := (if active then BORDER_COLOR_PRESSED
+                                         else Properties'Val (color_prop_index));
+            bg_color_property := (if active then BASE_COLOR_PRESSED
+                                            else Properties'Val (bg_color_prop_index));
+            text_color_property := (if active then TEXT_COLOR_PRESSED
+                                              else Properties'Val (text_color_prop_index));
          else
             color_property := Properties'Val (color_prop_index);
             bg_color_property := Properties'Val (bg_color_prop_index);
@@ -366,8 +404,6 @@ package body raylib.UI is
             Text_Alignment_Type'Val (get_style (TOGGLE, TEXT_ALIGNMENT)),
             colors.fade (text_color, global_alpha));
       end drawing;
-      
-      return is_active;
    end toggle;
 
    procedure set_style (

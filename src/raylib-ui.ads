@@ -69,7 +69,9 @@ package raylib.UI is
 
    function  button (bounds : raylib.Rectangle; label : String) return Boolean;
    procedure panel (bounds : Rectangle);
-   function  toggle (bounds : Rectangle ; text : String ; active : Boolean) return Boolean;
+   procedure statusbar (bounds : Rectangle ; text : String);
+   procedure toggle (bounds : Rectangle ; text : String ; active : in out Boolean);
+
 private
 
    function get_property_index (P : Properties) return Integer;
