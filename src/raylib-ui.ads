@@ -67,7 +67,8 @@ package raylib.UI is
 
    function get_text_width (text : String) return int;
 
-   function  button (bounds : raylib.Rectangle; label : String) return Boolean;
+   function  button (bounds : Rectangle; label : String) return Boolean;
+   procedure checkbox (bounds : Rectangle ; text : String ; checked : in out Boolean);
    procedure panel (bounds : Rectangle);
    procedure statusbar (bounds : Rectangle ; text : String);
    procedure toggle (bounds : Rectangle ; text : String ; active : in out Boolean);

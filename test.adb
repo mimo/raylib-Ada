@@ -25,6 +25,7 @@ procedure test is
    end select_next_test;
 
    gui_ctrl_toggle : Boolean := False;
+   gui_ctrl_checkbox : Boolean := True;
 begin
 
    raylib.window.init (800, 400, "test");
@@ -84,6 +85,9 @@ begin
          if raylib.UI.button ((600.0, 50.0, 80.0, 32.0), "Next test")
          then select_next_test;
          end if;
+         raylib.UI.checkbox (bounds  => (100.0, 150.0, 24.0, 24.0),
+                             text    => (if gui_ctrl_checkbox then "Checked" else "Unchecked"),
+                             checked => gui_ctrl_checkbox);
       end case;
 
       raylib.end_drawing;

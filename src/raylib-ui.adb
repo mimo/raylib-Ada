@@ -12,6 +12,19 @@ package body raylib.UI is
    global_style : array (Controls'Range, 0 .. 23) of unsigned;
    global_font : Font;
 
+   function to_text_alignment (position : unsigned)
+                               return Text_Alignment_Type is
+   begin  
+      return Text_Alignment_Type'Val (position);
+   end to_text_alignment;
+   
+   function get_property_by_state (C : Property_Element; state : Control_State) return Properties is
+      property_index : Integer := Property_Element'Pos (C)
+                                  + Control_State'Pos (state) * 3;
+   begin
+      return Properties'Val (property_index);
+   end get_property_by_state;
+   
    ---
    --
    procedure draw_text (
@@ -225,13 +238,9 @@ package body raylib.UI is
       --  Draw control
       --------------------------------------------------------------------
       declare
-         border_property_index : Integer := property_element'Pos (BORDER)
-                                            + control_state'Pos (button_state) * 3;
-         border_property : Properties := Properties'Val (border_property_index);
+         border_property : Properties := get_property_by_state (BORDER, button_state);
+         fill_property : Properties := get_property_by_state (BASE, button_state);
 
-         fill_property_index : integer := property_element'pos(BASE)
-                                          + (control_state'pos(button_state) * 3);
-         fill_property : Properties := Properties'Val (fill_property_index);
 
          style_bordercolor : Color := colors.fade (raylib.colors.get_color (
                                             get_style (DEFAULT,
@@ -242,11 +251,8 @@ package body raylib.UI is
                                           get_style (DEFAULT, fill_property)),
                                           global_alpha);
 
-         text_color_index : Integer := Property_Element'Pos (TEXT)
-                                       + Control_State'Pos (button_state) * 3;
-         text_color_property : Properties := Properties'Val (text_color_index);
+         text_color_property : Properties := get_property_by_state (TEXT, button_state);
          text_color_val : unsigned := get_style (BUTTON, text_color_property);
-
          text_color : Color := raylib.colors.get_color (text_color_val);
 
          use type unsigned;
@@ -267,13 +273,103 @@ package body raylib.UI is
          draw_text (
             label,
             get_text_bounds (BUTTON, bounds),
-            Text_Alignment_Type'Val (get_style (BUTTON, TEXT_ALIGNMENT)),
+            to_text_alignment (get_style (BUTTON, TEXT_ALIGNMENT)),
             raylib.colors.fade (text_color, global_alpha));
       end;
       ------------------------------------------------------------------
       return pressed;
    end button;
 
+   --  Check Box control, returns true when active
+   procedure checkbox (bounds : Rectangle ; text : String ; checked : in out Boolean) is
+      state : Control_State := global_state;
+      total_bounds, text_bounds : Rectangle := ( 0.0, 0.0, 0.0, 0.0 );
+      mouse_point : Vector2;
+      use type unsigned, int;
+   begin
+   
+      if text'Length > 0 then
+         text_bounds.width  := float (get_text_width (text));
+         text_bounds.height := float (get_style (DEFAULT, TEXT_SIZE));
+         text_bounds.x := bounds.x + bounds.width + float (get_style (CHECKBOX, TEXT_PADDING));
+         text_bounds.y := bounds.y + bounds.height / 2.0 - float (get_style (DEFAULT, TEXT_SIZE)) / 2.0;
+         if to_text_alignment (get_style (CHECKBOX, TEXT_ALIGNMENT)) = TEXT_ALIGN_LEFT
+         then text_bounds.x := bounds.x - text_bounds.width - float(get_style (CHECKBOX, TEXT_PADDING));
+         end if;
+      end if;
+
+      --  Update control
+      -------------------------------------------------------------------------
+      if state /= DISABLED and not global_locked
+      then
+         mouse_point := core.get_mouse_position;
+
+         total_bounds.x := (if to_text_alignment (get_style (CHECKBOX, TEXT_ALIGNMENT)) = TEXT_ALIGN_LEFT
+                            then text_bounds.x else bounds.x);
+         total_bounds.y := bounds.y;
+         total_bounds.width := bounds.width + text_bounds.width + float(get_style (CHECKBOX, TEXT_PADDING));
+         total_bounds.height := bounds.height;
+
+         --  Check checkbox state
+         if shapes.check_collision_point_rec (mouse_point, total_bounds)
+         then
+            state := (if core.is_mouse_button_down (MOUSE_LEFT_BUTTON)
+                      then PRESSED else FOCUSED);
+
+            if core.is_mouse_button_released (MOUSE_LEFT_BUTTON)
+            then checked := not checked;
+            end if;
+         end if;
+      end if;
+      ----------------------------------------------------------------------
+
+      --  Draw control
+      -------------------------------------------------------------------------
+      drawing : declare
+         text_prop : Properties := get_property_by_state (UI.TEXT, state);
+         text_color : Color := colors.get_color (get_style (LABEL, text_prop));
+         text_align : Text_Alignment_Type;
+         
+         check_color_prop : Properties;
+         
+         PADDING : constant unsigned := get_style (CHECKBOX, CHECK_PADDING);
+         BORDER_W : constant unsigned := get_style (CHECKBOX, BORDER_WIDTH);
+      begin
+         check_color_prop := get_property_by_state(raylib.UI.TEXT, state);
+         
+         text_align := to_text_alignment (get_style (CHECKBOX, TEXT_ALIGNMENT));
+         text_align := (if text_align = TEXT_ALIGN_RIGHT
+                        then TEXT_ALIGN_LEFT else TEXT_ALIGN_RIGHT);
+         
+         shapes.draw_rectangle_lines_ex (
+            rec        => bounds,
+            line_thick => int(get_style (CHECKBOX, BORDER_WIDTH)),
+            c          => colors.fade (colors.get_color (get_style (CHECKBOX, get_property_by_state(BORDER, state))), global_alpha));
+      if checked then
+         shapes.draw_rectangle (
+            posX   => int (bounds.x) + int (BORDER_W + PADDING),
+            posY   => int (bounds.y) + int (BORDER_W + PADDING),
+            width  => int (bounds.width)  - int (2 * (BORDER_W + PADDING)),
+            height => int (bounds.height) - int (2 * (BORDER_W + PADDING)),
+            c      => colors.fade (
+                         colors.get_color (
+                            get_style (CHECKBOX,
+                                       check_color_prop)),
+                         global_alpha));
+      end if;
+      
+         if text'Length > 0 then
+            draw_text (
+               text,
+               text_bounds,
+               text_align,
+               colors.fade (text_color, global_alpha));
+         
+         end if;
+      end drawing;
+      -------------------------------------------------------------------------
+   end checkbox;
+   
    procedure panel (bounds : Rectangle) is
       PANEL_BORDER_WIDTH : constant := 1;
       panel_state : constant Control_State := global_state;
@@ -416,20 +512,16 @@ package body raylib.UI is
 
    function get_style (control : Controls; property : Properties)
       return unsigned is
-      ctrl : Controls;
    begin
       if not global_style_loaded then
          load_style_default;
       end if;
-      
-      if control = TOGGLE
-      then ctrl := DEFAULT;
-      end if;
-      
-      return global_style (ctrl, get_property_index (property));
+            
+      return global_style (control, get_property_index (property));
    end get_style;
 
    procedure load_style_default is
+      use type Controls;
    begin
       set_style (DEFAULT, BORDER_COLOR_NORMAL,  16#838383ff#);
       set_style (DEFAULT, BASE_COLOR_NORMAL,    16#c9c9c9ff#);
@@ -442,11 +534,19 @@ package body raylib.UI is
       set_style (DEFAULT, TEXT_COLOR_PRESSED,   16#368bafff#);
       set_style (DEFAULT, BORDER_WIDTH, 1);
       set_style (DEFAULT, TEXT_PADDING, 0);
-      set_style (
-         DEFAULT,
-         TEXT_ALIGNMENT,
-         Text_Alignment_Type'Pos (TEXT_ALIGN_CENTER));
-
+      set_style (DEFAULT, TEXT_ALIGNMENT, Text_Alignment_Type'Pos (TEXT_ALIGN_CENTER));
+      set_style (DEFAULT, TEXT_SIZE, 10);
+      set_style (DEFAULT, TEXT_SPACING, 1);
+      set_style (DEFAULT, BACKGROUND_COLOR, 16#f5f5f5ff#);
+      set_style (DEFAULT, TEXT_SIZE, 10);
+      set_style (DEFAULT, LINE_COLOR, 16#90abb5ff#);
+      
+      for C in LABEL .. Controls'Last loop
+         for P in 0..23 loop
+            global_style (C, P) := global_style (global_style'First, P);
+         end loop;
+      end loop;
+      
       --  Initialize control-specific property values
       --  NOTE: Those properties are in default list but require specific values by control type
       set_style (LABEL,  TEXT_ALIGNMENT,
@@ -454,18 +554,16 @@ package body raylib.UI is
       set_style (BUTTON, TEXT_ALIGNMENT,
                  Text_Alignment_Type'Pos (TEXT_ALIGN_CENTER));
       set_style (BUTTON, BORDER_WIDTH, 2);
+      set_style (SLIDER, TEXT_PADDING, 5);
+      set_style (CHECKBOX, TEXT_PADDING, 5);
+      set_style (CHECKBOX, TEXT_ALIGNMENT, Text_Alignment_Type'Pos (TEXT_ALIGN_RIGHT));
 
-      set_style (DEFAULT, TEXT_SIZE, 10);
-      set_style (DEFAULT, TEXT_SPACING, 1);
-      set_style (DEFAULT, BACKGROUND_COLOR, 16#f5f5f5ff#);
-      
+
       --  Initialize extended property values
-      set_style (DEFAULT, TEXT_SIZE, 10);
-      set_style (DEFAULT, TEXT_SPACING, 1);
-      set_style (DEFAULT, LINE_COLOR, 16#90abb5ff#);
-      set_style (DEFAULT, BACKGROUND_COLOR, 16#f5f5f5ff#);
       set_style (TOGGLE, GROUP_PADDING, 2);
-      
+      set_style (CHECKBOX, CHECK_PADDING, 1);
+      set_style (CHECKBOX, BORDER_WIDTH, 1);
+
       global_font := raylib.text.get_font_default;
       global_style_loaded := TRUE;
    end load_style_default;
