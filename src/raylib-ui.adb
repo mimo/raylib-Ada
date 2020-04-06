@@ -14,17 +14,19 @@ package body raylib.UI is
 
    function to_text_alignment (position : unsigned)
                                return Text_Alignment_Type is
-   begin  
+   begin
       return Text_Alignment_Type'Val (position);
    end to_text_alignment;
-   
-   function get_property_by_state (C : Property_Element; state : Control_State) return Properties is
+
+   function get_property_by_state (C : Property_Element; state : Control_State)
+      return Properties
+   is
       property_index : Integer := Property_Element'Pos (C)
                                   + Control_State'Pos (state) * 3;
    begin
       return Properties'Val (property_index);
    end get_property_by_state;
-   
+
    ---
    --
    procedure draw_text (

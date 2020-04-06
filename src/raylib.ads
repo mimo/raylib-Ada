@@ -5,7 +5,7 @@ with System;
 ---
 --  for reference use :
 --  https://www.adaic.org/resources/add_content/standards/05rm/html/RM-B-3.html
---  https://github.com/raysan5/raylib/blob/a9f33c9a8962735fed5dd1857709d159bc4056fc/src/raylib.h
+--  https://raw.githubusercontent.com/raysan5/raylib/3.0.0/src/raylib.h
 
 package raylib is
 
@@ -31,6 +31,16 @@ package raylib is
    end record
       with Convention => C_Pass_By_Copy;
 
+   type Quaternion is new Vector4;
+
+   type Matrix is record
+      m0, m4, m8,  m12 : float;
+      m1, m5, m9,  m13 : float;
+      m2, m6, m10, m14 : float;
+      m3, m7, m11, m15 : float;
+   end record
+      with Convention => C_Pass_By_Copy;
+
    type Color is record
       r, g, b, a : unsigned_char;
    end record
@@ -38,6 +48,13 @@ package raylib is
 
    type Rectangle is record
      x, y, width, height : Float;
+   end record
+      with Convention => C_Pass_By_Copy;
+
+   type NPatch_Info is record
+      sourceRec : Rectangle;
+      left, top, right, bottom : int;
+      layout : int; -- named type in Raylib
    end record
       with Convention => C_Pass_By_Copy;
 
@@ -315,7 +332,7 @@ package raylib is
    with Convention => C;
 
    type Pixel_Format is (
-      UNCOMPRESSED_GRAYSCALE,     -- 8 bit per pixel (no alpha)
+      UNCOMPRESSED_GRAYSCALE,         -- 8 bit per pixel (no alpha)
       UNCOMPRESSED_GRAY_ALPHA,        -- 8*2 bpp (2 channels)
       UNCOMPRESSED_R5G6B5,            -- 16 bpp
       UNCOMPRESSED_R8G8B8,            -- 24 bpp
@@ -338,6 +355,13 @@ package raylib is
       COMPRESSED_ASTC_8x8_RGBA)       -- 2 bpp
    with Convention => C;
 
+   type Image is record
+     data : System.Address;
+     width, height, mipmaps : int;
+     format : Pixel_Format;
+   end record
+      with Convention => C_Pass_By_Copy;
+
    type Texture2D is record
      id : unsigned;
      width, height : int;
@@ -346,29 +370,32 @@ package raylib is
    end record
       with Convention => C_Pass_By_Copy;
 
-   type Image is record
-     data : System.Address;
-     width, height, mipmaps : int;
-     format : Pixel_Format;
+   subtype Texture is Texture2D;
+   subtype TextureCubemap is Texture2D;
+
+   type RenderTexture2D is record
+      id : unsigned;
+      texture, depth : Texture2D;
+      depthTexture : bool;
    end record
       with Convention => C_Pass_By_Copy;
+   subtype RenderTexture is RenderTexture2D;
 
    --  Font character info
    type CharInfo is record
        value : int;              -- Character value (Unicode)
-       rec : Rectangle;          -- Character rectangle in sprite font
        offsetX : int;            -- Character offset X when drawing
        offsetY : int;            -- Character offset Y when drawing
        advanceX : int;           -- Character advance position X
-       data : System.Address;    -- Character pixel data (grayscale)
-       --unsigned char * data;
+       img : Image;              -- Character image data, named image in raylib.h but conflict with the type
    end record
       with Convention => C_Pass_By_Copy;
 
    type Font  is record
-      texture  : Texture2D;   -- Font texture
       baseSize : int;         -- Base size (default chars height)
       charsCount : int;       -- Number of characters
+      texture  : Texture2D;   -- Character texture atlas
+      recs : System.Address;  -- Characters rectangles in texture
       chars : System.Address; -- Characters info data
       --  CharInfo *chars;
    end record
