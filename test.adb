@@ -2,6 +2,7 @@ with raylib;
 with raylib.UI;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
+with Interfaces.C.Extensions;
 
 procedure test is
    use raylib;
@@ -26,12 +27,20 @@ procedure test is
 
    gui_ctrl_toggle : Boolean := False;
    gui_ctrl_checkbox : Boolean := True;
+   gui_ctrl_textbox : Boolean := False;
+   gui_value_textbox : String (1 .. 25);
+
+   use type raylib.UI.Control_State;
+   use type Interfaces.C.Extensions.bool;
 begin
+   Ada.Strings.Fixed.Move ("Hello !", gui_value_textbox);
 
    raylib.window.init (800, 400, "test");
 
    raylib.set_target_FPS (FPS);
-   --raylib.window.hide_cursor;
+   --  raylib.window.hide_cursor;
+
+   raylib.UI.set_alpha (0.85);
 
    while not window.should_close loop
 
@@ -54,7 +63,7 @@ begin
          shapes.draw_line (
             start_posX => padding,
             start_posY => 28,
-            end_posx   => 300,
+            end_posX   => 300,
             end_posy   => 28,
             c => raylib.RED);
          --
@@ -75,7 +84,13 @@ begin
       when Perspective =>
          text.draw ("Perspective test not yet implemented", 1, 38, font_size, BLACK);
       when GUI =>
-         raylib.UI.statusbar ((0.0, 0.0, 800.0, 32.0), "This is a bar !!!");
+         if Boolean(is_key_pressed (raylib.KEY_D)) then
+            if raylib.UI.get_state = raylib.UI.NORMAL
+            then raylib.UI.set_state (raylib.UI.DISABLED);
+            else raylib.UI.set_state (raylib.UI.NORMAL);
+            end if;
+         end if;
+         raylib.UI.statusbar ((0.0, 0.0, 800.0, 32.0), "UI test, press key 'D' to disable");
          if gui_ctrl_toggle then
             raylib.UI.toggle ((100.0, 48.0, 100.0, 24.0), "Active button", gui_ctrl_toggle);
          else
@@ -88,6 +103,9 @@ begin
          raylib.UI.checkbox (bounds  => (100.0, 150.0, 24.0, 24.0),
                              text    => (if gui_ctrl_checkbox then "Checked" else "Unchecked"),
                              checked => gui_ctrl_checkbox);
+         if raylib.UI.textbox ((100.0, 200.0, 80.0, 32.0), gui_value_textbox, gui_ctrl_textbox) then
+            gui_ctrl_textbox := not gui_ctrl_textbox;
+         end if;
       end case;
 
       raylib.end_drawing;

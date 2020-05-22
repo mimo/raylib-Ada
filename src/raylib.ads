@@ -34,10 +34,10 @@ package raylib is
    type Quaternion is new Vector4;
 
    type Matrix is record
-      m0, m4, m8,  m12 : float;
-      m1, m5, m9,  m13 : float;
-      m2, m6, m10, m14 : float;
-      m3, m7, m11, m15 : float;
+      m0, m4, m8,  m12 : Float;
+      m1, m5, m9,  m13 : Float;
+      m2, m6, m10, m14 : Float;
+      m3, m7, m11, m15 : Float;
    end record
       with Convention => C_Pass_By_Copy;
 
@@ -355,10 +355,13 @@ package raylib is
       COMPRESSED_ASTC_8x8_RGBA)       -- 2 bpp
    with Convention => C;
 
+   for Pixel_Format'Size use Interfaces.C.int'Size;
+
    type Image is record
      data : System.Address;
      width, height, mipmaps : int;
-     format : Pixel_Format;
+     format : int;
+     --  format : Pixel_Format;
    end record
       with Convention => C_Pass_By_Copy;
 
@@ -366,7 +369,8 @@ package raylib is
      id : unsigned;
      width, height : int;
      mimaps : int;
-     format : Pixel_Format;
+     format : int;
+     --format : Pixel_Format;
    end record
       with Convention => C_Pass_By_Copy;
 
@@ -395,8 +399,8 @@ package raylib is
       baseSize : int;         -- Base size (default chars height)
       charsCount : int;       -- Number of characters
       texture  : Texture2D;   -- Character texture atlas
-      recs : System.Address;  -- Characters rectangles in texture
-      chars : System.Address; -- Characters info data
+      recs : access Rectangle;  -- Characters rectangles in texture
+      chars : access CharInfo; -- Characters info data
       --  CharInfo *chars;
    end record
       with Convention => C_Pass_By_Copy;
@@ -540,6 +544,11 @@ package raylib is
             Import => True,
             Convention => C,
             External_Name => "IsKeyPressed";
+      function get_key_pressed return int
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "GetKeyPressed";
       --  [[ Input-related functions: gamepads  ]]  --
       function is_gamepad_available (gamepad : int) return bool
          with
@@ -602,12 +611,17 @@ package raylib is
             Import => True,
             Convention => C,
             External_Name => "IsMouseButtonReleased";
+      function is_mouse_button_pressed (button : Mouse_Button) return bool
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "IsMouseButtonPressed";
       function get_mouse_position return Vector2
          with
             Import => True,
             Convention => C,
             External_Name => "GetMousePosition";
-      procedure trace_log (ltype : Log ; text : String);
+      procedure trace_log (ltype : Log; text : String);
    end core;
 
    package camera is
@@ -625,36 +639,67 @@ package raylib is
 
    package shapes is
       procedure draw_line (start_posX, start_posY, end_posX, end_posy : int;
-         c : Color);
-      procedure draw_line_v (start_pos, end_pos : Vector2; c : Color);
+         c : Color)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "DrawLine";
+
+      procedure draw_line_v (start_pos, end_pos : Vector2; c : Color)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "DrawLineV";
+
       procedure draw_line_ex (
          start_pos, end_pos : Vector2;
          thick : C_Float;
-         c : Color);
+         c : Color)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "DrawLineEx";
+
       --  Draw a color-filled circle
       procedure draw_circle (centerX, centerY : int; radius : Float; c : Color)
          with
             Import => True,
             Convention => C,
             External_Name => "DrawCircle";
-      procedure draw_rectangle (posX, posY, width, height : int ; c : Color);
+
+      procedure draw_rectangle (posX, posY, width, height : int; c : Color)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "DrawRectangle";
+
       procedure draw_rectangle_rec (bounds : Rectangle; c : Color)
-      with
-         Import => True,
-         Convention => C,
-         External_Name => "DrawRectangleRec";
-    procedure draw_rectangle_lines (posX, posY, width, height : int ; c : Color);
-    procedure draw_rectangle_lines_ex (rec : Rectangle ; line_thick : int ; c :Color);
-    function  check_collision_point_rec (point : Vector2 ; rec : Rectangle) return bool;
-    ------
-    pragma import (C, draw_line, "DrawLine");
-    pragma import (C, draw_line_v, "DrawLineV");
-    pragma import (C, draw_line_ex, "DrawLineEx");
-    pragma import (C, draw_rectangle, "DrawRectangle");
-    pragma import (C, draw_rectangle_lines, "DrawRectangleLines");
-    pragma import (C, draw_rectangle_lines_ex, "DrawRectangleLinesEx");
-    pragma import (C, check_collision_point_rec, "CheckCollisionPointRec");
-  end Shapes;
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "DrawRectangleRec";
+
+      procedure draw_rectangle_lines (posX, posY, width, height : int;
+         c : Color)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "DrawRectangleLines";
+
+      procedure draw_rectangle_lines_ex (rec : Rectangle; line_thick : int;
+         c : Color)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "DrawRectangleLinesEx";
+
+      function check_collision_point_rec (point : Vector2; rec : Rectangle)
+         return bool
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "CheckCollisionPointRec";
+   end shapes;
 
    package drawing is
       procedure begin_mode3D (camera : Camera3D);
@@ -665,6 +710,10 @@ package raylib is
    end drawing;
 
    package colors is
+      function color_to_int (c : Color) return int
+         with Import => True,
+              Convention => C,
+              External_Name => "ColorToInt";
       function get_color (hexvalue : unsigned) return Color
          with
             Import => True,

@@ -2,25 +2,29 @@ with "../raylib";
 
 project raylib.examples is
 
-for Main use (
-   "core_3d_camera_first_person.adb",
-   "core_input_gamepad.adb",
-   "textures_rectangle.adb"
-);
-for Source_Dirs use ("core","textures");
-for Object_Dir use "build";
-for Exec_Dir use ".";
+   Raylib_Path := external ("RAYLIB_PATH", "/usr/local");
+   Raylib_Link := "-L" & RAYLIB_PATH & "/lib";
 
-package Builder is
-  for Executable ("exec.adb") use "nautilus";
-end Builder;
+   for Main use (
+      "core_3d_camera_first_person.adb",
+      "core_input_gamepad.adb",
+      "textures_rectangle.adb"
+   );
 
-package Linker is
-  for Default_Switches ("ada") use ("-lraylib", "-g");
-end Linker;
+   for Source_Dirs use ("core","textures");
+   for Object_Dir use "build";
+   for Exec_Dir use ".";
 
-package Compiler is
-  for Default_Switches ("ada") use ("-O2", "-gnat12");
-end Compiler;
+   package Builder is
+      for Executable ("exec.adb") use "nautilus";
+   end Builder;
+
+   package Linker is
+      for Default_Switches ("ada") use ("-lraylib", Raylib_Link, "-g");
+   end Linker;
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-O2", "-gnat12");
+   end Compiler;
 
 end raylib.examples;
