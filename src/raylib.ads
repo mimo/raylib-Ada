@@ -287,6 +287,14 @@ package raylib is
       KEY_RIGHT_SUPER   => 347,
       KEY_KB_MENU       => 348);
 
+   type Mouse_Cursor is (
+     MOUSE_CURSOR_DEFAULT,
+     MOUSE_CURSOR_IBEAM)
+   with Convention => C;
+
+   for Mouse_Cursor use (
+      MOUSE_CURSOR_DEFAULT => 0,
+      MOUSE_CURSOR_IBEAM => 2);
    type Mouse_Button is (
        MOUSE_LEFT_BUTTON,
        MOUSE_RIGHT_BUTTON,
@@ -549,6 +557,13 @@ package raylib is
             Import => True,
             Convention => C,
             External_Name => "GetKeyPressed";
+
+      function get_char_pressed return int
+         with 
+            Import => True,
+            Convention => C,
+            External_Name => "GetCharPressed";
+
       --  [[ Input-related functions: gamepads  ]]  --
       function is_gamepad_available (gamepad : int) return bool
          with
@@ -621,6 +636,12 @@ package raylib is
             Import => True,
             Convention => C,
             External_Name => "GetMousePosition";
+      procedure set_mouse_cursor(cursor: Mouse_Cursor)
+         with 
+            Import => True,
+            Convention => C,
+            External_Name => "SetMouseCursor";
+
       procedure trace_log (ltype : Log; text : String);
    end core;
 
