@@ -35,17 +35,15 @@ begin
          a => 255);
    end loop;
 
-   camera.set_mode (view, CAMERA_FIRST_PERSON);
-
-   raylib.set_target_FPS(60);
+   raylib.set_target_FPS (60);
 
    while not raylib.window.should_close loop
-      camera.update (view'unchecked_access);
+      rcamera.update (view'unchecked_access, CAMERA_FIRST_PERSON);
 
       raylib.begin_drawing;
       raylib.clear_background (RAYWHITE);
 
-      drawing.begin_mode3D (view);
+      drawing.begin_mode_3D (view);
          --  Draw ground
          shapes3D.draw_plane(
             center => (0.0, 0.0, 0.0),
@@ -80,7 +78,7 @@ begin
                length => 2.0,
                tint   => MAROON);
          end loop;
-      drawing.end_mode3D;
+      drawing.end_mode_3D;
 
       text.draw_FPS (250, 20);
       shapes.draw_rectangle (10, 10, 220, 70, colors.fade (SKYBLUE, 0.5));

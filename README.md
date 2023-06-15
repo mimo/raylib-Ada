@@ -6,7 +6,7 @@ Many functions are missing and some are not tested !
 ## Prerequisites
 
 - GNAT toolsuite : [www.adacore.com](https://www.adacore.com/community)
-- Raylib 3.0 : [raysan5/raylib](https://github.com/raysan5/raylib)
+- Raylib 4.5 : [raysan5/raylib](https://github.com/raysan5/raylib)
 
 ## Development
 
@@ -29,7 +29,7 @@ Porting examples (full list [here](https://www.raylib.com/examples.html)) :
   - [ ] sprite button
 - text
   - [ ] format text
-  - [ ] input box
+  - [x] input box
   - [ ] rectangle bounds
 - models
   - [ ] box collisions

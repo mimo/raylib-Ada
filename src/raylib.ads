@@ -5,7 +5,7 @@ with System;
 ---
 --  for reference use :
 --  https://www.adaic.org/resources/add_content/standards/05rm/html/RM-B-3.html
---  https://raw.githubusercontent.com/raysan5/raylib/3.0.0/src/raylib.h
+--  https://raw.githubusercontent.com/raysan5/raylib/4.5.0/src/raylib.h
 
 package raylib is
 
@@ -15,6 +15,13 @@ package raylib is
    subtype unsigned_char is Interfaces.C.unsigned_char;
    subtype bool          is Interfaces.C.Extensions.bool;
    subtype chars_ptr     is Interfaces.C.Strings.chars_ptr;
+
+   RAYLIB_VERSION_MAJOR : constant := 4;
+   RAYLIB_VERSION_MINOR : constant := 5;
+   RAYLIB_VERSION_PATCH : constant := 0;
+   RAYLIB_VERSION : aliased constant String := "4.5";
+
+   PI : constant := 3.14159265358979323846;
 
    type Vector2 is record
       x, y : Float;
@@ -54,12 +61,13 @@ package raylib is
    type NPatch_Info is record
       sourceRec : Rectangle;
       left, top, right, bottom : int;
-      layout : int; -- named type in Raylib
+      layout : int;
    end record
       with Convention => C_Pass_By_Copy;
 
    --  Keyboard Function Keys
    type Keys is (
+      KEY_NULL,
       KEY_SPACE,
 
       --  Alphanumeric keys
@@ -176,6 +184,7 @@ package raylib is
    with Convention => C;
 
    for Keys use (
+      KEY_NULL   => 0,
       KEY_SPACE  => 32,
 
       KEY_APOSTROPHE => 39,
@@ -289,23 +298,26 @@ package raylib is
 
    type Mouse_Cursor is (
      MOUSE_CURSOR_DEFAULT,
-     MOUSE_CURSOR_IBEAM)
+     MOUSE_CURSOR_ARROW,
+     MOUSE_CURSOR_IBEAM,
+     MOUSE_CURSOR_POINTING_HAND,
+     MOUSE_CURSOR_RESIZE_EW,
+     MOUSE_CURSOR_RESIZE_NS,
+     MOUSE_CURSOR_RESIZE_NWSE,
+     MOUSE_CURSOR_RESIZE_NESW,
+     MOUSE_CURSOR_RESIZE_ALL,
+     MOUSE_CURSOR_NOT_ALLOWED
+     )
    with Convention => C;
-
-   for Mouse_Cursor use (
-      MOUSE_CURSOR_DEFAULT => 0,
-      MOUSE_CURSOR_IBEAM => 2);
+ 
    type Mouse_Button is (
-       MOUSE_LEFT_BUTTON,
-       MOUSE_RIGHT_BUTTON,
-       MOUSE_MIDDLE_BUTTON)
-   with Convention => C;
-
-   type Gamepad_Number is (
-      GAMEPAD_PLAYER1,
-      GAMEPAD_PLAYER2,
-      GAMEPAD_PLAYER3,
-      GAMEPAD_PLAYER4)
+       MOUSE_BUTTON_LEFT,
+       MOUSE_BUTTON_RIGHT,
+       MOUSE_BUTTON_MIDDLE,
+       MOUSE_BUTTON_SIDE,
+       MOUSE_BUTTON_EXTRA,
+       MOUSE_BUTTON_FORWARD,
+       MOUSE_BUTTON_BACK)
    with Convention => C;
 
    type Gamepad_Button is (
@@ -330,8 +342,7 @@ package raylib is
    with Convention => C;
 
    type Gamepad_Axis is
-     (GAMEPAD_AXIS_UNKNOWN,
-      GAMEPAD_AXIS_LEFT_X,
+     (GAMEPAD_AXIS_LEFT_X,
       GAMEPAD_AXIS_LEFT_Y,
       GAMEPAD_AXIS_RIGHT_X,
       GAMEPAD_AXIS_RIGHT_Y,
@@ -340,31 +351,59 @@ package raylib is
    with Convention => C;
 
    type Pixel_Format is (
-      UNCOMPRESSED_GRAYSCALE,         -- 8 bit per pixel (no alpha)
-      UNCOMPRESSED_GRAY_ALPHA,        -- 8*2 bpp (2 channels)
-      UNCOMPRESSED_R5G6B5,            -- 16 bpp
-      UNCOMPRESSED_R8G8B8,            -- 24 bpp
-      UNCOMPRESSED_R5G5B5A1,          -- 16 bpp (1 bit alpha)
-      UNCOMPRESSED_R4G4B4A4,          -- 16 bpp (4 bit alpha)
-      UNCOMPRESSED_R8G8B8A8,          -- 32 bpp
-      UNCOMPRESSED_R32,               -- 32 bpp (1 channel - float)
-      UNCOMPRESSED_R32G32B32,         -- 32*3 bpp (3 channels - float)
-      UNCOMPRESSED_R32G32B32A32,      -- 32*4 bpp (4 channels - float)
-      COMPRESSED_DXT1_RGB,            -- 4 bpp (no alpha)
-      COMPRESSED_DXT1_RGBA,           -- 4 bpp (1 bit alpha)
-      COMPRESSED_DXT3_RGBA,           -- 8 bpp
-      COMPRESSED_DXT5_RGBA,           -- 8 bpp
-      COMPRESSED_ETC1_RGB,            -- 4 bpp
-      COMPRESSED_ETC2_RGB,            -- 4 bpp
-      COMPRESSED_ETC2_EAC_RGBA,       -- 8 bpp
-      COMPRESSED_PVRT_RGB,            -- 4 bpp
-      COMPRESSED_PVRT_RGBA,           -- 4 bpp
-      COMPRESSED_ASTC_4x4_RGBA,       -- 8 bpp
-      COMPRESSED_ASTC_8x8_RGBA)       -- 2 bpp
+      PIXELFORMAT_UNCOMPRESSED_GRAYSCALE,         -- 8 bit per pixel (no alpha)
+      PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA,        -- 8*2 bpp (2 channels)
+      PIXELFORMAT_UNCOMPRESSED_R5G6B5,            -- 16 bpp
+      PIXELFORMAT_UNCOMPRESSED_R8G8B8,            -- 24 bpp
+      PIXELFORMAT_UNCOMPRESSED_R5G5B5A1,          -- 16 bpp (1 bit alpha)
+      PIXELFORMAT_UNCOMPRESSED_R4G4B4A4,          -- 16 bpp (4 bit alpha)
+      PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,          -- 32 bpp
+      PIXELFORMAT_UNCOMPRESSED_R32,               -- 32 bpp (1 channel - float)
+      PIXELFORMAT_UNCOMPRESSED_R32G32B32,         -- 32*3 bpp (3 channels - float)
+      PIXELFORMAT_UNCOMPRESSED_R32G32B32A32,      -- 32*4 bpp (4 channels - float)
+      PIXELFORMAT_COMPRESSED_DXT1_RGB,            -- 4 bpp (no alpha)
+      PIXELFORMAT_COMPRESSED_DXT1_RGBA,           -- 4 bpp (1 bit alpha)
+      PIXELFORMAT_COMPRESSED_DXT3_RGBA,           -- 8 bpp
+      PIXELFORMAT_COMPRESSED_DXT5_RGBA,           -- 8 bpp
+      PIXELFORMAT_COMPRESSED_ETC1_RGB,            -- 4 bpp
+      PIXELFORMAT_COMPRESSED_ETC2_RGB,            -- 4 bpp
+      PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA,       -- 8 bpp
+      PIXELFORMAT_COMPRESSED_PVRT_RGB,            -- 4 bpp
+      PIXELFORMAT_COMPRESSED_PVRT_RGBA,           -- 4 bpp
+      PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA,       -- 8 bpp
+      PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA)       -- 2 bpp
    with Convention => C;
 
    for Pixel_Format'Size use Interfaces.C.int'Size;
+   for Pixel_Format use (
+      PIXELFORMAT_UNCOMPRESSED_GRAYSCALE => 1,
+      PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA => 2,        -- 8*2 bpp (2 channels)
+      PIXELFORMAT_UNCOMPRESSED_R5G6B5 => 3,            -- 16 bpp
+      PIXELFORMAT_UNCOMPRESSED_R8G8B8 => 4,            -- 24 bpp
+      PIXELFORMAT_UNCOMPRESSED_R5G5B5A1 => 5,          -- 16 bpp (1 bit alpha)
+      PIXELFORMAT_UNCOMPRESSED_R4G4B4A4 => 6,          -- 16 bpp (4 bit alpha)
+      PIXELFORMAT_UNCOMPRESSED_R8G8B8A8 => 7,          -- 32 bpp
+      PIXELFORMAT_UNCOMPRESSED_R32 => 8,               -- 32 bpp (1 channel - float)
+      PIXELFORMAT_UNCOMPRESSED_R32G32B32 => 9,         -- 32*3 bpp (3 channels - float)
+      PIXELFORMAT_UNCOMPRESSED_R32G32B32A32 => 10,      -- 32*4 bpp (4 channels - float)
+      PIXELFORMAT_COMPRESSED_DXT1_RGB => 11,            -- 4 bpp (no alpha)
+      PIXELFORMAT_COMPRESSED_DXT1_RGBA => 12,           -- 4 bpp (1 bit alpha)
+      PIXELFORMAT_COMPRESSED_DXT3_RGBA => 13,           -- 8 bpp
+      PIXELFORMAT_COMPRESSED_DXT5_RGBA => 14,           -- 8 bpp
+      PIXELFORMAT_COMPRESSED_ETC1_RGB => 15,            -- 4 bpp
+      PIXELFORMAT_COMPRESSED_ETC2_RGB => 16,            -- 4 bpp
+      PIXELFORMAT_COMPRESSED_ETC2_EAC_RGBA => 17,       -- 8 bpp
+      PIXELFORMAT_COMPRESSED_PVRT_RGB => 18,            -- 4 bpp
+      PIXELFORMAT_COMPRESSED_PVRT_RGBA => 19,           -- 4 bpp
+      PIXELFORMAT_COMPRESSED_ASTC_4x4_RGBA => 20,       -- 8 bpp
+      PIXELFORMAT_COMPRESSED_ASTC_8x8_RGBA => 21);
 
+   type NPatch_Layout is (
+      NPATCH_NINE_PATCH,
+      NPATCH_THREE_PATCH_VERTICAL,
+      NPATCH_THREE_PATCH_HORIZONTAL)
+   with Convention => C;
+   
    type Image is record
      data : System.Address;
      width, height, mipmaps : int;
@@ -388,13 +427,12 @@ package raylib is
    type RenderTexture2D is record
       id : unsigned;
       texture, depth : Texture2D;
-      depthTexture : bool;
    end record
       with Convention => C_Pass_By_Copy;
    subtype RenderTexture is RenderTexture2D;
 
    --  Font character info
-   type CharInfo is record
+   type GlyphInfo is record
        value : int;              -- Character value (Unicode)
        offsetX : int;            -- Character offset X when drawing
        offsetY : int;            -- Character offset Y when drawing
@@ -405,11 +443,11 @@ package raylib is
 
    type Font  is record
       baseSize : int;         -- Base size (default chars height)
-      charsCount : int;       -- Number of characters
-      texture  : Texture2D;   -- Character texture atlas
-      recs : access Rectangle;  -- Characters rectangles in texture
-      chars : access CharInfo; -- Characters info data
-      --  CharInfo *chars;
+      glyphCount : int;       -- Number of glyph characters
+      glyphPadding : int;     -- Padding around the glyph characters
+      texture  : Texture2D;   -- Texture atlas containing the glyphs
+      recs : access Rectangle;  -- Rectangles in texture for the glyphs
+      glyphs : access GlyphInfo; --  Glyphs info data
    end record
       with Convention => C_Pass_By_Copy;
 
@@ -436,10 +474,18 @@ package raylib is
       --  Camera field-of-view apperture in Y (degrees) in perspective,
       --  used as near plane width in orthographic
       fovy : Float;
-      ctype : CameraType;  --  Camera type, defines projection type
+      ctype : CameraType;  -- Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
    end record
       with Convention => C_Pass_By_Copy;
+   subtype Camera is Camera3D;
    type P_Camera is access all Camera3D;
+
+   type Camera2D is record
+      offset : Vector2;    -- Camera offset (displacement from target)
+      target : Vector2;    -- Camera target (rotation and zoom origin)
+      rotation : Float;    -- Camera rotation in degrees
+      zoom : Float;        -- Camera zoom (scaling), should be 1.0f by default
+   end record;
 
    type Log is (LOG_INFO, LOG_WARNING, LOG_ERROR, LOG_DEBUG, LOG_OTHER);
    for Log  use (
@@ -576,18 +622,18 @@ package raylib is
          Import => True,
          Convention => C,
          External_Name => "IsGamepadName";
-      function get_gamepad_name (gamepad : Gamepad_Number) return String;
+      function get_gamepad_name (gamepad : int) return String;
       --  Detect if a gamepad button has been pressed once
       function is_gamepad_button_pressed (
          gamepad : int;
-         button : Gamepad_Button)
+         button : int)
          return bool
       with
          Import => True,
          Convention => C,
          External_Name => "IsGamepadButtonPressed";
       function is_gamepad_button_down (
-         gamepad : Gamepad_Number;
+         gamepad : int;
          button : Gamepad_Button)
          return bool
       with
@@ -601,14 +647,14 @@ package raylib is
          Convention => C,
          External_Name => "GetGamepadButtonPressed";
       --  Return gamepad axis count for a gamepad
-      function get_gamepad_axis_count (gamepad : Gamepad_Number) return int
+      function get_gamepad_axis_count (gamepad : int) return int
       with
          Import => True,
          Convention => C,
          External_Name => "GetGamepadAxisCount";
       --  Return axis movement value for a gamepad axis
       function get_gamepad_axis_movement (
-         gamepad : Gamepad_Number;
+         gamepad : int;
          axis : Gamepad_Axis)
          return Float
       with
@@ -645,18 +691,13 @@ package raylib is
       procedure trace_log (ltype : Log; text : String);
    end core;
 
-   package camera is
-      procedure set_mode (camera : Camera3D; mode : CameraMode)
-         with
-            Import => True,
-            Convention => C,
-            External_Name => "SetCameraMode";
-      procedure update (camera : access Camera3D)
+   package rcamera is
+      procedure update (camera : access Camera3D; mode : CameraMode)
          with
             Import => True,
             Convention => C,
             External_Name => "UpdateCamera";
-   end camera;
+   end rcamera;
 
    package shapes is
       procedure draw_line (start_posX, start_posY, end_posX, end_posy : int;
@@ -723,11 +764,15 @@ package raylib is
    end shapes;
 
    package drawing is
-      procedure begin_mode3D (camera : Camera3D);
-      procedure end_mode3D;
+      procedure begin_mode_3D (camera : Camera3D);
+      procedure end_mode_3D;
+      procedure begin_mode_2D (camera : Camera2D);
+      procedure end_mode_2D;
       ------
-      pragma Import (C, begin_mode3D, "BeginMode3D");
-      pragma Import (C, end_mode3D, "EndMode3D");
+      pragma Import (C, begin_mode_3D, "BeginMode3D");
+      pragma Import (C, end_mode_3D, "EndMode3D");
+      pragma Import (C, begin_mode_2D, "BeginMode3D");
+      pragma Import (C, end_mode_2D, "EndMode3D");
    end drawing;
 
    package colors is
@@ -857,6 +902,5 @@ package raylib is
          Convention => C,
          External_Name => "DrawCubeWires";
    end shapes3D;
-
 
 end raylib;

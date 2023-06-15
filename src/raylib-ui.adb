@@ -320,12 +320,12 @@ package body raylib.UI is
          --  Check button state
          if raylib.shapes.check_collision_point_rec (mouse_point, bounds) then
             --
-            if raylib.core.is_mouse_button_down (raylib.MOUSE_LEFT_BUTTON)
+            if raylib.core.is_mouse_button_down (raylib.MOUSE_BUTTON_LEFT)
             then button_state := raylib.UI.PRESSED;
             else button_state := FOCUSED;
             end if;
 
-            if raylib.core.is_mouse_button_released (raylib.MOUSE_LEFT_BUTTON)
+            if raylib.core.is_mouse_button_released (raylib.MOUSE_BUTTON_LEFT)
             then
                pressed := True;
             end if;
@@ -437,10 +437,10 @@ package body raylib.UI is
          --  Check checkbox state
          if shapes.check_collision_point_rec (mouse_point, total_bounds)
          then
-            state := (if core.is_mouse_button_down (MOUSE_LEFT_BUTTON)
+            state := (if core.is_mouse_button_down (MOUSE_BUTTON_LEFT)
                       then PRESSED else FOCUSED);
 
-            if core.is_mouse_button_released (MOUSE_LEFT_BUTTON)
+            if core.is_mouse_button_released (MOUSE_BUTTON_LEFT)
             then checked := not checked;
             end if;
          end if;
@@ -588,9 +588,9 @@ package body raylib.UI is
 
          if shapes.check_collision_point_rec (mouse_point, bounds) then
 
-            if core.is_mouse_button_down (MOUSE_LEFT_BUTTON) then
+            if core.is_mouse_button_down (MOUSE_BUTTON_LEFT) then
                toggle_state := PRESSED;
-            elsif core.is_mouse_button_released (MOUSE_LEFT_BUTTON) then
+            elsif core.is_mouse_button_released (MOUSE_BUTTON_LEFT) then
                toggle_state := NORMAL;
                active := not active;
             else
@@ -676,7 +676,7 @@ package body raylib.UI is
          else
             if shapes.check_collision_point_rec (mouse_point, bounds) then
                state := FOCUSED;
-               if core.is_mouse_button_pressed (MOUSE_LEFT_BUTTON) then
+               if core.is_mouse_button_pressed (MOUSE_BUTTON_LEFT) then
                   is_pressed := True;
                end if;
             end if;

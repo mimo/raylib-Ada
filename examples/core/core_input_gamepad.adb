@@ -7,6 +7,7 @@ procedure core_input_gamepad is
 
    screenWidth  : constant := 800;
    screenHeight : constant := 450;
+   GAMEPAD_PLAYER1 : constant := 0;
 
    texPs3Pad, texXboxPad :Texture2D;
 

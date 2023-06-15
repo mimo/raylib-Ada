@@ -108,8 +108,8 @@ end text; ---
       begin
          return to_boolean (pressed);
       end is_key_pressed;
-      function get_gamepad_name (gamepad : Gamepad_Number) return string is
-         function GetGamepadName (arg1 : Gamepad_Number)
+      function get_gamepad_name (gamepad : int) return string is
+         function GetGamepadName (arg1 : int)
             return Interfaces.C.Strings.chars_ptr
          with Import, Convention => C, External_Name => "GetGamepadName";
       begin
