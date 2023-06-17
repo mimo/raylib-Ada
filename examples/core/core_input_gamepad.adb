@@ -1,4 +1,6 @@
 with raylib;
+with Ada.Strings.Fixed;
+with Interfaces.C;
 
 procedure core_input_gamepad is
    use raylib;
@@ -7,26 +9,50 @@ procedure core_input_gamepad is
 
    screenWidth  : constant := 800;
    screenHeight : constant := 450;
-   GAMEPAD_PLAYER1 : constant := 0;
 
-   texPs3Pad, texXboxPad :Texture2D;
+   texPs3Pad, texXboxPad : Texture2D;
 
-begin
+   type Gamepad_Type is (UNAVAILABLE, UNKNOWN, XBOX, PLAYSTATION, OTHER);
+   --my_gamepad : Gamepad_Type := UNKNOWN;
+   --my_gamepad : Gamepad_Type := XBOX;
+   --my_gamepad : Gamepad_Type := PLAYSTATION;
+   my_gamepad : Gamepad_Type := OTHER;
+   GAMEPAD_PLAYER1 : int := 0;
 
-   --SetConfigFlags(FLAG_MSAA_4X_HINT);  // Set MSAA 4X hint before windows creation
+   procedure detect_gamepad is
+      use type Interfaces.C.C_bool;
+   begin
+      if raylib.core.is_gamepad_available (GAMEPAD_PLAYER1) = Interfaces.C.False then
+         my_gamepad := UNAVAILABLE;
+         return;
+      end if;
 
-   window.init (screenWidth, screenHeight, "raylib [core] example - gamepad input");
+      declare
+         gamepad_name : string := raylib.core.get_gamepad_name (GAMEPAD_PLAYER1);
+         package FS renames Ada.Strings.Fixed;
+      begin
+         if gamepad_name'length = 0 then
+            my_gamepad := UNKNOWN;
+            return;
+         end if;
 
-   texPs3Pad  := textures.load ("resources/ps3.png");
-   texXboxPad := textures.load ("resources/xbox.png");
+         if
+            FS.Index (gamepad_name, "Xbox") /= 0
+            or FS.Index (gamepad_name,"Microsoft") /= 0
+            then my_gamepad := XBOX;
+         elsif
+            FS.Index (gamepad_name, "PLAYSTATION") /= 0
+            or FS.Index (gamepad_name,"Sense") /= 0
+            or FS.Index (gamepad_name,"Wireless") /= 0
+            then my_gamepad := PLAYSTATION;
+         else my_gamepad := OTHER;
+         end if;
 
-   raylib.set_target_FPS (30);
+      end;
+   end detect_gamepad;
 
-   while not raylib.window.should_close loop
-
-      begin_drawing;
-      clear_background (raylib.RAYWHITE);
-
+   procedure Draw_Xbox_Gamepad is
+   begin
       textures.draw_texture (texXboxPad, 0, 0, DARKGRAY);
 
       -- Draw axis: left joystick
@@ -55,7 +81,35 @@ begin
          shapes.draw_rectangle (604, 30, 15, int(((1.0 +
          get_gamepad_axis_movement(GAMEPAD_PLAYER1,
          GAMEPAD_AXIS_RIGHT_TRIGGER))/2.0)*70.0), RED);
+   end Draw_xbox_Gamepad;
 
+   procedure draw_playstation_gamepad is
+   begin
+      textures.draw_texture (texPs3Pad, 0, 0, DARKGRAY);
+   end;
+
+begin
+
+   --SetConfigFlags(FLAG_MSAA_4X_HINT);  // Set MSAA 4X hint before windows creation
+
+   window.init (screenWidth, screenHeight, "raylib [core] example - gamepad input");
+
+   texPs3Pad  := textures.load ("resources/ps3.png");
+   texXboxPad := textures.load ("resources/xbox.png");
+
+   raylib.set_target_FPS (30);
+
+   while not raylib.window.should_close loop
+      begin_drawing;
+      clear_background (raylib.RAYWHITE);
+
+      raylib.text.draw ("My gamepad is " & (if my_gamepad = OTHER then raylib.core.get_gamepad_name (GAMEPAD_PLAYER1) else my_gamepad'Img), 30, 8, 15, DARKGREEN);
+
+      case my_gamepad is
+      when XBOX => Draw_Xbox_Gamepad;
+      when UNKNOWN | UNAVAILABLE => detect_gamepad;
+      when PLAYSTATION | OTHER => draw_playstation_gamepad;
+      end case;
 
       end_drawing;
 
