@@ -109,11 +109,13 @@ end text; ---
          return to_boolean (pressed);
       end is_key_pressed;
       function get_gamepad_name (gamepad : int) return string is
+         use Interfaces.C.Strings;
          function GetGamepadName (arg1 : int)
-            return Interfaces.C.Strings.chars_ptr
+            return chars_ptr
          with Import, Convention => C, External_Name => "GetGamepadName";
+         Gamepad_Name : chars_ptr := GetGamepadName (gamepad);
       begin
-         return Interfaces.C.Strings.Value (GetGamepadName (gamepad));
+         return (if Gamepad_Name /= Null_Ptr then Value (Gamepad_Name) else "");
       end get_gamepad_name;
    function is_gamepad_button_pressed (gamepad, button : int) return Boolean is
       function IsGamepadButtonPressed (gamepad, button : int) return int;
