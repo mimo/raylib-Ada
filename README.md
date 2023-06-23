@@ -12,8 +12,10 @@ Many functions are missing and some are not tested !
 
 Porting examples (full list [here](https://www.raylib.com/examples.html)) :
 
+- audio
+  - [x] sound loading and playing
 - core
-  - [ ] input gamepad (WIP)
+  - [x] input gamepad
   - [ ] input keys
   - [ ] input mouse
   - [ ] input mouse_wheel

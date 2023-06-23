@@ -503,6 +503,19 @@ package raylib is
       zoom : Float;        -- Camera zoom (scaling), should be 1.0f by default
    end record;
 
+   type AudioStream is record
+      buffer : System.Address;
+      processor : System.Address;
+      sampleRate, sampleSize, channels : unsigned;
+   end record
+      with Convention => C_Pass_By_Copy;
+
+   type Sound is record
+      stream : AudioStream;
+      frameCount : unsigned;
+   end record
+      with Convention => C_Pass_By_Copy;
+
    type Log is (LOG_ALL, LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR, LOG_FATAL, LOG_NONE);
    for Log'Size use int'Size;
 
@@ -936,5 +949,35 @@ package raylib is
          Convention => C,
          External_Name => "DrawCubeWires";
    end shapes3D;
+
+   ------------------------------------------------------------------------------------
+   -- Audio Loading and Playing Functions (Module: audio)
+   ------------------------------------------------------------------------------------
+   package Audio is
+      --typedef void (*AudioCallback)(void *bufferData, unsigned int frames);
+
+      -- Audio device management functions
+      procedure init_audio_device;  -- Initialize audio device and context
+      procedure close_audio_device; -- Close the audio device and context
+      function is_audio_device_ready return bool; -- Check if audio device has been initialized successfully
+      procedure set_master_volume (volume : C_Float); -- Set master volume (listener)
+      ---
+      pragma Import (C, init_audio_device, "InitAudioDevice");
+      pragma Import (C, close_audio_device, "CloseAudioDevice");
+      pragma Import (C, is_audio_device_ready, "IsAudioDeviceReady");
+      pragma Import (C, set_master_volume, "SetMasterVolume");
+
+      -- Wave/Sound loading/unloading functions
+      function load_sound(file : Interfaces.C.strings.chars_ptr) return Sound;
+      procedure unload_sound (s : Sound);
+
+      pragma Import (C, load_sound, "LoadSound");
+      pragma Import (C, unload_sound, "UnloadSound");
+
+      -- Wave/Sound management functions
+      procedure play_sound (s : Sound);
+
+      pragma Import (C, play_sound, "PlaySound");
+   end Audio;
 
 end raylib;

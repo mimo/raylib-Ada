@@ -9,10 +9,11 @@ project raylib.examples is
       "core_3d_camera_first_person.adb",
       "core_input_gamepad.adb",
       "textures_rectangle.adb",
-      "input_box.adb"
+      "input_box.adb",
+      "audio_sound_loading.adb"
    );
 
-   for Source_Dirs use ("core","textures","text");
+   for Source_Dirs use ("audio","core","textures","text");
    for Object_Dir use "build";
    for Exec_Dir use ".";
 
