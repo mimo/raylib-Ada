@@ -755,6 +755,12 @@ package raylib is
             Convention => C,
             External_Name => "DrawRectangleLinesEx";
 
+      procedure draw_triangle (p1, p2, p3 : Vector2; c : Color)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "DrawTriangle";
+
       function check_collision_point_rec (point : Vector2; rec : Rectangle)
          return bool
          with
