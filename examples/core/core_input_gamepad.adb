@@ -175,9 +175,10 @@ procedure core_input_gamepad is
       draw_rectangle (611, 48, 15, right_trigger_pos, RED);
    end draw_playstation_gamepad;
 
+   use type IC.unsigned;
 begin
 
-   --SetConfigFlags(FLAG_MSAA_4X_HINT);  // Set MSAA 4X hint before windows creation
+   set_config_flags (FLAG_MSAA_4X_HINT);  -- Set MSAA 4X hint before windows creation
 
    window.init (screenWidth, screenHeight, "raylib [core] example - gamepad input");
 

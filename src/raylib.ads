@@ -65,6 +65,22 @@ package raylib is
    end record
       with Convention => C_Pass_By_Copy;
 
+    FLAG_VSYNC_HINT         : constant := 16#00000040#;   -- Set to try enabling V-Sync on GPU
+    FLAG_FULLSCREEN_MODE    : constant := 16#00000002#;      -- Set to run program in fullscreen
+    FLAG_WINDOW_RESIZABLE   : constant := 16#00000004#;      -- Set to allow resizable window
+    FLAG_WINDOW_UNDECORATED : constant := 16#00000008#;      -- Set to disable window decoration (frame and buttons)
+    FLAG_WINDOW_HIDDEN      : constant := 16#00000080#;      -- Set to hide window
+    FLAG_WINDOW_MINIMIZED   : constant := 16#00000200#;      -- Set to minimize window (iconify)
+    FLAG_WINDOW_MAXIMIZED   : constant := 16#00000400#;      -- Set to maximize window (expanded to monitor)
+    FLAG_WINDOW_UNFOCUSED   : constant := 16#00000800#;      -- Set to window non focused
+    FLAG_WINDOW_TOPMOST     : constant := 16#00001000#;      -- Set to window always on top
+    FLAG_WINDOW_ALWAYS_RUN  : constant := 16#00000100#;      -- Set to allow windows running while minimized
+    FLAG_WINDOW_TRANSPARENT : constant := 16#00000010#;      -- Set to allow transparent framebuffer
+    FLAG_WINDOW_HIGHDPI     : constant := 16#00002000#;      -- Set to support HighDPI
+    FLAG_WINDOW_MOUSE_PASSTHROUGH : constant := 16#00004000#;      -- Set to support mouse passthrough#, only supported when FLAG_WINDOW_UNDECORATED
+    FLAG_MSAA_4X_HINT       : constant := 16#00000020#;      -- Set to try enabling MSAA 4X
+    FLAG_INTERLACED_HINT    : constant := 16#00010000#;    -- Set to try enabling interlaced video format (for V3D)
+
    --  Keyboard Function Keys
    type Keys is (
       KEY_NULL,
@@ -529,6 +545,8 @@ package raylib is
       Import => True,
       Convention => C,
       External_Name => "GetRandomValue";
+
+   procedure set_config_flags (flags : unsigned) with Import => True, Convention => C, External_Name => "SetConfigFlags";
 
    ----------------------------------------------------------------------------
    --  Window and Graphics Device Functions
