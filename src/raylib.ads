@@ -503,13 +503,7 @@ package raylib is
       zoom : Float;        -- Camera zoom (scaling), should be 1.0f by default
    end record;
 
-   type Log is (LOG_INFO, LOG_WARNING, LOG_ERROR, LOG_DEBUG, LOG_OTHER);
-   for Log  use (
-      LOG_INFO    => 1,
-      LOG_WARNING => 2,
-      LOG_ERROR   => 4,
-      LOG_DEBUG   => 8,
-      LOG_OTHER   => 16);
+   type Log is (LOG_ALL, LOG_TRACE, LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR, LOG_FATAL, LOG_NONE);
    for Log'Size use int'Size;
 
    LIGHTGRAY : constant Color := (200, 200, 200, 255);
@@ -616,12 +610,28 @@ package raylib is
             Import => True,
             Convention => C,
             External_Name => "IsKeyPressed";
-      function get_key_pressed return int
+
+      function is_key_down (key : Keys) return bool
          with
             Import => True,
             Convention => C,
-            External_Name => "GetKeyPressed";
+            External_Name => "IsKeyDown";
+      
+      function is_key_released (key : Keys) return bool
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "IsKeyReleased";
 
+      procedure set_exit_key (key : Keys)
+         with Import => True, Convention => C, External_Name => "SetExitKey";
+     
+      function get_key_pressed return Keys
+         with 
+            Import => True,
+            Convention => C,
+            External_Name => "GetKeyPressed";
+      
       function get_char_pressed return int
          with 
             Import => True,
@@ -634,12 +644,6 @@ package raylib is
             Import => True,
             Convention => C,
             External_Name => "IsGamepadAvailable";
-      function is_gamepad_name (gamepad : int; name : chars_ptr)
-         return bool
-      with
-         Import => True,
-         Convention => C,
-         External_Name => "IsGamepadName";
       function get_gamepad_name (gamepad : int) return String;
       --  Detect if a gamepad button has been pressed once
       function is_gamepad_button_pressed (
@@ -658,18 +662,23 @@ package raylib is
          Import => True,
          Convention => C,
          External_Name => "IsGamepadButtonDown";
+
+      function is_gamepad_button_released (gamepad : int; button : Gamepad_Button)
+         return bool
+         with Import => True, Convention => C, External_Name => "IsGamepadButtonReleased";
+
+      function is_gamepad_button_up (gamepad : int; button : Gamepad_Button)
+         return bool
+         with Import => True, Convention => C, External_Name => "IsGamepadButtonUp";
+
       --  Get the last gamepad button pressed
       function get_gamepad_button_pressed return Gamepad_Button
-      with
-         Import => True,
-         Convention => C,
-         External_Name => "GetGamepadButtonPressed";
+      with Import => True, Convention => C, External_Name => "GetGamepadButtonPressed";
+
       --  Return gamepad axis count for a gamepad
       function get_gamepad_axis_count (gamepad : int) return int
-      with
-         Import => True,
-         Convention => C,
-         External_Name => "GetGamepadAxisCount";
+      with Import => True, Convention => C, External_Name => "GetGamepadAxisCount";
+
       --  Return axis movement value for a gamepad axis
       function get_gamepad_axis_movement (
          gamepad : int;
@@ -679,6 +688,7 @@ package raylib is
          Import => True,
          Convention => C,
          External_Name => "GetGamepadAxisMovement";
+      
       --  [[ Input-related functions: mouse  ]] --
       function is_mouse_button_down (button : Mouse_Button) return bool
          with

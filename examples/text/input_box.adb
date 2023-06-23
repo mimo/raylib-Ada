@@ -26,10 +26,10 @@ procedure input_box is
     char : int;
     
     function isAnyKeyPressed return boolean is
-        key: int := raylib.core.get_key_pressed;
+        key : int := raylib.core.get_char_pressed;
     begin
         return (key >= 32 and key <= 126);
-    end isAnyKeyPressed; 
+    end isAnyKeyPressed;
 
 begin
     raylib.window.init(
