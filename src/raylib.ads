@@ -555,9 +555,9 @@ package raylib is
 
    procedure set_config_flags (flags : unsigned) with Import => True, Convention => C, External_Name => "SetConfigFlags";
 
-   ----------------------------------------------------------------------------
+   ------------------------------------------------------------------------------------
    --  Window and Graphics Device Functions
-   ---
+   ------------------------------------------------------------------------------------
    package window is
       --  [[  Window-related functions ]]  --
       procedure init (width, height : Positive; title : String);
@@ -567,6 +567,15 @@ package raylib is
             Import => True,
             Convention => C,
             External_Name => "CloseWindow";
+
+      -- Get current screen width
+      function get_screen_width return int
+      with import => True, Convention => C, External_Name => "GetScreenWidth";
+
+      -- Get current screen height
+      function get_screen_height return int
+      with import => True, Convention => C, External_Name => "GetScreenHeight";
+
       --  [[ Cursor-related functions ]] --
       procedure show_cursor
          with
@@ -592,9 +601,9 @@ package raylib is
             External_Name => "DisableCursor";
    end window;
 
-   ----------------------------------------------------------------------------
+   ------------------------------------------------------------------------------------
    --  Drawing-related functions
-   ---
+   ------------------------------------------------------------------------------------
    procedure clear_background (bg_color : Color)
       with
          Import,
@@ -657,7 +666,9 @@ package raylib is
             Import => True,
             Convention => C,
             External_Name => "IsGamepadAvailable";
+
       function get_gamepad_name (gamepad : int) return String;
+
       --  Detect if a gamepad button has been pressed once
       function is_gamepad_button_pressed (
          gamepad : int;
@@ -839,19 +850,22 @@ package raylib is
             External_Name => "Fade";
    end colors;
 
-   ----------------------------------------------------------------------------
+   ------------------------------------------------------------------------------------
    --  Texture Loading and Drawing Functions
-   ---
+   ------------------------------------------------------------------------------------
    package textures is
       --  [[ Image/Texture2D data loading/unloading/saving functions ]] --
+
       --  Load texture from file into GPU memory (VRAM)
       function load (filename : String) return Texture2D;
+
       --  Unload texture from GPU memory (VRAM)
       procedure unload (texture : Texture2D)
          with
             Import => True,
             Convention => C,
             External_Name => "UnloadTexture";
+
       --  [[ Texture2D drawing functions ]]  --
       procedure draw_texture (
          texture : Texture2D;
@@ -893,17 +907,31 @@ package raylib is
          External_Name => "DrawTexturePro";
    end textures;
 
-  ---
+  ------------------------------------------------------------------------------------
   -- Font Loading and Text Drawing
-  --
+  ------------------------------------------------------------------------------------
    package text is
+      type char_list is array (Integer range <>) of int;
+
       --  Font loading/unloading functions
       function get_font_default return Font;
       pragma Import (C, get_font_default, "GetFontDefault");
+      
+      -- Load font from file into GPU memory (VRAM)
+      function load_font (file : String) return Font;
+
+      -- Load font from file with extended parameters, use NULL for fontChars and 0 for glyphCount to load the default character set
+      function load_font_ex (file : String; size : int; chars : access int; glyphCount : int) return Font;
+      function load_font_ex (file : String; size : int; chars : char_list; glyphCount : int) return Font;
+
+      procedure unload_font (f : Font) with Import, Convention => C, External_Name => "UnloadFont";
+
       --  Text drawing functions
       procedure draw_FPS (x, y : int);
       pragma Import (C, draw_FPS, "DrawFPS");
+
       procedure draw (text : String; posX, posY, fontSize : int; c : Color);
+
       --  Draw text using font and additional parameters
       procedure draw_ex (
          F : Font;
@@ -911,9 +939,12 @@ package raylib is
          position : Vector2;
          fontSize, spacing : Float;
          tint : Color);
-      --  [[ Text misc. functions ]]  --
+
+      --  Text font info functions
+
       --  Measure string width for default font
       function measure (text : String; fontSize : int) return int;
+
       --  Measure string size for Font
       function measure_ex (f : Font; text : String; fontSize, spacing : Float)
          return Vector2;
@@ -925,8 +956,9 @@ package raylib is
       --  `count` will hold the total number of bytes processed
    end text;
 
-   ---
+   ------------------------------------------------------------------------------------
    --  Basic 3d Shapes
+   ------------------------------------------------------------------------------------
    package shapes3D is
       procedure draw_plane (center : Vector3; size : Vector2; tint : Color)
          with

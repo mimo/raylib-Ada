@@ -55,11 +55,41 @@ end window;
    end textures;
 
 package body text is
+   ---
+   -- Import C functions
+   --
+   procedure DrawText (text : strings.Chars_Ptr; X, Y, fs : int ; c : Color);
+   function LoadFont   (fileName : strings.Chars_Ptr) return Font;
+   function LoadFontEx (fileName : strings.Chars_Ptr; size : int; chars : access int; glyphCount : int) return Font;
+   function LoadFontEx2 (fileName : strings.Chars_Ptr; size : int; chars : char_list; glyphCount : int) return Font;
+   ---
+   pragma import (C, DrawText, "DrawText");
+   pragma import (C, LoadFont, "LoadFont");
+   pragma import (C, LoadFontEx, "LoadFontEx");
+   pragma import (C, LoadFontEx2, "LoadFontEx");
+
+   ---
+   -- Wrapping functions
+   --
+   function load_font (file : String) return Font is
+      ctext : strings.Chars_Ptr := strings.new_string (file);
+   begin
+      return LoadFont (ctext);
+   end load_font;
+
+   function load_font_ex (file : String; size : int; chars : access int; glyphCount : int) return Font is
+      ctext : strings.Chars_Ptr := strings.new_string (file);
+   begin
+      return LoadFontEx (ctext, size, chars, glyphCount);
+   end load_font_ex;
+
+   function load_font_ex (file : String; size : int; chars : char_list; glyphCount : int) return Font is
+      ctext : strings.Chars_Ptr := strings.new_string (file);
+   begin
+      return LoadFontEx2 (ctext, size, chars, glyphCount);
+   end load_font_ex;
 
    procedure draw (text : String ; posX, posY, fontSize : Int ; c : Color) is
-      procedure DrawText (text : strings.Chars_Ptr; X, Y, fs : int ; c : Color);
-      pragma import (C, DrawText, "DrawText");
-
       ctext : strings.Chars_Ptr := strings.new_string (text);
    begin
       DrawText (ctext, int(posX), int(posY), int(fontSize), c);

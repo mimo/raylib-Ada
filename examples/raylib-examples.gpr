@@ -10,6 +10,7 @@ project raylib.examples is
       "core_input_gamepad.adb",
       "textures_rectangle.adb",
       "input_box.adb",
+      "text_font_loading.adb",
       "audio_sound_loading.adb"
    );
 

@@ -32,6 +32,9 @@ procedure input_box is
     end isAnyKeyPressed;
 
 begin
+    --
+    --  Initialization
+    -------------------------------------
     raylib.window.init(
         screen_width,
         screen_height,
@@ -41,8 +44,11 @@ begin
     raylib.set_target_FPS(10);
 
     while not raylib.window.should_close loop
+        --
+        --  Update
+        -------------------------------------
 
-       if raylib.shapes.check_collision_point_rec (raylib.core.get_mouse_position, textBox) = bool(true) then
+        if raylib.shapes.check_collision_point_rec (raylib.core.get_mouse_position, textBox) = bool(true) then
             mouseOnText := true;   
         else 
             mouseOnText := false;
@@ -79,6 +85,9 @@ begin
             frameCounter := 0;
        end if; 
 
+       --
+       --  Draw
+       -------------------------------------
        raylib.begin_drawing;
        raylib.clear_background(RAYWHITE);
        raylib.text.draw("PLACE MOUSE OVER INPUT BOX!",240,140,20,GRAY);
@@ -95,6 +104,8 @@ begin
 
        if mouseOnText then
             if letterCount < maxInputChars then
+                ---
+                -- Draw blinking underscore char
                 if ((frameCounter/20) mod 2) = 0 then
                     raylib.text.draw(
                         "_",
