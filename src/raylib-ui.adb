@@ -1,4 +1,6 @@
 
+with Ada.Strings.Fixed;
+
 package body raylib.UI is
 
    global_state : Control_State := NORMAL;
@@ -8,6 +10,7 @@ package body raylib.UI is
    global_style_loaded : Boolean := False;
    global_style : array (Controls'Range, Properties'Range) of unsigned;
    global_font : Font;
+   global_enable_debug_info : Boolean := True; -- Global variable to enable/disable debug information
 
    function get_state return Control_State is
    begin
@@ -272,8 +275,9 @@ package body raylib.UI is
          if alignment = TEXT_ALIGN_RIGHT
          then textBounds.x := textBounds.x
                               - Float (get_style (control, TEXT_PADDING));
-         else textBounds.x := textBounds.x
-                              + Float (get_style (control, TEXT_PADDING));
+         else
+            textBounds.x := textBounds.x + Float (get_style (control, TEXT_PADDING));
+            textBounds.width := textBounds.width - 2.0 * Float (get_style (control, TEXT_PADDING));
          end if;
       end case;
 
@@ -643,86 +647,75 @@ package body raylib.UI is
    end toggle;
 
    function textbox (
-      bounds : Rectangle;
-      text : in out String;
-      edit_mode : Boolean)
+      bounds    : in Rectangle;
+      text      : in out String;
+      edit_mode : in Boolean)
       return Boolean
    is
       use type int;
 
       state : Control_State := global_state;
-      is_pressed : Boolean := False;
-      mouse_point : Vector2;
-
-      cursor : constant Rectangle := (
-         bounds.x + Float (int (get_style (TEXTBOX, TEXT_PADDING))
-                           + get_text_width (text) + 2),
-         bounds.y + Float (get_style (TEXTBOX, TEXT_INNER_PADDING)),
-         1.0,
-         Float (int (get_style (DEFAULT, TEXT_SIZE)) * 2)
-      );
+      mouse_point : Vector2 := core.get_mouse_position;
+      mouse_inside : Boolean := Boolean(shapes.check_collision_point_rec (mouse_point, bounds));
+      is_pressed : Boolean := Boolean (core.is_mouse_button_pressed (MOUSE_BUTTON_LEFT)) and mouse_inside;
 
       text_color, border_color, bg_color : Color;
       border_width : int;
 
+      trimmed_text : String := Ada.Strings.Fixed.Trim (text, Ada.Strings.Right);
+      text_width : int := get_text_width (trimmed_text);
+
       use colors;
    begin
-      if state /= DISABLED and not global_locked then
-         mouse_point := core.get_mouse_position;
-
-         if edit_mode then
-            state := PRESSED;
-            global_frame_counter := global_frame_counter + 1;
-         else
-            if shapes.check_collision_point_rec (mouse_point, bounds) then
-               state := FOCUSED;
-               if core.is_mouse_button_pressed (MOUSE_BUTTON_LEFT) then
-                  is_pressed := True;
-               end if;
-            end if;
-         end if;
+      if state = DISABLED or global_locked then
+         goto DRAW;
       end if;
 
+      if Boolean (core.is_mouse_button_pressed (MOUSE_BUTTON_LEFT)) and not mouse_inside
+         then state := NORMAL;
+
+      elsif edit_mode then
+         state := PRESSED;
+         is_pressed := True;
+         global_frame_counter := global_frame_counter + 1;
+      elsif mouse_inside then
+         state := FOCUSED;
+      end if;
+
+<<DRAW>>
       text_color   := get_color (get_style (TEXTBOX, UI.TEXT, state));
-      border_color := get_color (get_style (TEXTBOX, BORDER, state));
-
-      bg_color     := get_color (get_style (TEXTBOX, BASE, state));
-
+      border_color := get_color (get_style (TEXTBOX, BORDER,  state));
+      bg_color     := get_color (get_style (TEXTBOX, BASE,    state));
       border_width := int (get_style (TEXTBOX, UI.BORDER_WIDTH));
 
-      case state is
-         when DISABLED =>
-            draw_rectangle (
-               bounds,
-               border_width,
-               fade (border_color, global_alpha),
-               fade (get_color (get_style (TEXTBOX, BASE_COLOR_DISABLED)),
-                     global_alpha));
-         when PRESSED =>
-            draw_rectangle (
-               bounds,
-               border_width,
-               fade (border_color, global_alpha),
-               fade (bg_color, global_alpha));
-            --  Draw blinking cursor
-            if edit_mode and (global_frame_counter / 20) mod 2 = 0 then
-               draw_rectangle (
-                  cursor,
-                  0,
-                  BLANK,
-                  fade (border_color, global_alpha));
-            end if;
-         when others =>
-            bg_color := BLANK;
-            draw_rectangle (
-               bounds,
-               1,
-               colors.fade (border_color, global_alpha),
-               bg_color);
-      end case;
+      -- Draw border and background
+      draw_rectangle (
+         bounds,
+         border_width,
+         fade (border_color, global_alpha),
+         fade (bg_color, global_alpha));
 
+      --  Draw blinking cursor
+      if edit_mode and (global_frame_counter / 20) mod 2 = 0 then
+         declare
+            cursor : Rectangle;
+         begin
+            cursor.x := get_text_bounds (TEXTBOX, bounds).x + Float (text_width) + 2.0; -- 2px cursor offset is an approximation for text spacing
+            cursor.y := bounds.y + Float (get_style (TEXTBOX, TEXT_INNER_PADDING));
+            cursor.width := 1.5;
+            cursor.height := Float (int (get_style (DEFAULT, TEXT_SIZE)) * 2);
+
+            draw_rectangle (
+               cursor,
+               0,
+                 text_color,
+                 fade (text_color, global_alpha));
+         end;
+      end if;
+
+      --  Draw input text
       draw_text (
-         text,
+         trimmed_text,
          get_text_bounds (TEXTBOX, bounds),
          to_text_alignment (get_style (TEXTBOX, TEXT_ALIGNMENT)),
          colors.fade (text_color, global_alpha));

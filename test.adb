@@ -59,7 +59,7 @@ begin
              10,
              font_size,
              raylib.BLACK);
-
+        
          shapes.draw_line (
             start_posX => padding,
             start_posY => 28,
@@ -80,7 +80,7 @@ begin
             end_pos   => (300.0, 84.0),
             thick => 2.5,
             c => RED);
-
+      
       when Perspective =>
          text.draw ("Perspective test not yet implemented", 1, 38, font_size, BLACK);
       when GUI =>
@@ -103,9 +103,7 @@ begin
          raylib.UI.checkbox (bounds  => (100.0, 150.0, 24.0, 24.0),
                              text    => (if gui_ctrl_checkbox then "Checked" else "Unchecked"),
                              checked => gui_ctrl_checkbox);
-         if raylib.UI.textbox ((100.0, 200.0, 80.0, 32.0), gui_value_textbox, gui_ctrl_textbox) then
-            gui_ctrl_textbox := not gui_ctrl_textbox;
-         end if;
+         gui_ctrl_textbox := raylib.UI.textbox ((100.0, 200.0, 80.0, 32.0), gui_value_textbox, gui_ctrl_textbox);
       end case;
 
       raylib.end_drawing;
