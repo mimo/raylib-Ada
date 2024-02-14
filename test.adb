@@ -6,12 +6,14 @@ with Interfaces.C.Extensions;
 
 procedure test is
    use raylib;
-   use raylib.core;
+   use raylib.input;
 
    package FS renames Ada.Strings.Fixed;
    package TIO renames Ada.Text_IO;
 
    FPS : constant := 30;
+   BOTTOM_MSG_CENTER, BOTTOM_MSG_Y : Float;
+   BOTTOM_MSG_FONT_SIZE : constant int := 24;
 
    padding : constant int := 10;
    font_size : constant int := 18;
@@ -32,24 +34,39 @@ procedure test is
 
    use type raylib.UI.Control_State;
    use type Interfaces.C.Extensions.bool;
+
+   function bottom_msg_text return String is
+      ("Press [TAB] to change test - " & current_test'Img);
 begin
    Ada.Strings.Fixed.Move ("Hello !", gui_value_textbox);
 
-   raylib.window.init (800, 400, "test");
+   raylib.window.init (800, 400, "raylib Ada binding - tests");
 
-   raylib.set_target_FPS (FPS);
+   raylib.window.set_target_FPS (FPS);
    --  raylib.window.hide_cursor;
+   raylib.UI.set_alpha (0.90);
 
-   raylib.UI.set_alpha (0.85);
+   BOTTOM_MSG_CENTER := Float(window.get_render_width)/2.0;
+   BOTTOM_MSG_Y := Float(window.get_render_height) - 32.0;
 
    while not window.should_close loop
 
-      if is_key_pressed (raylib.KEY_TAB) then
+      if input.is_key_pressed (raylib.KEY_TAB) then
          select_next_test;
       end if;
 
-      raylib.begin_drawing;
-      raylib.clear_background (raylib.RAYWHITE);
+      raylib.window.begin_drawing;
+      raylib.window.clear_background (raylib.RAYWHITE);
+
+      text.draw_pro (
+         F        => text.get_font_default,
+         text     => bottom_msg_text,
+         position => Vector2'(BOTTOM_MSG_CENTER, BOTTOM_MSG_Y),
+         origin   => (Float(text.measure (bottom_msg_text,BOTTOM_MSG_FONT_SIZE))/2.0, 0.0),
+         rotation => 0.0,
+         fontSize => Float(BOTTOM_MSG_FONT_SIZE),
+         spacing  => 1.0,
+         tint     => BROWN);
 
       case current_test is
       when Lines =>
@@ -106,7 +123,7 @@ begin
          gui_ctrl_textbox := raylib.UI.textbox ((100.0, 200.0, 80.0, 32.0), gui_value_textbox, gui_ctrl_textbox);
       end case;
 
-      raylib.end_drawing;
+      raylib.window.end_drawing;
    end loop;
 
    raylib.window.close;

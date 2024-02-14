@@ -9,9 +9,9 @@ package body raylib is
    function to_boolean (value : int) return Boolean
       is (if value = 0 then False else True);
 
----
--- Window-related functions
-package body window is
+   ---
+   -- Window-related functions
+   package body window is
 
    procedure init (width, height : Positive ; title : string) is
       procedure InitWindow (w, h  : int ; title : strings.Chars_Ptr);
@@ -39,7 +39,7 @@ package body window is
       return (if hidden = 0 then FALSE else TRUE);
    end is_cursor_hidden;
 
-end window;
+   end window;
 
    package body textures is
 
@@ -54,7 +54,7 @@ end window;
 
    end textures;
 
-package body text is
+   package body text is
    ---
    -- Import C functions
    --
@@ -128,9 +128,21 @@ package body text is
    begin
       return MeasureTextEx (f, ctext, fontSize, spacing);
    end measure_ex;
-end text; ---
 
-   package body core is
+   end text; ---
+
+   package body utils is
+      procedure trace_log (ltype : Log ; text : String) is
+         procedure TraceLog (ltype : Log ; text : strings.Chars_Ptr);
+         pragma import (C, TraceLog, "TraceLog");
+
+         ctext : strings.Chars_Ptr := strings.new_string (text);
+      begin
+         TraceLog (ltype, ctext);
+      end trace_log;
+   end utils;
+
+   package body input is
       function is_key_pressed (key : keys) return boolean is
          function IsKeyPressed (key : keys) return int;
          pragma import (C, IsKeyPressed, "IsKeyPressed");
@@ -138,6 +150,7 @@ end text; ---
       begin
          return to_boolean (pressed);
       end is_key_pressed;
+
       function get_gamepad_name (gamepad : int) return string is
          use Interfaces.C.Strings;
          function GetGamepadName (arg1 : int)
@@ -147,22 +160,14 @@ end text; ---
       begin
          return (if Gamepad_Name /= Null_Ptr then Value (Gamepad_Name) else "");
       end get_gamepad_name;
+
    function is_gamepad_button_pressed (gamepad, button : int) return Boolean is
       function IsGamepadButtonPressed (gamepad, button : int) return int;
       pragma import (C, IsGamepadButtonPressed, "IsGamepadButtonPressed");
       pressed : int := IsGamepadButtonPressed (gamepad, button);
    begin
-     return to_boolean (pressed);
+      return to_boolean (pressed);
    end is_gamepad_button_pressed;
-
-   procedure trace_log (ltype : Log ; text : String) is
-      procedure TraceLog (ltype : Log ; text : strings.Chars_Ptr);
-      pragma import (C, TraceLog, "TraceLog");
-
-      ctext : strings.Chars_Ptr := strings.new_string (text);
-   begin
-      TraceLog (ltype, ctext);
-   end trace_log;
-end core;
+end input;
 
 end raylib;

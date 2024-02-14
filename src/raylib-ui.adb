@@ -320,16 +320,16 @@ package body raylib.UI is
       mouse_point : Vector2;
    begin
       if global_state /= DISABLED and not global_locked then
-         mouse_point := raylib.core.get_mouse_position;
+         mouse_point := raylib.input.get_mouse_position;
          --  Check button state
          if raylib.shapes.check_collision_point_rec (mouse_point, bounds) then
             --
-            if raylib.core.is_mouse_button_down (raylib.MOUSE_BUTTON_LEFT)
+            if raylib.input.is_mouse_button_down (raylib.MOUSE_BUTTON_LEFT)
             then button_state := raylib.UI.PRESSED;
             else button_state := FOCUSED;
             end if;
 
-            if raylib.core.is_mouse_button_released (raylib.MOUSE_BUTTON_LEFT)
+            if raylib.input.is_mouse_button_released (raylib.MOUSE_BUTTON_LEFT)
             then
                pressed := True;
             end if;
@@ -430,7 +430,7 @@ package body raylib.UI is
       --
       if state /= DISABLED and not global_locked
       then
-         mouse_point := core.get_mouse_position;
+         mouse_point := input.get_mouse_position;
 
          total_bounds.x := (if alignment = TEXT_ALIGN_LEFT
                             then text_bounds.x else bounds.x);
@@ -441,10 +441,10 @@ package body raylib.UI is
          --  Check checkbox state
          if shapes.check_collision_point_rec (mouse_point, total_bounds)
          then
-            state := (if core.is_mouse_button_down (MOUSE_BUTTON_LEFT)
+            state := (if input.is_mouse_button_down (MOUSE_BUTTON_LEFT)
                       then PRESSED else FOCUSED);
 
-            if core.is_mouse_button_released (MOUSE_BUTTON_LEFT)
+            if input.is_mouse_button_released (MOUSE_BUTTON_LEFT)
             then checked := not checked;
             end if;
          end if;
@@ -588,13 +588,13 @@ package body raylib.UI is
       mouse_point  : Vector2;
    begin
       if global_state /= DISABLED and not global_locked then
-         mouse_point := core.get_mouse_position;
+         mouse_point := input.get_mouse_position;
 
          if shapes.check_collision_point_rec (mouse_point, bounds) then
 
-            if core.is_mouse_button_down (MOUSE_BUTTON_LEFT) then
+            if input.is_mouse_button_down (MOUSE_BUTTON_LEFT) then
                toggle_state := PRESSED;
-            elsif core.is_mouse_button_released (MOUSE_BUTTON_LEFT) then
+            elsif input.is_mouse_button_released (MOUSE_BUTTON_LEFT) then
                toggle_state := NORMAL;
                active := not active;
             else
@@ -655,9 +655,9 @@ package body raylib.UI is
       use type int;
 
       state : Control_State := global_state;
-      mouse_point : Vector2 := core.get_mouse_position;
+      mouse_point : Vector2 := input.get_mouse_position;
       mouse_inside : Boolean := Boolean(shapes.check_collision_point_rec (mouse_point, bounds));
-      is_pressed : Boolean := Boolean (core.is_mouse_button_pressed (MOUSE_BUTTON_LEFT)) and mouse_inside;
+      is_pressed : Boolean := Boolean (input.is_mouse_button_pressed (MOUSE_BUTTON_LEFT)) and mouse_inside;
 
       text_color, border_color, bg_color : Color;
       border_width : int;
@@ -671,7 +671,7 @@ package body raylib.UI is
          goto DRAW;
       end if;
 
-      if Boolean (core.is_mouse_button_pressed (MOUSE_BUTTON_LEFT)) and not mouse_inside
+      if Boolean (input.is_mouse_button_pressed (MOUSE_BUTTON_LEFT)) and not mouse_inside
          then state := NORMAL;
 
       elsif edit_mode then
