@@ -12,6 +12,7 @@ procedure core_3d_camera_first_person is
    random_colors : array (1..MAX_COLUMNS) of raylib.Color;
 
    use raylib;
+   use raylib.window;
    use type raylib.int;
 begin
    raylib.window.init (screen_width, screen_height, "raylib [core] example - 3d camera first person");
@@ -23,27 +24,27 @@ begin
    view.ctype := CAMERA_PERSPECTIVE;
 
    for i in 1..MAX_COLUMNS loop
-      heights (i) := Float (raylib.get_random_value (1, 12));
+      heights (i) := Float (get_random_value (1, 12));
       positions (i) := (
-            Float (raylib.get_random_value (-15, 15)),
+            Float (get_random_value (-15, 15)),
             Float (heights (i) / 2.0),
-            Float (raylib.get_random_value (-15, 15)));
+            Float (get_random_value (-15, 15)));
       random_colors (i) := (
-         r => unsigned_char (raylib.get_random_value (20, 255)),
-         g => unsigned_char (raylib.get_random_value (10, 55)),
+         r => unsigned_char (get_random_value (20, 255)),
+         g => unsigned_char (get_random_value (10, 55)),
          b => 30,
          a => 255);
    end loop;
 
-   raylib.set_target_FPS (60);
+   set_target_FPS (15);
 
-   while not raylib.window.should_close loop
+   while not should_close loop
       rcamera.update (view'unchecked_access, CAMERA_FIRST_PERSON);
 
-      raylib.begin_drawing;
-      raylib.clear_background (RAYWHITE);
+      begin_drawing;
+      clear_background (RAYWHITE);
 
-      drawing.begin_mode_3D (view);
+      begin_mode3D (view);
          --  Draw ground
          shapes3D.draw_plane(
             center => (0.0, 0.0, 0.0),
@@ -78,7 +79,7 @@ begin
                length => 2.0,
                tint   => MAROON);
          end loop;
-      drawing.end_mode_3D;
+      end_mode3D;
 
       text.draw_FPS (250, 20);
       shapes.draw_rectangle (10, 10, 220, 70, colors.fade (SKYBLUE, 0.5));
@@ -86,7 +87,7 @@ begin
       text.draw ("First person camera default controls:", 20, 20, 10, BLACK);
       text.draw ("- Move with keys: W, A, S, D", 40, 40, 10, DARKGRAY);
       text.draw ("- Mouse move to look around", 40, 60, 10, DARKGRAY);
-      raylib.end_drawing;
+      end_drawing;
    end loop;
 
    raylib.window.close;

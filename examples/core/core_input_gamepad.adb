@@ -4,7 +4,7 @@ with Interfaces.C;
 
 procedure core_input_gamepad is
    use raylib;
-   use raylib.core;
+   use raylib.input;
    use type raylib.int;
 
    package IC renames Interfaces.C;
@@ -21,13 +21,13 @@ procedure core_input_gamepad is
 
    procedure detect_gamepad is
    begin
-      if raylib.core.is_gamepad_available (gamepad_number) = Interfaces.C.False then
+      if raylib.input.is_gamepad_available (gamepad_number) = Interfaces.C.False then
          my_gamepad := UNAVAILABLE;
          return;
       end if;
 
       declare
-         gamepad_name : string := raylib.core.get_gamepad_name (gamepad_number);
+         gamepad_name : string := get_gamepad_name (gamepad_number);
          package FS renames Ada.Strings.Fixed;
       begin
          if gamepad_name'length = 0 then
@@ -102,8 +102,8 @@ procedure core_input_gamepad is
          raylib.shapes.draw_circle (461, 237, 38.0, BLACK);
          raylib.shapes.draw_circle (461, 237, 33.0, LIGHTGRAY);
          raylib.shapes.draw_circle (
-            461 + int (raylib.core.get_gamepad_axis_movement (gamepad_number, GAMEPAD_AXIS_RIGHT_X) * 20.0),
-            237 + int (raylib.core.get_gamepad_axis_movement (gamepad_number, GAMEPAD_AXIS_RIGHT_Y) * 20.0),
+            461 + int (get_gamepad_axis_movement (gamepad_number, GAMEPAD_AXIS_RIGHT_X) * 20.0),
+            237 + int (get_gamepad_axis_movement (gamepad_number, GAMEPAD_AXIS_RIGHT_Y) * 20.0),
             25.0,
             right_thumb_color);
 
@@ -117,7 +117,6 @@ procedure core_input_gamepad is
    end Draw_xbox_Gamepad;
 
    procedure draw_playstation_gamepad is
-      use raylib.core;
       use raylib.shapes;
 
       left_thumb_color, right_thumb_color : Color;
@@ -178,24 +177,24 @@ procedure core_input_gamepad is
    use type IC.unsigned;
 begin
 
-   set_config_flags (FLAG_MSAA_4X_HINT);  -- Set MSAA 4X hint before windows creation
+   window.set_config_flags (FLAG_MSAA_4X_HINT);  -- Set MSAA 4X hint before windows creation
 
    window.init (screenWidth, screenHeight, "raylib [core] example - gamepad input");
 
-   texPs3Pad  := textures.load ("resources/ps3.png");
-   texXboxPad := textures.load ("resources/xbox.png");
+   texPs3Pad  := textures.load ("core/resources/ps3.png");
+   texXboxPad := textures.load ("core/resources/xbox.png");
 
-   raylib.set_target_FPS (30);
+   window.set_target_FPS (30);
 
    while not raylib.window.should_close loop
-      begin_drawing;
-      clear_background (raylib.RAYWHITE);
+      window.begin_drawing;
+      window.clear_background (raylib.RAYWHITE);
 
-      if gamepad_number > 0 and raylib.core.is_key_pressed (KEY_LEFT) = IC.True
+      if gamepad_number > 0 and is_key_pressed (KEY_LEFT) = IC.True
       then
          gamepad_number := gamepad_number - 1;
          detect_gamepad;
-      elsif raylib.core.is_key_pressed (KEY_RIGHT)
+      elsif is_key_pressed (KEY_RIGHT)
       then
          gamepad_number := gamepad_number + 1;
          detect_gamepad;
@@ -205,7 +204,7 @@ begin
          raylib.text.draw ("Gamepad " & gamepad_number'Img & " not detected", 10, 10, 15, GRAY);
          detect_gamepad;
       else
-         raylib.text.draw ("GAMEPAD " & gamepad_number'Img & " : " & raylib.core.get_gamepad_name (gamepad_number), 10, 10, 15, BLACK);
+         raylib.text.draw ("GAMEPAD " & gamepad_number'Img & " : " & get_gamepad_name (gamepad_number), 10, 10, 15, BLACK);
 
          case my_gamepad is
          when XBOX => draw_Xbox_gamepad;
@@ -227,7 +226,7 @@ begin
          end;
       end if;
 
-      end_drawing;
+      window.end_drawing;
 
    end loop;
 

@@ -24,9 +24,9 @@ procedure input_box is
     mouseOnText: Boolean := false;
     letterCount: integer := 0;
     char : int;
-    
+
     function isAnyKeyPressed return boolean is
-        key : int := raylib.core.get_char_pressed;
+        key : int := raylib.input.get_char_pressed;
     begin
         return (key >= 32 and key <= 126);
     end isAnyKeyPressed;
@@ -41,22 +41,22 @@ begin
         "raylib [text] example - input box"
     );
 
-    raylib.set_target_FPS(10);
+    window.set_target_FPS(10);
 
     while not raylib.window.should_close loop
         --
         --  Update
         -------------------------------------
 
-        if raylib.shapes.check_collision_point_rec (raylib.core.get_mouse_position, textBox) = bool(true) then
+        if raylib.shapes.check_collision_point_rec (raylib.input.get_mouse_position, textBox) = bool(true) then
             mouseOnText := true;   
         else 
             mouseOnText := false;
         end if;
 
         if mouseOnText = true then 
-            raylib.core.set_mouse_cursor(raylib.MOUSE_CURSOR_IBEAM);
-            char := raylib.core.get_char_pressed; --get_key_pressed;
+            raylib.input.set_mouse_cursor(raylib.MOUSE_CURSOR_IBEAM);
+            char := raylib.input.get_char_pressed; --get_key_pressed;
              
             while char > 0 loop 
                 if (char >= 32 and char <= 125) and then (letterCount < maxInputChars) then 
@@ -64,10 +64,10 @@ begin
                     letterCount := letterCount + 1;
                 end if;
 
-                char := raylib.core.get_char_pressed;
+                char := raylib.input.get_char_pressed;
             end loop;
 
-            if raylib.core.is_key_pressed(raylib.KEY_BACKSPACE) then
+            if raylib.input.is_key_pressed(raylib.KEY_BACKSPACE) then
                 if Length(name) > 0 and letterCount > 0 then
                     Delete (name,letterCount,letterCount);
                     letterCount := letterCount - 1;
@@ -76,7 +76,7 @@ begin
                 end if;
             end if;
        else 
-            raylib.core.set_mouse_cursor (raylib.MOUSE_CURSOR_DEFAULT); 
+            raylib.input.set_mouse_cursor (raylib.MOUSE_CURSOR_DEFAULT); 
        end if;
        
        if mouseOnText = true then 
@@ -88,8 +88,8 @@ begin
        --
        --  Draw
        -------------------------------------
-       raylib.begin_drawing;
-       raylib.clear_background(RAYWHITE);
+       window.begin_drawing;
+       window.clear_background(RAYWHITE);
        raylib.text.draw("PLACE MOUSE OVER INPUT BOX!",240,140,20,GRAY);
        raylib.shapes.draw_rectangle_rec (textBox, LIGHTGRAY);
 
@@ -117,7 +117,7 @@ begin
             end if;
         end if;
 
-       raylib.end_drawing; 
+       window.end_drawing; 
     end loop;
     raylib.window.close;
 end input_box;

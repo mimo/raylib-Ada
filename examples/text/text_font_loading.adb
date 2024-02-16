@@ -29,17 +29,17 @@ begin
     -- NOTE: We define a font base size of 32 pixels tall and up-to 250 characters
 	fontTTF := raylib.text.load_font_ex ("text/resources/pixantiqua.ttf", 32, null, 250);
 
-    raylib.set_target_FPS(60);
+    window.set_target_FPS(60);
 
     --
     --  Main game loop
     -------------------------------------
     while not raylib.window.should_close loop
 
-       use_ttf := (if raylib.core.is_key_down (KEY_SPACE) then True else False);
+       use_ttf := (if raylib.input.is_key_down (KEY_SPACE) then True else False);
 
-       raylib.begin_drawing;
-       raylib.clear_background (raylib.RAYWHITE);
+       window.begin_drawing;
+       window.clear_background (raylib.RAYWHITE);
 
        raylib.text.draw ("Hold SPACE to use TTF generated font", 20, 20, 20, LIGHTGRAY);
 
@@ -51,7 +51,7 @@ begin
           raylib.text.draw ("Using TTF font generated", 20, raylib.window.get_screen_height - 30, 20, GRAY);
        end if;
 
-       raylib.end_drawing;
+       window.end_drawing;
     end loop;
 
     raylib.text.unload_font (fontBm);

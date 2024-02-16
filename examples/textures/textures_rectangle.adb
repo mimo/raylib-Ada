@@ -23,10 +23,10 @@ begin
       screen_height,
       "raylib [texture] example - texture rectangle");
 
-   scarfy := textures.load ("resources/scarfy.png");
+   scarfy := textures.load ("textures/resources/scarfy.png");
    frame_rec := (0.0, 0.0, Float(scarfy.width / 6), Float(scarfy.height));
 
-   raylib.set_target_FPS(60);
+   window.set_target_FPS(60);
 
    while not raylib.window.should_close loop
 
@@ -43,9 +43,9 @@ begin
          frame_rec.x := Float (current_frame) * Float (scarfy.width) / 6.0;
       end if;
 
-      if raylib.core.is_key_pressed (KEY_RIGHT)
+      if input.is_key_pressed (KEY_RIGHT)
       then frames_speed := frames_speed + 1;
-      elsif raylib.core.is_key_pressed (KEY_LEFT)
+      elsif input.is_key_pressed (KEY_LEFT)
       then frames_speed := frames_speed - 1;
       end if;
 
@@ -53,8 +53,8 @@ begin
       elsif frames_speed < MIN_FRAME_SPEED then frames_speed := MIN_FRAME_SPEED;
       end if;
 
-      raylib.begin_drawing;
-      raylib.clear_background (RAYWHITE);
+      window.begin_drawing;
+      window.clear_background (RAYWHITE);
 
       textures.draw_texture (scarfy, 15, 40, WHITE);
       shapes.draw_rectangle_lines (15, 40, scarfy.width, scarfy.height, RED);
@@ -80,7 +80,7 @@ begin
 
       text.draw ("(c) Scarfy sprite by Eiden Marsal", int(screen_width) - 200, int(screen_height) - 20, 10, GRAY);
 
-      raylib.end_drawing;
+      window.end_drawing;
    end loop;
 
    textures.unload (scarfy);

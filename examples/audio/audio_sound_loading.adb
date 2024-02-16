@@ -31,19 +31,19 @@ begin
     fxWav := raylib.audio.load_sound (IC.Strings.new_string ("audio/resources/sound.wav"));
     fxOgg := raylib.audio.load_sound (IC.Strings.new_string ("audio/resources/target.ogg"));
 
-    raylib.set_target_FPS (60);
+    raylib.window.set_target_FPS (60);
 
     while not raylib.window.should_close loop
-        if raylib.core.is_key_pressed (KEY_SPACE) then raylib.audio.play_sound (fxWav); end if;
-        if raylib.core.is_key_pressed (KEY_ENTER) then raylib.audio.play_sound (fxOgg); end if;
+        if raylib.input.is_key_pressed (KEY_SPACE) then raylib.audio.play_sound (fxWav); end if;
+        if raylib.input.is_key_pressed (KEY_ENTER) then raylib.audio.play_sound (fxOgg); end if;
 
-        begin_drawing;
-        clear_background (raylib.RAYWHITE);
+        raylib.window.begin_drawing;
+        raylib.window.clear_background (raylib.RAYWHITE);
 
         raylib.text.draw ("Press SPACE to PLAY the WAV sound!", 200, 180, 20, LIGHTGRAY);
         raylib.text.draw ("Press ENTER to PLAY the OGG sound!", 200, 220, 20, LIGHTGRAY);
 
-        end_drawing;
+        raylib.window.end_drawing;
     end loop;
 
     raylib.audio.unload_sound (fxWav);
