@@ -497,7 +497,7 @@ package raylib is
       --  Camera field-of-view apperture in Y (degrees) in perspective,
       --  used as near plane width in orthographic
       fovy : Float;
-      ctype : CameraType;  -- Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
+      projection : CameraType;  -- Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
    end record
       with Convention => C_Pass_By_Copy;
    subtype Camera is Camera3D;
@@ -757,7 +757,7 @@ package raylib is
 
       --RLAPI bool IsCursorOnScreen(void);                                
       --// Check if cursor is on the screen
-      function is_cursor_on_screen return Boolean
+      function is_cursor_on_screen return Bool
          with
             Import => True,
             Convention => C,
@@ -1128,6 +1128,19 @@ package raylib is
             Import => True,
             Convention => C,
             External_Name => "GetMousePosition";
+
+      function get_mouse_delta return Vector2
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "GetMouseDelta";
+      
+      function get_mouse_wheel_move return float
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "GetMouseWheelMove";
+
       procedure set_mouse_cursor(cursor: Mouse_Cursor)
          with 
             Import => True,
@@ -1149,6 +1162,51 @@ package raylib is
             Import => True,
             Convention => C,
             External_Name => "UpdateCameraPro";
+
+      -- From rcamera.h
+      --// Camera movement
+      procedure Camera_Move_Forward (camera : access Camera3D; distance : Float; moveInWorldPlane : bool)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "CameraMoveForward";
+
+      procedure Camera_Move_Up (camera : access Camera3D; distance : Float)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "CameraMoveUp";
+
+      procedure Camera_Move_Right (camera : access Camera3D; distance : Float; moveInWorldPlane : bool)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "CameraMoveRight";
+
+      procedure Camera_Move_To_Target (camera : access Camera3D; steps : Float)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "CameraMoveToTarget";
+
+      --// Camera rotation
+      procedure Camera_Yaw (camera : access Camera3D; angle : Float; rotateAroundTarget : bool)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "CameraYaw";
+      
+      procedure Camera_Pitch (camera : access Camera3D; angle : Float; lockView, rotateAroundTarget, rotateUp : bool)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "CameraPitch";
+      
+      procedure Camera_Roll (camera : access Camera3D; angle : Float)
+         with
+            Import => True,
+            Convention => C,
+            External_Name => "CameraRoll";
 
    end rcamera;
 

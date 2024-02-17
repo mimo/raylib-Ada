@@ -10,7 +10,6 @@ package body raylib.UI is
    global_style_loaded : Boolean := False;
    global_style : array (Controls'Range, Properties'Range) of unsigned;
    global_font : Font;
-   global_enable_debug_info : Boolean := True; -- Global variable to enable/disable debug information
 
    function get_state return Control_State is
    begin
