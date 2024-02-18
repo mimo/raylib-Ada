@@ -19,7 +19,7 @@ procedure test is
    font_size : constant int := 18;
 
    type tests is (Lines, Perspective, GUI);
-   current_test : tests := Lines;
+   current_test : tests := GUI;
    procedure select_next_test is
    begin
       current_test := (if current_test = tests'Last
@@ -31,6 +31,10 @@ procedure test is
    gui_ctrl_checkbox : Boolean := True;
    gui_ctrl_textbox : Boolean := False;
    gui_value_textbox : String (1 .. 25);
+
+   is_editing_text_area : Boolean := False;
+   cursor_text_area : Vector2;
+   buffer_text_area : String (1 .. 1024);
 
    use type raylib.UI.Control_State;
    use type Interfaces.C.Extensions.bool;
@@ -107,20 +111,41 @@ begin
             else raylib.UI.set_state (raylib.UI.NORMAL);
             end if;
          end if;
-         raylib.UI.statusbar ((0.0, 0.0, 800.0, 32.0), "UI test, press key 'D' to disable");
-         if gui_ctrl_toggle then
-            raylib.UI.toggle ((100.0, 48.0, 100.0, 24.0), "Active button", gui_ctrl_toggle);
-         else
-            raylib.UI.toggle ((100.0, 48.0, 120.0, 24.0), "Deactivated button", gui_ctrl_toggle);
-         end if;
-         raylib.UI.panel ((598.0, 48.0, 84.0, 36.0));
-         if raylib.UI.button ((600.0, 50.0, 80.0, 32.0), "Next test")
+
+         declare
+            --  type Cell is record
+            --     bounds : Rectangle;
+            --     pos   : Vector2;
+            --     size  : Vector2;
+            --  end record;
+            --  Cells : array (1 .. 10) of Cell; 
+
+            --
+            Left_Align      : constant Float := 100.0;
+            Vertical_Margin : constant Float := 4.0;
+            Cell_Height     : constant Float := 32.0;
+            Cell_Spacing    : constant Float := Cell_Height + Vertical_Margin;
+
+            status_area : Rectangle := (0.0, 0.0, 800.0, 32.0);
+            toggle_area    : Rectangle := (Left_Align, Cell_Spacing, 140.0, Cell_Height);
+            button_area    : Rectangle := (Left_Align, Cell_Spacing * 2.0, 120.0, Cell_Height);
+            checkbox_area  : Rectangle := (Left_Align, Cell_Spacing * 3.0, Cell_Height, Cell_Height);
+            textbox_area   : Rectangle := (Left_Align, Cell_Spacing * 4.0, 80.0, Cell_Height);
+            textarea_area  : Rectangle := (Left_Align, Cell_Spacing * 5.0, 200.0, Cell_Spacing * 5.0);
+         begin 
+            UI.statusbar (status_area, "UI test, press key 'D' to disable");
+            UI.toggle (toggle_area, (if gui_ctrl_toggle then "Active button" else "Deacticated button"), gui_ctrl_toggle);
+            UI.panel ((400.0, 48.0, 100.0, 36.0));
+            if raylib.UI.button (button_area, "Next test")
          then select_next_test;
          end if;
-         raylib.UI.checkbox (bounds  => (100.0, 150.0, 24.0, 24.0),
+            raylib.UI.checkbox (
+               bounds  => checkbox_area,
                              text    => (if gui_ctrl_checkbox then "Checked" else "Unchecked"),
                              checked => gui_ctrl_checkbox);
-         gui_ctrl_textbox := raylib.UI.textbox ((100.0, 200.0, 80.0, 32.0), gui_value_textbox, gui_ctrl_textbox);
+            gui_ctrl_textbox := UI.textbox (textbox_area, gui_value_textbox, gui_ctrl_textbox);
+            cursor_text_area := UI.textbox_multi (textarea_area, buffer_text_area, is_editing_text_area);
+         end;
       end case;
 
       raylib.window.end_drawing;
