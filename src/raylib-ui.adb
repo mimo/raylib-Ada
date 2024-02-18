@@ -346,7 +346,7 @@ package body raylib.UI is
          fill_color : Color;
          text_color : Color;
 
-         border_width : int;
+         border_width : float;
 
          use type unsigned;
          use type int;
@@ -360,7 +360,7 @@ package body raylib.UI is
          fill_color   := get_color (get_style (DEFAULT, fill_property));
          text_color   := get_color (get_style (BUTTON, text_property));
 
-         border_width := int (get_style (BUTTON, UI.BORDER_WIDTH));
+         border_width := float (get_style (BUTTON, UI.BORDER_WIDTH));
 
          raylib.shapes.draw_rectangle_lines_ex (
             bounds,
@@ -368,10 +368,10 @@ package body raylib.UI is
             fade (border_color, global_alpha));
 
          raylib.shapes.draw_rectangle (
-            int (bounds.x) + border_width,
-            int (bounds.y) + border_width,
-            int (bounds.width)  - 2 * border_width,
-            int (bounds.height) - 2 * border_width,
+            int (bounds.x + border_width),
+            int (bounds.y + border_width),
+            int (bounds.width)  - int(2.0 * border_width),
+            int (bounds.height) - int(2.0 * border_width),
             fade (fill_color, global_alpha));
 
          draw_text (
@@ -563,7 +563,7 @@ package body raylib.UI is
 
       shapes.draw_rectangle_lines_ex (
          bounds,
-         int (border_width),
+         float (border_width),
          colors.fade (border_color, global_alpha));
 
       shapes.draw_rectangle_rec (
@@ -603,7 +603,7 @@ package body raylib.UI is
       end if;
 
       drawing : declare
-         line_thickness : int;
+         line_thickness : unsigned;
          color_property : Properties;
          bg_color_property : Properties;
          text_color_property : Properties;
@@ -612,7 +612,7 @@ package body raylib.UI is
          use type int;
          use colors;
       begin
-         line_thickness :=  int (get_style (TOGGLE, BORDER_WIDTH));
+         line_thickness :=  get_style (TOGGLE, BORDER_WIDTH);
          color_property := (if active then BORDER_COLOR_PRESSED
                             else get_property_by_state (BORDER, toggle_state));
 
@@ -627,14 +627,14 @@ package body raylib.UI is
          text_color := get_color (get_style (TOGGLE, text_color_property));
          shapes.draw_rectangle_lines_ex (
             bounds,
-            line_thickness,
+            float(line_thickness),
             colors.fade (outline, global_alpha));
 
          shapes.draw_rectangle (
-            posX => int (bounds.x) + line_thickness,
-            posY => int (bounds.y) + line_thickness,
-            width  => int (bounds.width)  - 2 * line_thickness,
-            height => int (bounds.height) - 2 * line_thickness,
+            posX => int (bounds.x) + int(line_thickness),
+            posY => int (bounds.y) + int(line_thickness),
+            width  => int (bounds.width)  - 2 * int(line_thickness),
+            height => int (bounds.height) - 2 * int(line_thickness),
             c => colors.fade (background, global_alpha));
 
          draw_text (

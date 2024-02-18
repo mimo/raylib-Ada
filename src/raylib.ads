@@ -1323,7 +1323,7 @@ package raylib is
       --// Draw rectangle outline with extended parameters
       procedure draw_rectangle_lines_ex (
             rec : Rectangle;
-            line_thick : int;
+            line_thick : float;
             c : Color)
          with
             Import => True,
