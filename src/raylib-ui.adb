@@ -661,11 +661,32 @@ package body raylib.UI is
       text_color, border_color, bg_color : Color;
       border_width : int;
 
-      trimmed_text : String := Ada.Strings.Fixed.Trim (text, Ada.Strings.Right);
-      text_width : int := get_text_width (trimmed_text);
+      FAKE_SPACE : constant Character := ASCII.CR;
+      pressed_char : int;
+      text_length : integer;
+
+      function transform (S : in String) return String is
+         -- TODO: transform TAB to spaces
+         transformed : String := Ada.Strings.Fixed.Trim (S, Ada.Strings.Right);
+         last_character : Character;
+         index : Integer;
+      begin
+         index := Ada.Strings.Fixed.Index_Non_Blank (transformed, Ada.Strings.Backward);
+         if index = 0 then return "";
+         end if;
+
+         last_character := transformed (index);
+         if last_character = FAKE_SPACE then
+            transformed(transformed'Last) := ' ';
+         end if;
+
+         return transformed;
+      end transform;
 
       use colors;
    begin
+      text_length := Ada.Strings.Fixed.Index_Non_Blank (Text, Ada.Strings.Backward);
+
       if state = DISABLED or global_locked then
          goto DRAW;
       end if;
@@ -677,6 +698,41 @@ package body raylib.UI is
          state := PRESSED;
          is_pressed := True;
          global_frame_counter := global_frame_counter + 1;
+
+         loop
+            -- Handle backspace key and a string terminator if the last character is a space
+            if Boolean(input.is_key_pressed(KEY_BACKSPACE)) and text_length >= 1 then
+               text (text_length) := ' ';
+
+               if text_length > 1 and then text (text_length - 1) = ' ' then
+                  text (text_length - 1) := FAKE_SPACE;
+               end if;
+               
+               exit;
+            end if;
+
+            pressed_char := raylib.input.get_char_pressed;
+            exit when pressed_char = 0 or text_length = text'Last;
+
+            -- Replace added space by a fake because fixed strings length
+            -- is determined by the last non-blank character, ui being stateless
+            -- input length would be lost
+            if text_length > 0 and then Text (text_length) = FAKE_SPACE then
+               Text (text_length) := ' ';
+            end if;
+            case pressed_char is
+            when 32 =>-- ASCII value of space
+               -- FAKE_SPACE play a similar role to the null character in C strings
+               -- only when the last character is a space
+               text_length := text_length + 1;
+               text (text_length) := FAKE_SPACE;
+            when 33..125 => --  ASCII printable characters
+               text_length := text_length + 1;
+               Text (text_length) := Character'val (pressed_char);
+            when others =>
+               utils.trace_log (LOG_INFO, "Not handled: " & Character'Val (pressed_char) & ", pos "  & pressed_char'Img);
+            end case;
+         end loop;
       elsif mouse_inside then
          state := FOCUSED;
       end if;
@@ -698,6 +754,7 @@ package body raylib.UI is
       if edit_mode and (global_frame_counter / 20) mod 2 = 0 then
          declare
             cursor : Rectangle;
+            text_width : int := get_text_width (transform (text));
          begin
             cursor.x := get_text_bounds (TEXTBOX, bounds).x + Float (text_width) + 2.0; -- 2px cursor offset is an approximation for text spacing
             cursor.y := bounds.y + Float (get_style (TEXTBOX, TEXT_INNER_PADDING));
@@ -714,11 +771,13 @@ package body raylib.UI is
 
       --  Draw input text
       draw_text (
-         trimmed_text,
+         transform (text),
          get_text_bounds (TEXTBOX, bounds),
          to_text_alignment (get_style (TEXTBOX, TEXT_ALIGNMENT)),
          colors.fade (text_color, global_alpha));
 
+      -- TODO: Would be better to return the cursor position
+      -- as edit_mode is an in out parameter
       return is_pressed;
    end textbox;
 
@@ -796,7 +855,7 @@ package body raylib.UI is
       end loop;
 
       --  Default extended properties
-      set_style (DEFAULT, TEXT_SIZE, 10);
+      set_style (DEFAULT, TEXT_SIZE, 14);
       set_style (DEFAULT, TEXT_SPACING, 1);
       set_style (DEFAULT, BACKGROUND_COLOR, 16#f5f5f5ff#);
       set_style (DEFAULT, LINE_COLOR, 16#90abb5ff#);
