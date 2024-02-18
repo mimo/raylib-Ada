@@ -141,6 +141,11 @@ package raylib.UI is
       text      : in out String;
       edit_mode : in Boolean) return Boolean;
 
+   function textbox_multi (
+      bounds : Rectangle;
+      text : in out String;
+      edit_mode : in out Boolean)
+      return Vector2;
    ---
    --
    --

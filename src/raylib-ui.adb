@@ -781,23 +781,38 @@ package body raylib.UI is
       return is_pressed;
    end textbox;
 
+   function is_activated (bounds : Rectangle)
+      return Boolean
+   is
+      mouse_point  : Vector2 := input.get_mouse_position;
+      left_click   : Boolean := Boolean(input.is_mouse_button_pressed (MOUSE_BUTTON_LEFT));
+      mouse_inside : Boolean := Boolean(shapes.check_collision_point_rec (mouse_point, bounds));
+   begin
+      return mouse_inside and left_click;
+   end is_activated;
+
    function textbox_multi (
       bounds : Rectangle;
       text : in out String;
-      edit_mode : Boolean)
-      return Boolean
+      edit_mode : in out Boolean)
+      return Vector2
    is
       state : Control_State := global_state;
-      ispressed : Boolean := False;
+      isactive : Boolean := is_activated (bounds);
+      cursor_position : Vector2 := (0.0, 0.0);
 
+      style_inner_padding : Float := Float (get_style (TEXTBOX, TEXT_INNER_PADDING));
       textAreaBounds : Rectangle := (
-         bounds.x + Float (get_style (TEXTBOX, TEXT_INNER_PADDING)),
-         bounds.y + Float (get_style (TEXTBOX, TEXT_INNER_PADDING)),
-         bounds.width  - 2.0 * Float (get_style (TEXTBOX, TEXT_INNER_PADDING)),
-         bounds.height - 2.0 * Float (get_style (TEXTBOX, TEXT_INNER_PADDING))
+         bounds.x + style_inner_padding,
+         bounds.y + style_inner_padding,
+         bounds.width  - 2.0 * style_inner_padding,
+         bounds.height - 2.0 * style_inner_padding
       );
    begin
-      return ispressed;
+      shapes.draw_rectangle_lines_ex (bounds, 0.8, DARKGRAY);
+      shapes.draw_rectangle_lines_ex (textAreaBounds, 0.8, LIME);
+
+      return cursor_position;
    end textbox_multi;
 
    procedure set_style (
