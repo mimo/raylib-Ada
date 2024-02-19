@@ -309,6 +309,18 @@ package body raylib.UI is
    --  UI elements
    ----------------------------------------------------------------------------
 
+procedure label (
+      bounds : Rectangle;
+      text   : String) is
+   begin
+         draw_text
+           (text      => text,
+            bounds    => get_text_bounds (LABEL, bounds),
+            alignment => Text_Alignment_Type'Val (get_style (LABEL, TEXT_ALIGNMENT)),
+            tint      => colors.get_color (get_style (LABEL, get_property_by_state (UI.TEXT, global_state)))
+           );
+      end label;
+
    function button (
       bounds : raylib.Rectangle;
       label : String)
@@ -645,10 +657,11 @@ package body raylib.UI is
       end drawing;
    end toggle;
 
+   -- return true when validated (enter pressed)
    function textbox (
       bounds    : in Rectangle;
       text      : in out String;
-      edit_mode : in Boolean)
+      edit_mode : in out Boolean)
       return Boolean
    is
       use type int;
@@ -656,7 +669,7 @@ package body raylib.UI is
       state : Control_State := global_state;
       mouse_point : Vector2 := input.get_mouse_position;
       mouse_inside : Boolean := Boolean(shapes.check_collision_point_rec (mouse_point, bounds));
-      is_pressed : Boolean := Boolean (input.is_mouse_button_pressed (MOUSE_BUTTON_LEFT)) and mouse_inside;
+      is_validated : Boolean := False;
 
       text_color, border_color, bg_color : Color;
       border_width : int;
@@ -691,15 +704,25 @@ package body raylib.UI is
          goto DRAW;
       end if;
 
-      if Boolean (input.is_mouse_button_pressed (MOUSE_BUTTON_LEFT)) and not mouse_inside
-         then state := NORMAL;
+      if Boolean (input.is_mouse_button_pressed (MOUSE_BUTTON_LEFT)) then
+         if mouse_inside then
+            state := PRESSED;
+            edit_mode := true;
+         else
+            state := NORMAL;
+         end if;
+      end if;
 
-      elsif edit_mode then
-         state := PRESSED;
-         is_pressed := True;
+      if edit_mode then
+
          global_frame_counter := global_frame_counter + 1;
 
          loop
+            if Boolean (input.is_key_pressed (KEY_ENTER)) then
+               is_validated := True;
+               state := NORMAL;
+               exit;
+            end if;
             -- Handle backspace key and a string terminator if the last character is a space
             if Boolean(input.is_key_pressed(KEY_BACKSPACE)) and text_length >= 1 then
                text (text_length) := ' ';
@@ -778,7 +801,7 @@ package body raylib.UI is
 
       -- TODO: Would be better to return the cursor position
       -- as edit_mode is an in out parameter
-      return is_pressed;
+      return is_validated;
    end textbox;
 
    function is_activated (bounds : Rectangle)

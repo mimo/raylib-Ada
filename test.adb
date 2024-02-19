@@ -27,10 +27,13 @@ procedure test is
                        else tests'Succ (current_test));
    end select_next_test;
 
+   keep_dialog_box : Boolean := False;
+   show_dialog_box : Boolean := False;
    gui_ctrl_toggle : Boolean := False;
    gui_ctrl_checkbox : Boolean := True;
-   gui_ctrl_textbox : Boolean := False;
-   gui_value_textbox : String (1 .. 25);
+   gui_label_text    : String (1 .. 25);
+   gui_value_textbox : String (gui_label_text'Range);
+   gui_textbox_edit  : Boolean := False;
 
    is_editing_text_area : Boolean := False;
    cursor_text_area : Vector2;
@@ -43,6 +46,7 @@ procedure test is
       ("Press [TAB] to change test - " & current_test'Img);
 begin
    Ada.Strings.Fixed.Move ("Hello !", gui_value_textbox);
+   Ada.Strings.Fixed.Move ("Hello !", buffer_text_area);
 
    raylib.window.init (800, 400, "raylib Ada binding - tests");
 
@@ -105,13 +109,6 @@ begin
       when Perspective =>
          text.draw ("Perspective test not yet implemented", 1, 38, font_size, BLACK);
       when GUI =>
-         if Boolean(is_key_pressed (raylib.KEY_D)) then
-            if raylib.UI.get_state = raylib.UI.NORMAL
-            then raylib.UI.set_state (raylib.UI.DISABLED);
-            else raylib.UI.set_state (raylib.UI.NORMAL);
-            end if;
-         end if;
-
          declare
             --  type Cell is record
             --     bounds : Rectangle;
@@ -122,29 +119,56 @@ begin
 
             --
             Left_Align      : constant Float := 100.0;
+            Right_Align     : constant Float := 350.0;
             Vertical_Margin : constant Float := 4.0;
             Cell_Height     : constant Float := 32.0;
             Cell_Spacing    : constant Float := Cell_Height + Vertical_Margin;
 
             status_area : Rectangle := (0.0, 0.0, 800.0, 32.0);
-            toggle_area    : Rectangle := (Left_Align, Cell_Spacing, 140.0, Cell_Height);
-            button_area    : Rectangle := (Left_Align, Cell_Spacing * 2.0, 120.0, Cell_Height);
-            checkbox_area  : Rectangle := (Left_Align, Cell_Spacing * 3.0, Cell_Height, Cell_Height);
-            textbox_area   : Rectangle := (Left_Align, Cell_Spacing * 4.0, 80.0, Cell_Height);
-            textarea_area  : Rectangle := (Left_Align, Cell_Spacing * 5.0, 200.0, Cell_Spacing * 5.0);
+
+            toggle_area    : Rectangle := (Left_Align, Cell_Spacing * 2.0, 140.0, Cell_Height);
+            button_area    : Rectangle := (Left_Align, Cell_Spacing * 4.0, 140.0, Cell_Height);
+            checkbox_area  : Rectangle := (Left_Align, Cell_Spacing * 6.0, Cell_Height, Cell_Height);
+
+            label_area     : Rectangle := (Right_Align, Cell_Spacing, 0.0, Cell_Height);
+            textbox_area   : Rectangle := (Right_Align, Cell_Spacing * 2.0, 140.0, Cell_Height);
+            label2_area    : Rectangle := (Right_Align, Cell_Spacing * 3.0, 140.0, Cell_Height);
+            textarea_area  : Rectangle := (Right_Align, Cell_Spacing * 4.0, 200.0, Cell_Spacing * 5.0);
+
          begin 
-            UI.statusbar (status_area, "UI test, press key 'D' to disable");
-            UI.toggle (toggle_area, (if gui_ctrl_toggle then "Active button" else "Deacticated button"), gui_ctrl_toggle);
-            UI.panel ((400.0, 48.0, 100.0, 36.0));
-            if raylib.UI.button (button_area, "Next test")
-         then select_next_test;
-         end if;
+            UI.statusbar (status_area, "UI test");
+
+            UI.toggle (toggle_area, (if gui_ctrl_toggle then "Activate UI" else "Deactivate UI"), gui_ctrl_toggle);
+            if gui_ctrl_toggle then
+               raylib.UI.set_state (raylib.UI.DISABLED);
+            end if;
+
+            show_dialog_box := raylib.UI.button (button_area, "Show Dialog Box");
             raylib.UI.checkbox (
                bounds  => checkbox_area,
                              text    => (if gui_ctrl_checkbox then "Checked" else "Unchecked"),
                              checked => gui_ctrl_checkbox);
-            gui_ctrl_textbox := UI.textbox (textbox_area, gui_value_textbox, gui_ctrl_textbox);
+            UI.label (label_area, "Input : " & gui_label_text);
+            if UI.textbox (textbox_area, gui_value_textbox, gui_textbox_edit) then
+               Ada.Strings.Fixed.Move (gui_value_textbox, gui_label_text);
+            end if;
+
+            if UI.button (label2_area, "Copy to clipborad") then
+               raylib.window.set_clipboard_text (buffer_text_area);
+            end if;
             cursor_text_area := UI.textbox_multi (textarea_area, buffer_text_area, is_editing_text_area);
+
+            if show_dialog_box or keep_dialog_box then
+               keep_dialog_box := TRUE;
+               UI.panel ((200.0, 60.0, 300.0, 240.0));
+               UI.label ((200.0 + 300.0 / 2.0 - 70.0, 70.0, 140.0, 32.0), "Dialog Box");
+
+               if UI.button ((200.0+300.0/2.0-50.0, 60.0+240.0-30.0-10.0, 100.0, 30.0), "Cancel") then
+                  keep_dialog_box := False;
+               end if;
+            end if;
+
+            raylib.UI.set_state (raylib.UI.NORMAL);
          end;
       end case;
 

@@ -115,6 +115,10 @@ package raylib.UI is
    ---
    --  Controls
    --
+   procedure label (
+      bounds : Rectangle;
+      text   : String);
+   
    function  button (
       bounds : Rectangle;
       label  : String)
@@ -139,7 +143,7 @@ package raylib.UI is
    function  textbox (
       bounds    : in Rectangle;
       text      : in out String;
-      edit_mode : in Boolean) return Boolean;
+      edit_mode : in out Boolean) return Boolean;
 
    function textbox_multi (
       bounds : Rectangle;
