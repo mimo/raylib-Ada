@@ -20,6 +20,7 @@ package body raylib is
       ctitle : strings.Chars_Ptr := strings.new_string (title);
    begin
       InitWindow ( int (width), int (height), ctitle);
+      strings.free (ctitle);
    end init;
 
    function should_close return Boolean is
@@ -48,8 +49,11 @@ package body raylib is
 
       function load (filename : String) return Texture2D is
          cfilename : Strings.Chars_Ptr := Strings.New_String (filename);
+         text : Texture2D;
       begin
-         return LoadTexture (cfilename);
+         text := LoadTexture (cfilename);
+         strings.free (cfilename);
+         return text;
       end load;
 
    end textures;
@@ -73,26 +77,36 @@ package body raylib is
    --
    function load_font (file : String) return Font is
       ctext : strings.Chars_Ptr := strings.new_string (file);
+      ft : Font;
    begin
-      return LoadFont (ctext);
+      ft := LoadFont (ctext);
+      strings.free (ctext);
+      return ft;
    end load_font;
 
    function load_font_ex (file : String; size : int; chars : access int; glyphCount : int) return Font is
       ctext : strings.Chars_Ptr := strings.new_string (file);
+      ft : Font;
    begin
-      return LoadFontEx (ctext, size, chars, glyphCount);
+      ft := LoadFontEx (ctext, size, chars, glyphCount);
+      strings.free (ctext);
+      return ft;
    end load_font_ex;
 
    function load_font_ex (file : String; size : int; chars : char_list; glyphCount : int) return Font is
       ctext : strings.Chars_Ptr := strings.new_string (file);
+      ft : Font;
    begin
-      return LoadFontEx2 (ctext, size, chars, glyphCount);
+      ft := LoadFontEx2 (ctext, size, chars, glyphCount);
+      strings.free (ctext);
+      return ft;
    end load_font_ex;
 
    procedure draw (text : String ; posX, posY, fontSize : Int ; c : Color) is
       ctext : strings.Chars_Ptr := strings.new_string (text);
    begin
       DrawText (ctext, int(posX), int(posY), int(fontSize), c);
+      strings.free (ctext);
    end draw;
 
    procedure draw_ex (F : Font; text : String; position : Vector2; fontSize, spacing : Float; tint : Color) is
@@ -107,6 +121,7 @@ package body raylib is
       ctext : strings.Chars_Ptr := strings.new_string (text);
    begin
       DrawTextEx (F, ctext, position, fontSize, spacing, tint);
+      strings.free (ctext);
    end draw_ex;
 
    function measure (text : String; fontSize : int) return int is
@@ -114,8 +129,11 @@ package body raylib is
          with Import, Convention => C, External_Name => "MeasureText";
 
       ctext : Strings.chars_ptr := Strings.New_String (text);
+      mt : Int;
    begin
-      return MeasureText (ctext, fontSize);
+      mt := MeasureText (ctext, fontSize);
+      strings.free (ctext);
+      return mt;
    end measure;
 
    function measure_ex (f : Font; text : String; fontSize, spacing : Float)
@@ -125,8 +143,11 @@ package body raylib is
       ------
       pragma Import (C, MeasureTextEx, "MeasureTextEx");
       ctext : Strings.Chars_Ptr := Strings.New_String (text);
+      mt : Vector2;
    begin
-      return MeasureTextEx (f, ctext, fontSize, spacing);
+      mt := MeasureTextEx (f, ctext, fontSize, spacing);
+      strings.free (ctext);
+      return mt;
    end measure_ex;
 
    end text; ---
@@ -139,6 +160,7 @@ package body raylib is
          ctext : strings.Chars_Ptr := strings.new_string (text);
       begin
          TraceLog (ltype, ctext);
+         strings.free (ctext);
       end trace_log;
    end utils;
 
