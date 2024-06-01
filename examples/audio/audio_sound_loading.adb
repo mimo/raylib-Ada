@@ -22,14 +22,19 @@ procedure audio_sound_loading is
 
     fxWav, fxOgg : raylib.Sound;
 
+    wavFile : IC.Strings.Chars_Ptr := IC.Strings.new_string ("audio/resources/sound.wav");
+    oggFile : IC.Strings.Chars_Ptr := IC.Strings.new_string ("audio/resources/target.ogg");
+
 begin
 
     raylib.window.init (screenWidth, screenHeight, "raylib [audio] example - sound loading and playing");
     
     raylib.audio.init_audio_device;
     
-    fxWav := raylib.audio.load_sound (IC.Strings.new_string ("audio/resources/sound.wav"));
-    fxOgg := raylib.audio.load_sound (IC.Strings.new_string ("audio/resources/target.ogg"));
+    fxWav := raylib.audio.load_sound (wavFile);
+    fxOgg := raylib.audio.load_sound (oggFile);
+    IC.strings.free (wavFile);
+    IC.strings.free (oggFile);
 
     raylib.window.set_target_FPS (60);
 
