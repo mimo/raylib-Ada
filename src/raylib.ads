@@ -26,37 +26,37 @@ package raylib is
    type Vector2 is record
       x, y : Float;
    end record
-      with Convention => C_Pass_By_Copy;
+   with Convention => C_Pass_By_Copy;
 
    type Vector3 is record
       x, y, z : Float;
    end record
-      with Convention => C_Pass_By_Copy;
+   with Convention => C_Pass_By_Copy;
 
    type Vector4 is record
       x, y, z, w : Float;
    end record
-      with Convention => C_Pass_By_Copy;
+   with Convention => C_Pass_By_Copy;
 
    type Quaternion is new Vector4;
 
    type Matrix is record
-      m0, m4, m8,  m12 : Float;
-      m1, m5, m9,  m13 : Float;
+      m0, m4, m8, m12  : Float;
+      m1, m5, m9, m13  : Float;
       m2, m6, m10, m14 : Float;
       m3, m7, m11, m15 : Float;
    end record
-      with Convention => C_Pass_By_Copy;
+   with Convention => C_Pass_By_Copy;
 
    type Color is record
       r, g, b, a : unsigned_char;
    end record
-      with Convention => C_Pass_By_Copy;
+   with Convention => C_Pass_By_Copy;
 
    type Rectangle is record
       x, y, width, height : Float;
    end record
-      with Convention => C_Pass_By_Copy;
+   with Convention => C_Pass_By_Copy;
 
    type NPatch_Info is record
       sourceRec                : Rectangle;
@@ -83,8 +83,8 @@ package raylib is
     FLAG_INTERLACED_HINT          : constant := 16#00010000#;  -- Set to try enabling interlaced video format (for V3D)
 
    --  Keyboard Function Keys
-   type Keys is (
-      KEY_NULL,
+   type Keys is
+     (KEY_NULL,
       KEY_SPACE,
 
       --  Alphanumeric keys
@@ -313,32 +313,31 @@ package raylib is
       KEY_RIGHT_SUPER   => 347,
       KEY_KB_MENU       => 348);
 
-   type Mouse_Cursor is (
-     MOUSE_CURSOR_DEFAULT,
-     MOUSE_CURSOR_ARROW,
-     MOUSE_CURSOR_IBEAM,
-     MOUSE_CURSOR_POINTING_HAND,
-     MOUSE_CURSOR_RESIZE_EW,
-     MOUSE_CURSOR_RESIZE_NS,
-     MOUSE_CURSOR_RESIZE_NWSE,
-     MOUSE_CURSOR_RESIZE_NESW,
-     MOUSE_CURSOR_RESIZE_ALL,
-     MOUSE_CURSOR_NOT_ALLOWED
-     )
-   with Convention => C;
- 
-   type Mouse_Button is (
-       MOUSE_BUTTON_LEFT,
-       MOUSE_BUTTON_RIGHT,
-       MOUSE_BUTTON_MIDDLE,
-       MOUSE_BUTTON_SIDE,
-       MOUSE_BUTTON_EXTRA,
-       MOUSE_BUTTON_FORWARD,
-       MOUSE_BUTTON_BACK)
+   type Mouse_Cursor is
+     (MOUSE_CURSOR_DEFAULT,
+      MOUSE_CURSOR_ARROW,
+      MOUSE_CURSOR_IBEAM,
+      MOUSE_CURSOR_POINTING_HAND,
+      MOUSE_CURSOR_RESIZE_EW,
+      MOUSE_CURSOR_RESIZE_NS,
+      MOUSE_CURSOR_RESIZE_NWSE,
+      MOUSE_CURSOR_RESIZE_NESW,
+      MOUSE_CURSOR_RESIZE_ALL,
+      MOUSE_CURSOR_NOT_ALLOWED)
    with Convention => C;
 
-   type Gamepad_Button is (
-      GAMEPAD_BUTTON_UNKNOWN,
+   type Mouse_Button is
+     (MOUSE_BUTTON_LEFT,
+      MOUSE_BUTTON_RIGHT,
+      MOUSE_BUTTON_MIDDLE,
+      MOUSE_BUTTON_SIDE,
+      MOUSE_BUTTON_EXTRA,
+      MOUSE_BUTTON_FORWARD,
+      MOUSE_BUTTON_BACK)
+   with Convention => C;
+
+   type Gamepad_Button is
+     (GAMEPAD_BUTTON_UNKNOWN,
       GAMEPAD_BUTTON_LEFT_FACE_UP,
       GAMEPAD_BUTTON_LEFT_FACE_RIGHT,
       GAMEPAD_BUTTON_LEFT_FACE_DOWN,
@@ -367,8 +366,8 @@ package raylib is
       GAMEPAD_AXIS_RIGHT_TRIGGER)
    with Convention => C;
 
-   type Pixel_Format is (
-      PIXELFORMAT_UNCOMPRESSED_GRAYSCALE,         -- 8 bit per pixel (no alpha)
+   type Pixel_Format is
+     (PIXELFORMAT_UNCOMPRESSED_GRAYSCALE,         -- 8 bit per pixel (no alpha)
       PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA,        -- 8*2 bpp (2 channels)
       PIXELFORMAT_UNCOMPRESSED_R5G6B5,            -- 16 bpp
       PIXELFORMAT_UNCOMPRESSED_R8G8B8,            -- 24 bpp
@@ -433,7 +432,7 @@ package raylib is
       format                 : int;
       --  format : Pixel_Format;
    end record
-      with Convention => C_Pass_By_Copy;
+   with Convention => C_Pass_By_Copy;
 
    type Texture2D is record
       id            : unsigned;
@@ -442,7 +441,7 @@ package raylib is
       format        : int;
       --format : Pixel_Format;
    end record
-      with Convention => C_Pass_By_Copy;
+   with Convention => C_Pass_By_Copy;
 
    subtype Texture is Texture2D;
    subtype TextureCubemap is Texture2D;
@@ -707,6 +706,17 @@ package raylib is
         Convention    => C,
         External_Name => "DisableEventWaiting";
 
+      --// Custom frame control functions
+      procedure Swap_Screen_Buffer
+      with
+        Import        => True,
+        Convention    => C,
+        External_Name => "SwapScreenBuffer";
+      procedure Poll_Input_Events
+      with Import => True, Convention => C, External_Name => "PollInputEvents";
+      procedure WaitTime (seconds : Interfaces.C.double)
+      with Import => True, Convention => C, External_Name => "WaitTime";
+
       --  [[ Cursor-related functions ]] --
       procedure show_cursor
       with Import => True, Convention => C, External_Name => "ShowCursor";
@@ -771,14 +781,6 @@ package raylib is
       --// Get current FPS
       function get_FPS return int
       with Import, Convention => C, External_Name => "GetFPS";
-
-      --  // Custom frame control functions
-      --  // NOTE: Those functions are intended for advance users that want full control over the frame processing
-      --  // By default EndDrawing() does this job: draws everything + SwapScreenBuffer() + manage frame timing + PollInputEvents()
-      --  // To avoid that behaviour and control frame processes manually, enable in config.h: SUPPORT_CUSTOM_FRAME_CONTROL
-      --  RLAPI void SwapScreenBuffer(void);                                // Swap back buffer with front buffer (screen drawing)
-      --  RLAPI void PollInputEvents(void);                                 // Register all input events
-      --  RLAPI void WaitTime(double seconds);                              // Wait for some time (halt program execution)
 
       --// Set the seed for the random number generator
       procedure set_random_seed (seed : unsigned)
@@ -1311,7 +1313,11 @@ package raylib is
    ------------------------------------------------------------------------------------
    package textures is
       --  [[ Image loading functions ]] --
-      -- TODO: Add more functions from raylib.h
+      function load_image (filename : String) return Image;
+      function load_image_SVG
+        (filename : String; width, height : int) return Image;
+      procedure unload_image (img : Image)
+      with Import => True, Convention => C, External_Name => "UnloadImage";
 
       --  [[ Image generation functions ]] --
       -- TODO: Add more functions from raylib.h
@@ -1401,7 +1407,7 @@ package raylib is
 
       --  Text drawing functions
 
-      --// Draw current FPS 
+      --// Draw current FPS
       procedure draw_FPS (x, y : int);
       pragma Import (C, draw_FPS, "DrawFPS");
 
@@ -1417,32 +1423,29 @@ package raylib is
          tint              : Color);
 
       --// Draw text using Font and pro parameters (rotation)
-      procedure draw_pro (
-            F : Font;
-            text : String;
-            position, origin : Vector2;
-            rotation, fontSize, spacing : Float;
-            tint : Color)
-         with
-            Import => True,
-            Convention => C,
-            External_Name => "DrawTextPro";
+      procedure draw_pro
+        (F                           : Font;
+         text                        : String;
+         position, origin            : Vector2;
+         rotation, fontSize, spacing : Float;
+         tint                        : Color)
+      with Import => True, Convention => C, External_Name => "DrawTextPro";
 
       --  Text font info functions
 
       --// Set vertical line spacing when drawing with line-breaks
       procedure set_text_line_spacing (spacing : int)
-         with
-            Import => True,
-            Convention => C,
-            External_Name => "SetTextLineSpacing";
-      
+      with
+        Import        => True,
+        Convention    => C,
+        External_Name => "SetTextLineSpacing";
+
       --  Measure string width for default font
       function measure (text : String; fontSize : int) return int;
 
       --  Measure string size for Font
-      function measure_ex (f : Font; text : String; fontSize, spacing : Float)
-         return Vector2;
+      function measure_ex
+        (f : Font; text : String; fontSize, spacing : Float) return Vector2;
       --  Get index position for a unicode character on font
       --  RLAPI int GetGlyphIndex(Font font, int character);
       --  Returns next codepoint in a UTF8 encoded string
@@ -1456,25 +1459,14 @@ package raylib is
    ------------------------------------------------------------------------------------
    package shapes3D is
       procedure draw_plane (center : Vector3; size : Vector2; tint : Color)
-         with
-            Import,
-            Convention => C,
-            External_Name => "DrawPlane";
+      with Import, Convention => C, External_Name => "DrawPlane";
 
       procedure draw_cube_v (position, size : Vector3; tint : Color)
-         with
-            Import,
-            Convention => C,
-            External_Name => "DrawCubeV";
+      with Import, Convention => C, External_Name => "DrawCubeV";
 
-      procedure draw_cube_wires (
-         position : Vector3;
-         width, height, length : Float;
-         tint : Color)
-      with
-         Import => True,
-         Convention => C,
-         External_Name => "DrawCubeWires";
+      procedure draw_cube_wires
+        (position : Vector3; width, height, length : Float; tint : Color)
+      with Import => True, Convention => C, External_Name => "DrawCubeWires";
    end shapes3D;
 
    ------------------------------------------------------------------------------------
@@ -1486,23 +1478,26 @@ package raylib is
       -- Audio device management functions
       procedure init_audio_device;  -- Initialize audio device and context
       procedure close_audio_device; -- Close the audio device and context
-      function  is_audio_device_ready return bool; -- Check if audio device has been initialized successfully
-      procedure set_master_volume (volume : C_Float); -- Set master volume (listener)
-      function  get_master_volume return C_Float; -- Get master volume
+      function is_audio_device_ready
+         return bool; -- Check if audio device has been initialized successfully
+      procedure set_master_volume
+        (volume : C_Float); -- Set master volume (listener)
+      function get_master_volume return C_Float; -- Get master volume
       ---
-      pragma Import (C, init_audio_device,     "InitAudioDevice");
-      pragma Import (C, close_audio_device,    "CloseAudioDevice");
+      pragma Import (C, init_audio_device, "InitAudioDevice");
+      pragma Import (C, close_audio_device, "CloseAudioDevice");
       pragma Import (C, is_audio_device_ready, "IsAudioDeviceReady");
-      pragma Import (C, set_master_volume,     "SetMasterVolume");
-      pragma Import (C, get_master_volume,     "GetMasterVolume");
+      pragma Import (C, set_master_volume, "SetMasterVolume");
+      pragma Import (C, get_master_volume, "GetMasterVolume");
 
       -- Wave/Sound loading/unloading functions
-      function load_sound    (file : Interfaces.C.strings.chars_ptr) return Sound;
+      function load_sound (file : Interfaces.C.strings.chars_ptr) return Sound;
       procedure unload_sound (s : Sound);
-      function  is_sound_ready (s : Sound) return bool; --// Checks if a sound is ready
-                            
-      pragma Import (C, load_sound,     "LoadSound"); --// Play a sound
-      pragma Import (C, unload_sound,   "UnloadSound");
+      function is_sound_ready
+        (s : Sound) return bool; --// Checks if a sound is ready
+
+      pragma Import (C, load_sound, "LoadSound"); --// Play a sound
+      pragma Import (C, unload_sound, "UnloadSound");
       pragma Import (C, is_sound_ready, "IsSoundReady");
 
       -- Wave/Sound management functions
