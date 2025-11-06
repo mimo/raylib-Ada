@@ -2,7 +2,6 @@ with raylib;
 with raylib.UI;
 with Ada.Strings.Fixed;
 with Ada.Text_IO;
-with Interfaces.C.Extensions;
 
 procedure test is
    use raylib;
@@ -40,7 +39,6 @@ procedure test is
    buffer_text_area : String (1 .. 1024);
 
    use type raylib.UI.Control_State;
-   use type Interfaces.C.Extensions.bool;
 
    function bottom_msg_text return String is
       ("Press [TAB] to change test - " & current_test'Img);

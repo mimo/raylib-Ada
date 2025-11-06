@@ -11,10 +11,8 @@
 
 
 with raylib;
-with Interfaces.C.Strings;
 
 procedure audio_sound_loading is
-    package IC renames Interfaces.C;
     use raylib;
 
     screenWidth  : constant := 800;
@@ -25,11 +23,11 @@ procedure audio_sound_loading is
 begin
 
     raylib.window.init (screenWidth, screenHeight, "raylib [audio] example - sound loading and playing");
-    
+
     raylib.audio.init_audio_device;
-    
-    fxWav := raylib.audio.load_sound (IC.Strings.new_string ("audio/resources/sound.wav"));
-    fxOgg := raylib.audio.load_sound (IC.Strings.new_string ("audio/resources/target.ogg"));
+
+    fxWav := raylib.audio.load_sound ("audio/resources/sound.wav");
+    fxOgg := raylib.audio.load_sound ("audio/resources/target.ogg");
 
     raylib.window.set_target_FPS (60);
 

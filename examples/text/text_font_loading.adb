@@ -1,9 +1,7 @@
 with raylib;
-with Interfaces.C;
 
 procedure text_font_loading is
 	use raylib;
-	package IC renames Interfaces.C;
 	use type raylib.int;
 
     screen_width  : Integer := 800;

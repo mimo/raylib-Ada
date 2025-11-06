@@ -1,14 +1,10 @@
 with raylib;
 with Ada.Strings.Fixed;
-with Interfaces.C;
 
 procedure core_input_gamepad is
    use raylib;
    use raylib.input;
    use type raylib.int;
-
-   package IC renames Interfaces.C;
-   use type IC.C_bool;
 
    screenWidth  : constant := 800;
    screenHeight : constant := 450;
@@ -21,7 +17,7 @@ procedure core_input_gamepad is
 
    procedure detect_gamepad is
    begin
-      if raylib.input.is_gamepad_available (gamepad_number) = Interfaces.C.False then
+      if not raylib.input.is_gamepad_available (gamepad_number) then
          my_gamepad := UNAVAILABLE;
          return;
       end if;
@@ -52,8 +48,7 @@ procedure core_input_gamepad is
 
    function check_down (button_id : Gamepad_Button) return Boolean is
    begin
-      if is_gamepad_button_down (gamepad_number, button_id) = IC.True
-      then return True; else return False; end if;
+      return is_gamepad_button_down (gamepad_number, button_id);
    end check_down;
 
    procedure Draw_Xbox_Gamepad is
@@ -174,7 +169,6 @@ procedure core_input_gamepad is
       draw_rectangle (611, 48, 15, right_trigger_pos, RED);
    end draw_playstation_gamepad;
 
-   use type IC.unsigned;
 begin
 
    window.set_config_flags (FLAG_MSAA_4X_HINT);  -- Set MSAA 4X hint before windows creation
@@ -190,12 +184,10 @@ begin
       window.begin_drawing;
       window.clear_background (raylib.RAYWHITE);
 
-      if gamepad_number > 0 and is_key_pressed (KEY_LEFT) = IC.True
-      then
+      if gamepad_number > 0 and is_key_pressed (KEY_LEFT) then
          gamepad_number := gamepad_number - 1;
          detect_gamepad;
-      elsif is_key_pressed (KEY_RIGHT)
-      then
+      elsif is_key_pressed (KEY_RIGHT) then
          gamepad_number := gamepad_number + 1;
          detect_gamepad;
       end if;

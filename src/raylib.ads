@@ -9,12 +9,12 @@ with System;
 
 package raylib is
 
+   -- Internal C types for C interoperability (used in records with C convention)
+   -- Users should generally not need to use these types directly
    subtype int           is Interfaces.C.int;
    subtype c_float       is Interfaces.C.C_float;
    subtype unsigned      is Interfaces.C.unsigned;
    subtype unsigned_char is Interfaces.C.unsigned_char;
-   subtype bool          is Interfaces.C.Extensions.bool;
-   subtype chars_ptr     is Interfaces.C.Strings.chars_ptr;
 
    RAYLIB_VERSION_MAJOR : constant := 5;
    RAYLIB_VERSION_MINOR : constant := 0;
@@ -686,11 +686,7 @@ package raylib is
 
       --RLAPI const char *GetClipboardText(void);
       --// Get clipboard text content
-      function get_clipboard_text return chars_ptr
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "GetClipboardText";
+      function get_clipboard_text return String;
 
       --// Enable waiting for events on EndDrawing(), no automatic event polling
       procedure enable_event_waiting
@@ -733,11 +729,7 @@ package raylib is
 
       --RLAPI bool IsCursorOnScreen(void);
       --// Check if cursor is on the screen
-      function is_cursor_on_screen return Bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "IsCursorOnScreen";
+      function is_cursor_on_screen return Boolean;
 
       --  [[  Drawing-related functions ]]  --
       procedure clear_background (bg_color : Color)
@@ -899,27 +891,19 @@ package raylib is
       --  [[ Input-related functions: keyboard ]]  --
 
       --// Check if a key has been pressed once
-      function is_key_pressed (key : Keys) return bool
-      with Import => True, Convention => C, External_Name => "IsKeyPressed";
+      function is_key_pressed (key : Keys) return Boolean;
 
       --// Check if a key has been pressed again (Only PLATFORM_DESKTOP)
-      function is_key_pressed_repeat (key : Keys) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "IsKeyPressedRepeat";
+      function is_key_pressed_repeat (key : Keys) return Boolean;
 
       --// Check if a key is being pressed
-      function is_key_down (key : Keys) return bool
-      with Import => True, Convention => C, External_Name => "IsKeyDown";
+      function is_key_down (key : Keys) return Boolean;
 
       --// Check if a key has been released once
-      function is_key_released (key : Keys) return bool
-      with Import => True, Convention => C, External_Name => "IsKeyReleased";
+      function is_key_released (key : Keys) return Boolean;
 
       --// Check if a key is NOT being pressed
-      function is_key_up (key : Keys) return bool
-      with Import => True, Convention => C, External_Name => "IsKeyUp";
+      function is_key_up (key : Keys) return Boolean;
 
       --// Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty
       function get_key_pressed return Keys
@@ -934,45 +918,25 @@ package raylib is
       with Import => True, Convention => C, External_Name => "SetExitKey";
 
       --  [[ Input-related functions: gamepads  ]]  --
-      function is_gamepad_available (gamepad : int) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "IsGamepadAvailable";
+      function is_gamepad_available (gamepad : int) return Boolean;
 
       function get_gamepad_name (gamepad : int) return String;
 
       --  Detect if a gamepad button has been pressed once
       function is_gamepad_button_pressed
-        (gamepad : int; button : int) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "IsGamepadButtonPressed";
+        (gamepad : int; button : int) return Boolean;
 
       --// Check if a gamepad button is being pressed
       function is_gamepad_button_down
-        (gamepad : int; button : Gamepad_Button) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "IsGamepadButtonDown";
+        (gamepad : int; button : Gamepad_Button) return Boolean;
 
       --// Check if a gamepad button has been released once
       function is_gamepad_button_released
-        (gamepad : int; button : Gamepad_Button) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "IsGamepadButtonReleased";
+        (gamepad : int; button : Gamepad_Button) return Boolean;
 
       --// Check if a gamepad button is NOT being pressed
       function is_gamepad_button_up
-        (gamepad : int; button : Gamepad_Button) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "IsGamepadButtonUp";
+        (gamepad : int; button : Gamepad_Button) return Boolean;
 
       --  Get the last gamepad button pressed
       function get_gamepad_button_pressed return Gamepad_Button
@@ -1001,29 +965,16 @@ package raylib is
       --  [[ Input-related functions: mouse  ]] --
 
       --// Check if a mouse button has been pressed once
-      function is_mouse_button_pressed (button : Mouse_Button) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "IsMouseButtonPressed";
+      function is_mouse_button_pressed (button : Mouse_Button) return Boolean;
 
       --// Check if a mouse button is being pressed
-      function is_mouse_button_down (button : Mouse_Button) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "IsMouseButtonDown";
+      function is_mouse_button_down (button : Mouse_Button) return Boolean;
 
       --// Check if a mouse button has been released once
-      function is_mouse_button_released (button : Mouse_Button) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "IsMouseButtonReleased";
+      function is_mouse_button_released (button : Mouse_Button) return Boolean;
 
       --// Check if a mouse button is NOT being pressed
-      function is_mouse_button_up (button : Mouse_Button) return bool
-      with Import => True, Convention => C, External_Name => "IsMouseButtonUp";
+      function is_mouse_button_up (button : Mouse_Button) return Boolean;
 
       function get_mouse_position return Vector2
       with
@@ -1057,18 +1008,13 @@ package raylib is
       -- From rcamera.h
       --// Camera movement
       procedure Camera_Move_Forward
-        (camera : access Camera3D; distance : Float; moveInWorldPlane : bool)
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "CameraMoveForward";
+        (camera : access Camera3D; distance : Float; moveInWorldPlane : Boolean);
 
       procedure Camera_Move_Up (camera : access Camera3D; distance : Float)
       with Import => True, Convention => C, External_Name => "CameraMoveUp";
 
       procedure Camera_Move_Right
-        (camera : access Camera3D; distance : Float; moveInWorldPlane : bool)
-      with Import => True, Convention => C, External_Name => "CameraMoveRight";
+        (camera : access Camera3D; distance : Float; moveInWorldPlane : Boolean);
 
       procedure Camera_Move_To_Target (camera : access Camera3D; steps : Float)
       with
@@ -1078,14 +1024,12 @@ package raylib is
 
       --// Camera rotation
       procedure Camera_Yaw
-        (camera : access Camera3D; angle : Float; rotateAroundTarget : bool)
-      with Import => True, Convention => C, External_Name => "CameraYaw";
+        (camera : access Camera3D; angle : Float; rotateAroundTarget : Boolean);
 
       procedure Camera_Pitch
         (camera                                 : access Camera3D;
          angle                                  : Float;
-         lockView, rotateAroundTarget, rotateUp : bool)
-      with Import => True, Convention => C, External_Name => "CameraPitch";
+         lockView, rotateAroundTarget, rotateUp : Boolean);
 
       procedure Camera_Roll (camera : access Camera3D; angle : Float)
       with Import => True, Convention => C, External_Name => "CameraRoll";
@@ -1218,81 +1162,45 @@ package raylib is
       --  [[ Basic shapes collision detection functions ]] --
 
       --// Check collision between two rectangles
-      function check_collision_recs (rec1, rec2 : Rectangle) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "CheckCollisionRecs";
+      function check_collision_recs (rec1, rec2 : Rectangle) return Boolean;
 
       --// Check collision between two circles
       function check_collision_circles
         (center1 : Vector2;
          radius1 : Float;
          center2 : Vector2;
-         radius2 : Float) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "CheckCollisionCircles";
+         radius2 : Float) return Boolean;
 
       --// Check collision between circle and rectangle
       function check_collision_circle_rec
-        (center : Vector2; radius : Float; rec : Rectangle) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "CheckCollisionCircleRec";
+        (center : Vector2; radius : Float; rec : Rectangle) return Boolean;
 
       --// Check if point is inside rectangle
       function check_collision_point_rec
-        (point : Vector2; rec : Rectangle) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "CheckCollisionPointRec";
+        (point : Vector2; rec : Rectangle) return Boolean;
 
       --// Check if point is inside circle
       function check_collision_point_circle
-        (point, center : Vector2; radius : Float) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "CheckCollisionPointCircle";
+        (point, center : Vector2; radius : Float) return Boolean;
 
       --// Check if point is inside a triangle
       function check_collision_point_triangle
-        (point, p1, p2, p3 : Vector2) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "CheckCollisionPointTriangle";
+        (point, p1, p2, p3 : Vector2) return Boolean;
 
       --// Check if point is within a polygon described by array of vertices
       function check_collision_point_poly
         (point : Vector2; points : access Vector2; point_count : int)
-         return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "CheckCollisionPointPoly";
+         return Boolean;
 
       --// Check the collision between two lines defined by two points each, returns collision point by reference
       function check_collision_lines
         (start_pos1, end_pos1, start_pos2, end_pos2 : Vector2;
          collision_point                            : access Vector2)
-         return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "CheckCollisionLines";
+         return Boolean;
 
       --// Check if point belongs to line created between two points [p1] and [p2] with defined margin in pixels [threshold]
       function check_collision_point_line
-        (point, p1, p2 : Vector2; threshold : int) return bool
-      with
-        Import        => True,
-        Convention    => C,
-        External_Name => "CheckCollisionPointLine";
+        (point, p1, p2 : Vector2; threshold : int) return Boolean;
 
       --// Get collision rectangle for two rectangles collision
       function Get_collision_rec (rec1, rec2 : Rectangle) return Rectangle
@@ -1479,26 +1387,21 @@ package raylib is
       procedure init_audio_device;  -- Initialize audio device and context
       procedure close_audio_device; -- Close the audio device and context
       function is_audio_device_ready
-         return bool; -- Check if audio device has been initialized successfully
+         return Boolean; -- Check if audio device has been initialized successfully
       procedure set_master_volume
-        (volume : C_Float); -- Set master volume (listener)
-      function get_master_volume return C_Float; -- Get master volume
+        (volume : Float); -- Set master volume (listener)
+      function get_master_volume return Float; -- Get master volume
       ---
       pragma Import (C, init_audio_device, "InitAudioDevice");
       pragma Import (C, close_audio_device, "CloseAudioDevice");
-      pragma Import (C, is_audio_device_ready, "IsAudioDeviceReady");
-      pragma Import (C, set_master_volume, "SetMasterVolume");
-      pragma Import (C, get_master_volume, "GetMasterVolume");
 
       -- Wave/Sound loading/unloading functions
-      function load_sound (file : Interfaces.C.strings.chars_ptr) return Sound;
+      function load_sound (file : String) return Sound;
       procedure unload_sound (s : Sound);
       function is_sound_ready
-        (s : Sound) return bool; --// Checks if a sound is ready
+        (s : Sound) return Boolean; --// Checks if a sound is ready
 
-      pragma Import (C, load_sound, "LoadSound"); --// Play a sound
       pragma Import (C, unload_sound, "UnloadSound");
-      pragma Import (C, is_sound_ready, "IsSoundReady");
 
       -- Wave/Sound management functions
       procedure play_sound (s : Sound);
