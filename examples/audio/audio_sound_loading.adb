@@ -9,8 +9,8 @@
 --   Copyright (c) 2014-2023 Ramon Santamaria (@raysan5)
 --
 
-
-with raylib;
+with Raylib.Window;
+with Raylib.Audio;
 
 procedure audio_sound_loading is
     use raylib;
@@ -22,7 +22,10 @@ procedure audio_sound_loading is
 
 begin
 
-    raylib.window.init (screenWidth, screenHeight, "raylib [audio] example - sound loading and playing");
+    raylib.window.init
+       (screenWidth,
+        screenHeight,
+        "raylib [audio] example - sound loading and playing");
 
     raylib.audio.init_audio_device;
 
@@ -32,14 +35,20 @@ begin
     raylib.window.set_target_FPS (60);
 
     while not raylib.window.should_close loop
-        if raylib.input.is_key_pressed (KEY_SPACE) then raylib.audio.play_sound (fxWav); end if;
-        if raylib.input.is_key_pressed (KEY_ENTER) then raylib.audio.play_sound (fxOgg); end if;
+        if raylib.input.is_key_pressed (KEY_SPACE) then
+            raylib.audio.play_sound (fxWav);
+        end if;
+        if raylib.input.is_key_pressed (KEY_ENTER) then
+            raylib.audio.play_sound (fxOgg);
+        end if;
 
         raylib.window.begin_drawing;
         raylib.window.clear_background (raylib.RAYWHITE);
 
-        raylib.text.draw ("Press SPACE to PLAY the WAV sound!", 200, 180, 20, LIGHTGRAY);
-        raylib.text.draw ("Press ENTER to PLAY the OGG sound!", 200, 220, 20, LIGHTGRAY);
+        raylib.text.draw
+           ("Press SPACE to PLAY the WAV sound!", 200, 180, 20, LIGHTGRAY);
+        raylib.text.draw
+           ("Press ENTER to PLAY the OGG sound!", 200, 220, 20, LIGHTGRAY);
 
         raylib.window.end_drawing;
     end loop;

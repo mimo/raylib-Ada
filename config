@@ -1,4 +1,5 @@
 # Change the values according to your installation
 
-RAYLIB_PATH="/usr/local"
-EDITOR=${EDITOR:-"atom"}
+#RAYLIB_PATH="/usr/local"
+RAYLIB_PATH="$LOCALAPPDATA/alire/cache/msys64/mingw64"
+EDITOR=${EDITOR:-"zed"}

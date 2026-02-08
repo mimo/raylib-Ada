@@ -10,7 +10,7 @@ project raylib.test is
 
    for Main use ("test.adb");
    for Source_Dirs use (".");
-   for Object_Dir use "build";
+   for Object_Dir use "build" & "/" & Mode;
    for Exec_Dir use ".";
 
    package Builder is
