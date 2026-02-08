@@ -5,6 +5,7 @@ with System.Address_To_Access_Conversions;
 package body raylib is
 
    use Interfaces.C;
+   use type Interfaces.C.Strings.chars_ptr;
 
    -- Helper functions for C/Ada type conversion
    function to_boolean (value : int) return Boolean
@@ -18,10 +19,10 @@ package body raylib is
    package body window is
 
       procedure init (width, height : Positive; title : string) is
-         procedure InitWindow (w, h : int; title : strings.Chars_Ptr);
+         procedure InitWindow (w, h : int; title : char_array);
          pragma import (C, InitWindow, "InitWindow");
 
-         ctitle : strings.Chars_Ptr := strings.new_string (title);
+         ctitle : char_array := To_C (title);
       begin
          InitWindow (int (width), int (height), ctitle);
       end init;
@@ -61,15 +62,15 @@ package body raylib is
    end window;
 
    package body textures is
-      function raylib_load_image (filename : strings.Chars_Ptr) return Image
+      function raylib_load_image (filename : char_array) return Image
       with Import, Convention => C, External_Name => "LoadImage";
 
       function raylib_load_image_SVG
-        (filename : strings.Chars_Ptr; width, height : int) return Image
+        (filename : char_array; width, height : int) return Image
       with Import, Convention => C, External_Name => "LoadImageSvg";
 
       function load_image (filename : String) return Image is
-         cfilename : Strings.Chars_Ptr := Strings.New_String (filename);
+         cfilename : char_array := To_C (filename);
       begin
          return raylib_load_image (cfilename);
       end load_image;
@@ -77,16 +78,16 @@ package body raylib is
       function load_image_SVG
         (filename : String; width, height : int) return Image
       is
-         cfilename : Strings.Chars_Ptr := Strings.New_String (filename);
+         cfilename : char_array := To_C (filename);
       begin
          return raylib_load_image_SVG (cfilename, width, height);
       end load_image_SVG;
 
-      function LoadTexture (filename : strings.Chars_Ptr) return Texture2D
+      function LoadTexture (filename : char_array) return Texture2D
       with Import, Convention => C, External_Name => "LoadTexture";
 
       function load (filename : String) return Texture2D is
-         cfilename : Strings.Chars_Ptr := Strings.New_String (filename);
+         cfilename : char_array := To_C (filename);
       begin
          return LoadTexture (cfilename);
       end load;
@@ -97,15 +98,15 @@ package body raylib is
       ---
       -- Import C functions
       --
-      procedure DrawText (text : strings.Chars_Ptr; X, Y, fs : int; c : Color);
-      function LoadFont (fileName : strings.Chars_Ptr) return Font;
+      procedure DrawText (text : char_array; X, Y, fs : int; c : Color);
+      function LoadFont (fileName : char_array) return Font;
       function LoadFontEx
-        (fileName   : strings.Chars_Ptr;
+        (fileName   : char_array;
          size       : int;
          chars      : access int;
          glyphCount : int) return Font;
       function LoadFontEx2
-        (fileName   : strings.Chars_Ptr;
+        (fileName   : char_array;
          size       : int;
          chars      : char_list;
          glyphCount : int) return Font;
@@ -119,7 +120,7 @@ package body raylib is
       -- Wrapping functions
       --
       function load_font (file : String) return Font is
-         ctext : strings.Chars_Ptr := strings.new_string (file);
+         ctext : char_array := To_C (file);
       begin
          return LoadFont (ctext);
       end load_font;
@@ -128,7 +129,7 @@ package body raylib is
         (file : String; size : int; chars : access int; glyphCount : int)
          return Font
       is
-         ctext : strings.Chars_Ptr := strings.new_string (file);
+         ctext : char_array := To_C (file);
       begin
          return LoadFontEx (ctext, size, chars, glyphCount);
       end load_font_ex;
@@ -137,13 +138,13 @@ package body raylib is
         (file : String; size : int; chars : char_list; glyphCount : int)
          return Font
       is
-         ctext : strings.Chars_Ptr := strings.new_string (file);
+         ctext : char_array := To_C (file);
       begin
          return LoadFontEx2 (ctext, size, chars, glyphCount);
       end load_font_ex;
 
       procedure draw (text : String; posX, posY, fontSize : Int; c : Color) is
-         ctext : strings.Chars_Ptr := strings.new_string (text);
+         ctext : char_array := To_C (text);
       begin
          DrawText (ctext, int (posX), int (posY), int (fontSize), c);
       end draw;
@@ -157,23 +158,23 @@ package body raylib is
       is
          procedure DrawTextEx
            (f                 : Font;
-            text              : strings.Chars_Ptr;
+            text              : char_array;
             p                 : Vector2;
             fontSize, spacing : Float;
             tint              : Color);
          pragma Import (C, DrawTextEx, "DrawTextEx");
 
-         ctext : strings.Chars_Ptr := strings.new_string (text);
+         ctext : char_array := To_C (text);
       begin
          DrawTextEx (F, ctext, position, fontSize, spacing, tint);
       end draw_ex;
 
       function measure (text : String; fontSize : int) return int is
          function MeasureText
-           (text : Strings.chars_ptr; fontSize : int) return int
+           (text : char_array; fontSize : int) return int
          with Import, Convention => C, External_Name => "MeasureText";
 
-         ctext : Strings.chars_ptr := Strings.New_String (text);
+         ctext : char_array := To_C (text);
       begin
          return MeasureText (ctext, fontSize);
       end measure;
@@ -182,11 +183,11 @@ package body raylib is
         (f : Font; text : String; fontSize, spacing : Float) return Vector2
       is
          function MeasureTextEx
-           (f : Font; text : Strings.Chars_Ptr; fontSize, spacing : Float)
+           (f : Font; text : char_array; fontSize, spacing : Float)
             return Vector2;
          ------
          pragma Import (C, MeasureTextEx, "MeasureTextEx");
-         ctext : Strings.Chars_Ptr := Strings.New_String (text);
+         ctext : char_array := To_C (text);
       begin
          return MeasureTextEx (f, ctext, fontSize, spacing);
       end measure_ex;
@@ -195,10 +196,10 @@ package body raylib is
 
    package body utils is
       procedure trace_log (ltype : Log; text : String) is
-         procedure TraceLog (ltype : Log; text : strings.Chars_Ptr);
+         procedure TraceLog (ltype : Log; text : char_array);
          pragma import (C, TraceLog, "TraceLog");
 
-         ctext : strings.Chars_Ptr := strings.new_string (text);
+         ctext : char_array := To_C (text);
       begin
          TraceLog (ltype, ctext);
       end trace_log;
@@ -506,9 +507,9 @@ package body raylib is
 
       -- Sound loading
       function load_sound (file : String) return Sound is
-         function LoadSound (file : Strings.chars_ptr) return Sound;
+         function LoadSound (file : char_array) return Sound;
          pragma import (C, LoadSound, "LoadSound");
-         cfile : Strings.chars_ptr := Strings.New_String (file);
+         cfile : char_array := To_C (file);
       begin
          return LoadSound (cfile);
       end load_sound;
