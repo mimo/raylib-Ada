@@ -672,11 +672,11 @@ package Raylib is
     ------------------------------------------------------------------------------------
     --  Input Handling Functions (Module: core)
     ------------------------------------------------------------------------------------
-    package input is
+    package Input is
         --  [[ Input-related functions: keyboard ]]  --
 
         --// Check if a key has been pressed once
-        function is_key_pressed (key : Keys) return Boolean;
+        function Is_Key_Pressed (key : Keys) return Boolean;
 
         --// Check if a key has been pressed again (Only PLATFORM_DESKTOP)
         function is_key_pressed_repeat (key : Keys) return Boolean;
@@ -692,18 +692,15 @@ package Raylib is
 
         --// Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty
         function get_key_pressed return Keys
-        with Import => True, Convention => C, External_Name => "GetKeyPressed";
+        with Import, Convention => C, External_Name => "GetKeyPressed";
 
         --// Get char pressed (unicode), call it multiple times for chars queued, returns 0 when the queue is empty
         function get_char_pressed return int
-        with
-           Import        => True,
-           Convention    => C,
-           External_Name => "GetCharPressed";
+        with Import, Convention => C, External_Name => "GetCharPressed";
 
         --// Set a custom key to exit program (default is ESC)
         procedure set_exit_key (key : Keys)
-        with Import => True, Convention => C, External_Name => "SetExitKey";
+        with Import, Convention => C, External_Name => "SetExitKey";
 
         --  [[ Input-related functions: gamepads  ]]  --
         function is_gamepad_available (gamepad : int) return Boolean;
@@ -729,22 +726,19 @@ package Raylib is
         --  Get the last gamepad button pressed
         function get_gamepad_button_pressed return Gamepad_Button
         with
-           Import        => True,
+           Import,
            Convention    => C,
            External_Name => "GetGamepadButtonPressed";
 
         --  Return gamepad axis count for a gamepad
         function get_gamepad_axis_count (gamepad : int) return int
-        with
-           Import        => True,
-           Convention    => C,
-           External_Name => "GetGamepadAxisCount";
+        with Import, Convention => C, External_Name => "GetGamepadAxisCount";
 
         --  Return axis movement value for a gamepad axis
         function get_gamepad_axis_movement
            (gamepad : int; axis : Gamepad_Axis) return Float
         with
-           Import        => True,
+           Import,
            Convention    => C,
            External_Name => "GetGamepadAxisMovement";
         --RLAPI int SetGamepadMappings(const char *mappings);
@@ -766,35 +760,26 @@ package Raylib is
         --// Check if a mouse button is NOT being pressed
         function is_mouse_button_up (button : Mouse_Button) return Boolean;
 
-        function get_mouse_position return Vector2
-        with
-           Import        => True,
-           Convention    => C,
-           External_Name => "GetMousePosition";
+        function Get_Mouse_Position return Vector2
+        with Import, Convention => C, External_Name => "GetMousePosition";
 
-        function get_mouse_delta return Vector2
-        with Import => True, Convention => C, External_Name => "GetMouseDelta";
+        function Get_Mouse_Delta return Vector2
+        with Import, Convention => C, External_Name => "GetMouseDelta";
 
-        function get_mouse_wheel_move return Float
-        with
-           Import        => True,
-           Convention    => C,
-           External_Name => "GetMouseWheelMove";
+        function Get_Mouse_Wheel_Move return Float
+        with Import, Convention => C, External_Name => "GetMouseWheelMove";
 
-        procedure set_mouse_cursor (cursor : Mouse_Cursor)
-        with
-           Import        => True,
-           Convention    => C,
-           External_Name => "SetMouseCursor";
-    end input;
+        procedure Set_Mouse_Cursor (cursor : Mouse_Cursor)
+        with Import, Convention => C, External_Name => "SetMouseCursor";
+    end Input;
 
     package rcamera is
         --// Update camera position for selected mode
-        procedure update (camera : access Camera3D; mode : CameraMode)
-        with Import => True, Convention => C, External_Name => "UpdateCamera";
+        procedure Update (Camera : access Camera3D; mode : CameraMode)
+        with Import, Convention => C, External_Name => "UpdateCamera";
 
         --// Update camera movement/rotation
-        procedure update_pro
+        procedure Update_Pro
            (camera             : access Camera3D;
             movement, rotation : Vector3;
             zoom               : Float)
@@ -864,10 +849,7 @@ package Raylib is
         --// Draw line segment cubic-bezier in-out interpolation
         procedure draw_line_bezier
            (start_pos, end_pos : Vector2; thick : Float; c : Color)
-        with
-           Import        => True,
-           Convention    => C,
-           External_Name => "DrawLineBezier";
+        with Import, Convention => C, External_Name => "DrawLineBezier";
 
         --  Draw a color-filled circle
         procedure draw_circle
@@ -875,8 +857,8 @@ package Raylib is
         with Import => True, Convention => C, External_Name => "DrawCircle";
 
         --// Draw a color-filled rectangle
-        procedure draw_rectangle (posX, posY, width, height : int; c : Color)
-        with Import => True, Convention => C, External_Name => "DrawRectangle";
+        procedure Draw_Rectangle (posX, posY, width, height : int; c : Color)
+        with Import, Convention => C, External_Name => "DrawRectangle";
 
         --// Draw a color-filled rectangle (Vector version)
         procedure draw_rectangle_v (position, size : Vector2; c : Color)
@@ -1133,14 +1115,14 @@ package Raylib is
         --  Text drawing functions
 
         --// Draw current FPS
-        procedure draw_FPS (x, y : int);
-        pragma Import (C, draw_FPS, "DrawFPS");
+        procedure Draw_FPS (x, y : int)
+        with Import, Convention => C, External_Name => "DrawFPS";
 
         --// Draw text (using default font)
-        procedure draw (text : String; posX, posY, fontSize : int; c : Color);
+        procedure Draw (text : String; posX, posY, fontSize : int; c : Color);
 
         --//  Draw text using font and additional parameters
-        procedure draw_ex
+        procedure Draw_Ex
            (F                 : Font;
             text              : String;
             position          : Vector2;
@@ -1154,16 +1136,13 @@ package Raylib is
             position, origin            : Vector2;
             rotation, fontSize, spacing : Float;
             tint                        : Color)
-        with Import => True, Convention => C, External_Name => "DrawTextPro";
+        with Import, Convention => C, External_Name => "DrawTextPro";
 
         --  Text font info functions
 
         --// Set vertical line spacing when drawing with line-breaks
         procedure set_text_line_spacing (spacing : int)
-        with
-           Import        => True,
-           Convention    => C,
-           External_Name => "SetTextLineSpacing";
+        with Import, Convention => C, External_Name => "SetTextLineSpacing";
 
         --  Measure string width for default font
         function measure (text : String; fontSize : int) return int;
@@ -1182,17 +1161,24 @@ package Raylib is
     ------------------------------------------------------------------------------------
     --  Basic 3d Shapes
     ------------------------------------------------------------------------------------
-    package shapes3D is
-        procedure draw_plane (center : Vector3; size : Vector2; tint : Color)
+    package Shapes_3D is
+        -- Draw a line in 3D world space
+        procedure Draw_Line_3D (Start_Pos, End_Pos : Vector3; C : Color)
+        with Import, Convention => C, External_Name => "DrawLine3D";
+
+        procedure Draw_Plane (Center : Vector3; Size : Vector2; Tint : Color)
         with Import, Convention => C, External_Name => "DrawPlane";
 
-        procedure draw_cube_v (position, size : Vector3; tint : Color)
+        procedure Draw_Cube
+           (Position : Vector3; Width, Height, Length : Float; Tint : Color)
+        with Import, Convention => C, External_Name => "DrawCube";
+
+        procedure Draw_Cube_V (Position, Size : Vector3; Tint : Color)
         with Import, Convention => C, External_Name => "DrawCubeV";
 
-        procedure draw_cube_wires
-           (position : Vector3; width, height, length : Float; tint : Color)
-        with Import => True, Convention => C, External_Name => "DrawCubeWires";
-    end shapes3D;
+        procedure Draw_Cube_Wires
+           (Position : Vector3; Width, Height, Length : Float; Tint : Color)
+        with Import, Convention => C, External_Name => "DrawCubeWires";
 
         function Get_Ray_Collision_Box
            (R : Ray; Box : BoundingBox) return RayCollision
