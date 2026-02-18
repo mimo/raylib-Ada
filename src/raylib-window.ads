@@ -205,6 +205,10 @@ package Raylib.Window is
 
     --  [[  Screen-space-related functions  ]]  --
 
+    function Get_Screen_To_World_Ray
+       (position : Vector2; C : Camera3D) return Ray
+    with Import, Convention => C, External_Name => "GetScreenToWorldRay";
+
     --// Get the screen space position for a 3D world space position
     function Get_World_To_Screen
        (Position : Vector3; Camera : Camera3D) return Vector2

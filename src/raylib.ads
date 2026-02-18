@@ -551,6 +551,28 @@ package Raylib is
            Float;        -- Camera zoom (scaling), should be 1.0f by default
     end record;
 
+    --  Ray, ray for raycasting
+    type Ray is record
+        position  : Vector3;
+        direction : Vector3;
+    end record
+    with Convention => C_Pass_By_Copy;
+
+    --  RayCollision, ray hit information
+    type RayCollision is record
+        hit      : Boolean;
+        distance : Float;
+        point    : Vector3;
+        normal   : Vector3;
+    end record
+    with Convention => C_Pass_By_Copy;
+
+    type BoundingBox is record
+        min : Vector3;            -- Minimum vertex box-corner
+        max : Vector3;            -- Maximum vertex box-corner
+    end record
+    with Convention => C_Pass_By_Copy;
+
     --// Wave, audio wave data
     type Wave is record
         -- Total number of frames (considering channels)
@@ -1172,5 +1194,9 @@ package Raylib is
         with Import => True, Convention => C, External_Name => "DrawCubeWires";
     end shapes3D;
 
+        function Get_Ray_Collision_Box
+           (R : Ray; Box : BoundingBox) return RayCollision
+        with Import, Convention => C, External_Name => "GetRayCollisionBox";
+    end Shapes_3D;
 
 end Raylib;

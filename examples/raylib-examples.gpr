@@ -6,21 +6,17 @@ project raylib.examples is
    Raylib_Link := "-L" & RAYLIB_PATH & "/lib";
 
    for Main use (
-      "core_3d_camera_first_person.adb",
-      "core_input_gamepad.adb",
-      "textures_rectangle.adb",
-      "input_box.adb",
-      "text_font_loading.adb",
-      "audio_sound_loading.adb"
-   );
+                 "core_3d_camera_first_person.adb",
+                 "core_input_gamepad.adb",
+                 "textures_rectangle.adb",
+                 "input_box.adb",
+                 "text_font_loading.adb",
+                 "audio_sound_loading.adb"
+                );
 
    for Source_Dirs use ("audio","core","textures","text");
    for Object_Dir use "build";
    for Exec_Dir use ".";
-
-   package Builder is
-      for Executable ("exec.adb") use "nautilus";
-   end Builder;
 
    package Linker is
       for Default_Switches ("ada") use ("-lraylib", Raylib_Link, "-g");

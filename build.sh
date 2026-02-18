@@ -2,7 +2,7 @@
 
 set -e
 cd $(dirname $0)
-. `pwd`/config
+. "`pwd`/config"
 
 case $1 in
   clean)
