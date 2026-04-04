@@ -31,7 +31,7 @@ procedure Test is
     show_dialog_box   : Boolean := False;
     gui_ctrl_toggle   : Boolean := False;
     gui_ctrl_checkbox : Boolean := True;
-    gui_label_text    : String (1 .. 25);
+    gui_label_text    : String (1 .. 25) := (others => ' ');
     gui_value_textbox : String (gui_label_text'Range);
     gui_textbox_edit  : Boolean := False;
 
@@ -56,7 +56,7 @@ begin
     BOTTOM_MSG_CENTER := Float (window.get_render_width) / 2.0;
     BOTTOM_MSG_Y := Float (window.get_render_height) - 32.0;
 
-    Raylib.Window.Set_Window_Opacity (0.50);
+    Raylib.Window.Set_Window_Opacity (1.0);
 
     while not Raylib.Window.Should_Close loop
 
@@ -199,7 +199,7 @@ begin
                            (gui_value_textbox, gui_label_text);
                     end if;
 
-                    if UI.button (label2_area, "Copy to clipborad") then
+                    if UI.button (label2_area, "Copy to clipboard") then
                         raylib.window.set_clipboard_text (buffer_text_area);
                     end if;
                     cursor_text_area :=

@@ -19,7 +19,7 @@ package Raylib is
     RAYLIB_VERSION_MAJOR : constant := 5;
     RAYLIB_VERSION_MINOR : constant := 5;
     RAYLIB_VERSION_PATCH : constant := 0;
-    RAYLIB_VERSION       : aliased constant String := "5.0";
+    RAYLIB_VERSION       : aliased constant String := "5.5";
 
     PI : constant := 3.14159265358979323846;
 

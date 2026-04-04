@@ -143,33 +143,33 @@ begin
 
         Begin_Mode_3D (view);
         --  Draw ground
-        shapes3D.draw_plane
+        Shapes_3D.draw_plane
            (center => (0.0, 0.0, 0.0),
             size   => (32.0, 32.0),
             tint   => LIGHTGRAY);
         --  Draw a blue wall
-        shapes3D.draw_cube_v
+        Shapes_3D.draw_cube_v
            (position => (-16.0, 2.5, 0.0),
             size     => (1.0, 5.0, 32.0),
             tint     => BLUE);
         --  Draw a green wall
-        shapes3D.draw_cube_v
+        Shapes_3D.draw_cube_v
            (position => (16.0, 2.5, 0.0),
             size     => (1.0, 5.0, 32.0),
             tint     => LIME);
         --  Draw a yellow wall
-        shapes3D.draw_cube_v
+        Shapes_3D.draw_cube_v
            (position => (0.0, 2.5, 16.0),
             size     => (32.0, 5.0, 1.0),
             tint     => GOLD);
 
         for col in 1 .. MAX_COLUMNS loop
-            raylib.shapes3D.draw_cube_v
+            raylib.Shapes_3D.draw_cube_v
                (positions (col),
                 size => (2.0, heights (col), 2.0),
                 tint => random_colors (col));
 
-            raylib.shapes3D.draw_cube_wires
+            raylib.Shapes_3D.draw_cube_wires
                (positions (col),
                 width  => 2.0,
                 height => Float (heights (col)),
@@ -178,11 +178,11 @@ begin
         end loop;
 
         if cam_mode = CAMERA_THIRD_PERSON then
-            raylib.shapes3D.draw_cube_v
+            raylib.Shapes_3D.draw_cube_v
                (position => view.target,
                 size     => (0.5, 0.5, 0.5),
                 tint     => PURPLE);
-            raylib.shapes3D.draw_cube_wires
+            raylib.Shapes_3D.draw_cube_wires
                (position => view.target,
                 width    => 0.5,
                 height   => 0.5,
