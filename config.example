@@ -1,0 +1,15 @@
+# Configuration du projet raylib-Ada
+# Copier ce fichier vers 'config' et ajuster selon votre installation
+
+# Chemin d'installation de raylib
+# Après compilation avec './build.sh raylib', utiliser :
+RAYLIB_PATH="$HOME/.local"
+
+# Ou pour une installation système :
+#RAYLIB_PATH="/usr/local"
+
+# Ou pour Windows/MSYS2 :
+#RAYLIB_PATH="$LOCALAPPDATA/alire/cache/msys64/mingw64"
+
+# Éditeur pour './build.sh edit'
+EDITOR=${EDITOR:-"vi"}
