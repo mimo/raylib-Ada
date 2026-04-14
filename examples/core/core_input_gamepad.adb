@@ -17,13 +17,13 @@ procedure core_input_gamepad is
 
     procedure detect_gamepad is
     begin
-        if not raylib.input.is_gamepad_available (gamepad_number) then
+        if not raylib.Input.Is_Gamepad_Available (gamepad_number) then
             my_gamepad := UNAVAILABLE;
             return;
         end if;
 
         declare
-            gamepad_name : String := get_gamepad_name (gamepad_number);
+            gamepad_name : String := Get_Gamepad_Name (gamepad_number);
             package FS renames Ada.Strings.Fixed;
         begin
             if gamepad_name'length = 0 then
@@ -49,7 +49,7 @@ procedure core_input_gamepad is
 
     function check_down (button_id : Gamepad_Button) return Boolean is
     begin
-        return is_gamepad_button_down (gamepad_number, button_id);
+        return Is_Gamepad_Button_Down (gamepad_number, button_id);
     end check_down;
 
     procedure Draw_Xbox_Gamepad is
@@ -58,71 +58,71 @@ procedure core_input_gamepad is
         left_thumb_color, right_thumb_color : Color;
         left_trigger_pos, right_trigger_pos : int;
     begin
-        textures.draw_texture (texXboxPad, 0, 0, DARKGRAY);
+        Textures.Draw_Texture (texXboxPad, 0, 0, DARKGRAY);
 
         -- Draw buttons: xbox home
         if check_down (GAMEPAD_BUTTON_MIDDLE) then
-            draw_circle (394, 89, 19.0, RED);
+            Draw_Circle (394, 89, 19.0, RED);
         end if;
 
         -- Draw buttons: basic
         if check_down (GAMEPAD_BUTTON_MIDDLE_RIGHT) then
-            draw_circle (436, 150, 9.0, RED);
+            Draw_Circle (436, 150, 9.0, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_MIDDLE_LEFT) then
-            draw_circle (352, 150, 9.0, RED);
+            Draw_Circle (352, 150, 9.0, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_RIGHT_FACE_LEFT) then
-            draw_circle (501, 151, 15.0, BLUE);
+            Draw_Circle (501, 151, 15.0, BLUE);
         end if;
         if check_down (GAMEPAD_BUTTON_RIGHT_FACE_DOWN) then
-            draw_circle (536, 187, 15.0, LIME);
+            Draw_Circle (536, 187, 15.0, LIME);
         end if;
         if check_down (GAMEPAD_BUTTON_RIGHT_FACE_RIGHT) then
-            draw_circle (572, 151, 15.0, MAROON);
+            Draw_Circle (572, 151, 15.0, MAROON);
         end if;
         if check_down (GAMEPAD_BUTTON_RIGHT_FACE_UP) then
-            draw_circle (536, 115, 15.0, GOLD);
+            Draw_Circle (536, 115, 15.0, GOLD);
         end if;
 
         -- Draw buttons: d-pad
-        shapes.draw_rectangle (317, 202, 19, 71, BLACK);
-        shapes.draw_rectangle (293, 228, 69, 19, BLACK);
+        Shapes.Draw_Rectangle (317, 202, 19, 71, BLACK);
+        Shapes.Draw_Rectangle (293, 228, 69, 19, BLACK);
         if check_down (GAMEPAD_BUTTON_LEFT_FACE_UP) then
-            draw_rectangle (317, 202, 19, 26, RED);
+            Draw_Rectangle (317, 202, 19, 26, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_LEFT_FACE_DOWN) then
-            draw_rectangle (317, 202 + 45, 19, 26, RED);
+            Draw_Rectangle (317, 202 + 45, 19, 26, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_LEFT_FACE_LEFT) then
-            draw_rectangle (292, 228, 25, 19, RED);
+            Draw_Rectangle (292, 228, 25, 19, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_LEFT_FACE_RIGHT) then
-            draw_rectangle (292 + 44, 228, 26, 19, RED);
+            Draw_Rectangle (292 + 44, 228, 26, 19, RED);
         end if;
 
         -- Draw buttons: left-right back buttons
         if check_down (GAMEPAD_BUTTON_LEFT_TRIGGER_1) then
-            shapes.draw_circle (259, 61, 20.0, RED);
+            Shapes.Draw_Circle (259, 61, 20.0, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_RIGHT_TRIGGER_1) then
-            shapes.draw_circle (536, 61, 20.0, RED);
+            Shapes.Draw_Circle (536, 61, 20.0, RED);
         end if;
 
         -- Draw axis: left joystick
         left_thumb_color :=
            (if check_down (GAMEPAD_BUTTON_LEFT_THUMB) then RED else BLACK);
-        draw_circle (259, 152, 39.0, BLACK);
-        draw_circle (259, 152, 34.0, LIGHTGRAY);
-        draw_circle
+        Draw_Circle (259, 152, 39.0, BLACK);
+        Draw_Circle (259, 152, 34.0, LIGHTGRAY);
+        Draw_Circle
            (259
             + int
-                 (get_gamepad_axis_movement
+                 (Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_LEFT_X)
                   * 20.0),
             152
             + int
-                 (get_gamepad_axis_movement
+                 (Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_LEFT_Y)
                   * 20.0),
             25.0,
@@ -131,17 +131,17 @@ procedure core_input_gamepad is
         --  Draw axis: right joystick
         right_thumb_color :=
            (if check_down (GAMEPAD_BUTTON_RIGHT_THUMB) then RED else BLACK);
-        raylib.shapes.draw_circle (461, 237, 38.0, BLACK);
-        raylib.shapes.draw_circle (461, 237, 33.0, LIGHTGRAY);
-        raylib.shapes.draw_circle
+        raylib.Shapes.Draw_Circle (461, 237, 38.0, BLACK);
+        raylib.Shapes.Draw_Circle (461, 237, 33.0, LIGHTGRAY);
+        raylib.Shapes.Draw_Circle
            (461
             + int
-                 (get_gamepad_axis_movement
+                 (Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_RIGHT_X)
                   * 20.0),
             237
             + int
-                 (get_gamepad_axis_movement
+                 (Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_RIGHT_Y)
                   * 20.0),
             25.0,
@@ -151,21 +151,21 @@ procedure core_input_gamepad is
         left_trigger_pos :=
            int
               ((1.0
-                + get_gamepad_axis_movement
+                + Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_LEFT_TRIGGER))
                / 2.0
                * 70.0);
         right_trigger_pos :=
            int
               ((1.0
-                + get_gamepad_axis_movement
+                + Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_RIGHT_TRIGGER))
                / 2.0
                * 70.0);
-        shapes.draw_rectangle (170, 30, 15, 70, GRAY);
-        shapes.draw_rectangle (604, 30, 15, 70, GRAY);
-        shapes.draw_rectangle (170, 30, 15, left_trigger_pos, RED);
-        shapes.draw_rectangle (604, 30, 15, right_trigger_pos, RED);
+        Shapes.Draw_Rectangle (170, 30, 15, 70, GRAY);
+        Shapes.Draw_Rectangle (604, 30, 15, 70, GRAY);
+        Shapes.Draw_Rectangle (170, 30, 15, left_trigger_pos, RED);
+        Shapes.Draw_Rectangle (604, 30, 15, right_trigger_pos, RED);
     end Draw_xbox_Gamepad;
 
     procedure draw_playstation_gamepad is
@@ -174,75 +174,75 @@ procedure core_input_gamepad is
         left_thumb_color, right_thumb_color : Color;
         left_trigger_pos, right_trigger_pos : int;
     begin
-        textures.draw_texture (texPs3Pad, 0, 0, DARKGRAY);
+        Textures.Draw_Texture (texPs3Pad, 0, 0, DARKGRAY);
 
         -- Draw buttons: ps
         if check_down (GAMEPAD_BUTTON_MIDDLE) then
-            draw_circle (396, 222, 13.0, RED);
+            Draw_Circle (396, 222, 13.0, RED);
         end if;
 
         -- Draw buttons: basic
         if check_down (GAMEPAD_BUTTON_MIDDLE_LEFT) then
-            draw_rectangle (328, 170, 32, 13, RED);
+            Draw_Rectangle (328, 170, 32, 13, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_MIDDLE_RIGHT) then
-            draw_triangle
+            Draw_Triangle
                (Vector2'(436.0, 168.0),
                 Vector2'(436.0, 185.0),
                 Vector2'(464.0, 177.0),
                 RED);
         end if;
         if check_down (GAMEPAD_BUTTON_RIGHT_FACE_UP) then
-            draw_circle (557, 144, 13.0, LIME);
+            Draw_Circle (557, 144, 13.0, LIME);
         end if;
         if check_down (GAMEPAD_BUTTON_RIGHT_FACE_RIGHT) then
-            draw_circle (586, 173, 13.0, RED);
+            Draw_Circle (586, 173, 13.0, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_RIGHT_FACE_DOWN) then
-            draw_circle (557, 203, 13.0, VIOLET);
+            Draw_Circle (557, 203, 13.0, VIOLET);
         end if;
         if check_down (GAMEPAD_BUTTON_RIGHT_FACE_LEFT) then
-            draw_circle (527, 173, 13.0, PINK);
+            Draw_Circle (527, 173, 13.0, PINK);
         end if;
 
         -- Draw buttons: d-pad
-        draw_rectangle (225, 132, 24, 84, BLACK);
-        draw_rectangle (195, 161, 84, 25, BLACK);
+        Draw_Rectangle (225, 132, 24, 84, BLACK);
+        Draw_Rectangle (195, 161, 84, 25, BLACK);
         if check_down (GAMEPAD_BUTTON_LEFT_FACE_UP) then
-            draw_rectangle (225, 132, 24, 29, RED);
+            Draw_Rectangle (225, 132, 24, 29, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_LEFT_FACE_DOWN) then
-            draw_rectangle (225, 132 + 54, 24, 29, RED);
+            Draw_Rectangle (225, 132 + 54, 24, 29, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_LEFT_FACE_LEFT) then
-            draw_rectangle (195, 161, 30, 25, RED);
+            Draw_Rectangle (195, 161, 30, 25, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_LEFT_FACE_RIGHT) then
-            draw_rectangle (195 + 54, 161, 30, 25, RED);
+            Draw_Rectangle (195 + 54, 161, 30, 25, RED);
         end if;
 
         -- Draw buttons: left-right back buttons
         if check_down (GAMEPAD_BUTTON_LEFT_TRIGGER_1) then
-            shapes.draw_circle (239, 82, 20.0, RED);
+            Shapes.Draw_Circle (239, 82, 20.0, RED);
         end if;
         if check_down (GAMEPAD_BUTTON_RIGHT_TRIGGER_1) then
-            shapes.draw_circle (557, 82, 20.0, RED);
+            Shapes.Draw_Circle (557, 82, 20.0, RED);
         end if;
 
         -- Draw axis: left joystick
         left_thumb_color :=
            (if check_down (GAMEPAD_BUTTON_LEFT_THUMB) then RED else BLACK);
-        draw_circle (319, 255, 35.0, left_thumb_color);
-        draw_circle (319, 255, 31.0, LIGHTGRAY);
-        draw_circle
+        Draw_Circle (319, 255, 35.0, left_thumb_color);
+        Draw_Circle (319, 255, 31.0, LIGHTGRAY);
+        Draw_Circle
            (319
             + int
-                 (get_gamepad_axis_movement
+                 (Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_LEFT_X)
                   * 20.0),
             255
             + int
-                 (get_gamepad_axis_movement
+                 (Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_LEFT_Y)
                   * 20.0),
             25.0,
@@ -251,17 +251,17 @@ procedure core_input_gamepad is
         -- Draw axis: right joystick
         right_thumb_color :=
            (if check_down (GAMEPAD_BUTTON_RIGHT_THUMB) then RED else BLACK);
-        draw_circle (475, 255, 35.0, right_thumb_color);
-        draw_circle (475, 255, 31.0, LIGHTGRAY);
-        draw_circle
+        Draw_Circle (475, 255, 35.0, right_thumb_color);
+        Draw_Circle (475, 255, 31.0, LIGHTGRAY);
+        Draw_Circle
            (475
             + int
-                 (get_gamepad_axis_movement
+                 (Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_RIGHT_X)
                   * 20.0),
             255
             + int
-                 (get_gamepad_axis_movement
+                 (Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_RIGHT_Y)
                   * 20.0),
             25.0,
@@ -271,62 +271,59 @@ procedure core_input_gamepad is
         left_trigger_pos :=
            int
               ((1.0
-                - get_gamepad_axis_movement
+                - Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_LEFT_TRIGGER))
                / 2.0
                * 70.0);
         right_trigger_pos :=
            int
               ((1.0
-                - get_gamepad_axis_movement
+                - Get_Gamepad_Axis_Movement
                      (gamepad_number, GAMEPAD_AXIS_RIGHT_TRIGGER))
                / 2.0
                * 70.0);
-        draw_rectangle (169, 48, 15, 70, GRAY);
-        draw_rectangle (611, 48, 15, 70, GRAY);
-        draw_rectangle (169, 48, 15, left_trigger_pos, RED);
-        draw_rectangle (611, 48, 15, right_trigger_pos, RED);
+        Draw_Rectangle (169, 48, 15, 70, GRAY);
+        Draw_Rectangle (611, 48, 15, 70, GRAY);
+        Draw_Rectangle (169, 48, 15, left_trigger_pos, RED);
+        Draw_Rectangle (611, 48, 15, right_trigger_pos, RED);
     end draw_playstation_gamepad;
 
 begin
 
-    window.set_config_flags
+    Window.Set_Config_Flags
        (FLAG_MSAA_4X_HINT);  -- Set MSAA 4X hint before windows creation
 
-    window.init
-       (screenWidth, screenHeight, "raylib [core] example - gamepad input");
+    Window.Init (screenWidth, screenHeight, "raylib [core] example - gamepad input");
 
-    texPs3Pad := textures.load ("core/resources/ps3.png");
-    texXboxPad := textures.load ("core/resources/xbox.png");
+    texPs3Pad := Textures.Load ("core/resources/ps3.png");
+    texXboxPad := Textures.Load ("core/resources/xbox.png");
 
-    window.set_target_FPS (30);
+    Window.Set_Target_FPS (30);
 
-    while not raylib.window.should_close loop
-        window.begin_drawing;
-        window.clear_background (raylib.RAYWHITE);
+    while not raylib.Window.Should_Close loop
+        Window.Begin_Drawing;
+        Window.Clear_Background (raylib.RAYWHITE);
 
-        if gamepad_number > 0 and is_key_pressed (KEY_LEFT) then
+        if gamepad_number > 0 and Is_Key_Pressed (KEY_LEFT) then
             gamepad_number := gamepad_number - 1;
             detect_gamepad;
-        elsif is_key_pressed (KEY_RIGHT) then
+        elsif Is_Key_Pressed (KEY_RIGHT) then
             gamepad_number := gamepad_number + 1;
             detect_gamepad;
         end if;
 
         if my_gamepad = UNKNOWN or my_gamepad = UNAVAILABLE then
-            raylib.text.draw
-               ("Gamepad " & gamepad_number'Img & " not detected",
+            raylib.Text.Draw ("Gamepad " & gamepad_number'Img & " not detected",
                 10,
                 10,
                 15,
                 GRAY);
             detect_gamepad;
         else
-            raylib.text.draw
-               ("GAMEPAD "
+            raylib.Text.Draw ("GAMEPAD "
                 & gamepad_number'Img
                 & " : "
-                & get_gamepad_name (gamepad_number),
+                & Get_Gamepad_Name (gamepad_number),
                 10,
                 10,
                 15,
@@ -344,12 +341,11 @@ begin
             end case;
 
             declare
-                axis_count : int := get_gamepad_axis_count (gamepad_number);
+                axis_count : int := Get_Gamepad_Axis_Count (gamepad_number);
                 axis       : Gamepad_Axis;
                 axis_level : Float;
             begin
-                text.draw
-                   ("DETECTED AXIS [" & axis_count'Img & "]",
+                Text.Draw ("DETECTED AXIS [" & axis_count'Img & "]",
                     10,
                     50,
                     10,
@@ -357,9 +353,8 @@ begin
                 for I in 0 .. (axis_count - 1) loop
                     axis := Gamepad_Axis'Val (I);
                     axis_level :=
-                       get_gamepad_axis_movement (gamepad_number, axis);
-                    text.draw
-                       ("AXIS " & I'Img & ": " & axis_level'Img,
+                       Get_Gamepad_Axis_Movement (gamepad_number, axis);
+                    Text.Draw ("AXIS " & I'Img & ": " & axis_level'Img,
                         20,
                         70 + 20 * I,
                         10,
@@ -368,13 +363,13 @@ begin
             end;
         end if;
 
-        window.end_drawing;
+        Window.End_Drawing;
 
     end loop;
 
-    textures.unload (texXboxPad);
-    textures.unload (texPs3Pad);
+    Textures.Unload (texXboxPad);
+    Textures.Unload (texPs3Pad);
 
-    raylib.window.close;
+    raylib.Window.Close;
 
 end core_input_gamepad;

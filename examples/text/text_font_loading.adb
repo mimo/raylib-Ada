@@ -17,71 +17,68 @@ begin
     --
     --  Initialization
     -------------------------------------
-    raylib.window.init (screen_width, screen_height, window_title);
+    raylib.Window.Init (screen_width, screen_height, window_title);
 
     -- NOTE: Textures/Fonts MUST be loaded after Window initialization (OpenGL context is required)
 
     -- BMFont (AngelCode) : Font data and image atlas have been generated using external program
-    fontBm := raylib.text.load_font ("text/resources/pixantiqua.fnt");
+    fontBm := raylib.Text.Load_Font ("text/resources/pixantiqua.fnt");
 
     -- TTF font : Font data and atlas are generated directly from TTF
     -- NOTE: We define a font base size of 32 pixels tall and up-to 250 characters
     fontTTF :=
-       raylib.text.load_font_ex
+       raylib.Text.Load_Font_Ex
           ("text/resources/pixantiqua.ttf", 32, null, 250);
 
-    window.set_target_FPS (60);
+    Window.Set_Target_FPS (60);
 
     --
     --  Main game loop
     -------------------------------------
-    while not raylib.window.should_close loop
+    while not raylib.Window.Should_Close loop
 
         use_ttf :=
-           (if raylib.input.is_key_down (KEY_SPACE) then True else False);
+           (if raylib.Input.Is_Key_Down (KEY_SPACE) then True else False);
 
-        window.begin_drawing;
-        window.clear_background (raylib.RAYWHITE);
+        Window.Begin_Drawing;
+        Window.Clear_Background (raylib.RAYWHITE);
 
-        raylib.text.draw
-           ("Hold SPACE to use TTF generated font", 20, 20, 20, LIGHTGRAY);
+        raylib.Text.Draw ("Hold SPACE to use TTF generated font", 20, 20, 20, LIGHTGRAY);
 
         if not use_ttf then
-            raylib.text.draw_ex
+            raylib.Text.Draw_Ex
                (fontBm,
                 msg,
                 Vector2'(20.0, 100.0),
                 Float (fontBm.baseSize),
                 2.0,
                 MAROON);
-            raylib.text.draw
-               ("Using BMFont (Angelcode) imported",
+            raylib.Text.Draw ("Using BMFont (Angelcode) imported",
                 20,
-                raylib.window.get_screen_height - 30,
+                raylib.Window.Get_Screen_Height - 30,
                 20,
                 GRAY);
         else
-            raylib.text.draw_ex
+            raylib.Text.Draw_Ex
                (fontTTF,
                 msg,
                 Vector2'(20.0, 100.0),
                 Float (fontTTF.baseSize),
                 2.0,
                 LIME);
-            raylib.text.draw
-               ("Using TTF font generated",
+            raylib.Text.Draw ("Using TTF font generated",
                 20,
-                raylib.window.get_screen_height - 30,
+                raylib.Window.Get_Screen_Height - 30,
                 20,
                 GRAY);
         end if;
 
-        window.end_drawing;
+        Window.End_Drawing;
     end loop;
 
-    raylib.text.unload_font (fontBm);
-    raylib.text.unload_font (fontTTF);
+    raylib.Text.Unload_Font (fontBm);
+    raylib.Text.Unload_Font (fontTTF);
 
-    raylib.window.close;
+    raylib.Window.Close;
 
 end text_font_loading;

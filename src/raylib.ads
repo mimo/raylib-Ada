@@ -654,20 +654,20 @@ package Raylib is
     MAGENTA  : constant Color := (255, 0, 255, 255);
     RAYWHITE : constant Color := (245, 245, 245, 255);
 
-    package utils is
+    package Utils is
         --  // NOTE: Following functions implemented in module [utils]
         --  //------------------------------------------------------------------
 
         --// Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR...)
-        procedure trace_log (ltype : Log; text : String);
+        procedure Trace_Log (ltype : Log; text : String);
 
         --// Set the current threshold (minimum) log level
-        procedure set_trace_log_level (ltype : Log)
+        procedure Set_Trace_Log_Level (ltype : Log)
         with
            Import        => True,
            Convention    => C,
            External_Name => "SetTraceLogLevel";
-    end utils;
+    end Utils;
 
     ------------------------------------------------------------------------------------
     --  Input Handling Functions (Module: core)
@@ -679,63 +679,63 @@ package Raylib is
         function Is_Key_Pressed (key : Keys) return Boolean;
 
         --// Check if a key has been pressed again (Only PLATFORM_DESKTOP)
-        function is_key_pressed_repeat (key : Keys) return Boolean;
+        function Is_Key_Pressed_Repeat (key : Keys) return Boolean;
 
         --// Check if a key is being pressed
-        function is_key_down (key : Keys) return Boolean;
+        function Is_Key_Down (key : Keys) return Boolean;
 
         --// Check if a key has been released once
-        function is_key_released (key : Keys) return Boolean;
+        function Is_Key_Released (key : Keys) return Boolean;
 
         --// Check if a key is NOT being pressed
-        function is_key_up (key : Keys) return Boolean;
+        function Is_Key_Up (key : Keys) return Boolean;
 
         --// Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty
-        function get_key_pressed return Keys
+        function Get_Key_Pressed return Keys
         with Import, Convention => C, External_Name => "GetKeyPressed";
 
         --// Get char pressed (unicode), call it multiple times for chars queued, returns 0 when the queue is empty
-        function get_char_pressed return int
+        function Get_Char_Pressed return int
         with Import, Convention => C, External_Name => "GetCharPressed";
 
         --// Set a custom key to exit program (default is ESC)
-        procedure set_exit_key (key : Keys)
+        procedure Set_Exit_Key (key : Keys)
         with Import, Convention => C, External_Name => "SetExitKey";
 
         --  [[ Input-related functions: gamepads  ]]  --
-        function is_gamepad_available (gamepad : int) return Boolean;
+        function Is_Gamepad_Available (gamepad : int) return Boolean;
 
-        function get_gamepad_name (gamepad : int) return String;
+        function Get_Gamepad_Name (gamepad : int) return String;
 
         --  Detect if a gamepad button has been pressed once
-        function is_gamepad_button_pressed
+        function Is_Gamepad_Button_Pressed
            (gamepad : int; button : int) return Boolean;
 
         --// Check if a gamepad button is being pressed
-        function is_gamepad_button_down
+        function Is_Gamepad_Button_Down
            (gamepad : int; button : Gamepad_Button) return Boolean;
 
         --// Check if a gamepad button has been released once
-        function is_gamepad_button_released
+        function Is_Gamepad_Button_Released
            (gamepad : int; button : Gamepad_Button) return Boolean;
 
         --// Check if a gamepad button is NOT being pressed
-        function is_gamepad_button_up
+        function Is_Gamepad_Button_Up
            (gamepad : int; button : Gamepad_Button) return Boolean;
 
         --  Get the last gamepad button pressed
-        function get_gamepad_button_pressed return Gamepad_Button
+        function Get_Gamepad_Button_Pressed return Gamepad_Button
         with
            Import,
            Convention    => C,
            External_Name => "GetGamepadButtonPressed";
 
         --  Return gamepad axis count for a gamepad
-        function get_gamepad_axis_count (gamepad : int) return int
+        function Get_Gamepad_Axis_Count (gamepad : int) return int
         with Import, Convention => C, External_Name => "GetGamepadAxisCount";
 
         --  Return axis movement value for a gamepad axis
-        function get_gamepad_axis_movement
+        function Get_Gamepad_Axis_Movement
            (gamepad : int; axis : Gamepad_Axis) return Float
         with
            Import,
@@ -747,18 +747,18 @@ package Raylib is
         --  [[ Input-related functions: mouse  ]] --
 
         --// Check if a mouse button has been pressed once
-        function is_mouse_button_pressed
+        function Is_Mouse_Button_Pressed
            (button : Mouse_Button) return Boolean;
 
         --// Check if a mouse button is being pressed
-        function is_mouse_button_down (button : Mouse_Button) return Boolean;
+        function Is_Mouse_Button_Down (button : Mouse_Button) return Boolean;
 
         --// Check if a mouse button has been released once
-        function is_mouse_button_released
+        function Is_Mouse_Button_Released
            (button : Mouse_Button) return Boolean;
 
         --// Check if a mouse button is NOT being pressed
-        function is_mouse_button_up (button : Mouse_Button) return Boolean;
+        function Is_Mouse_Button_Up (button : Mouse_Button) return Boolean;
 
         function Get_Mouse_Position return Vector2
         with Import, Convention => C, External_Name => "GetMousePosition";
@@ -773,7 +773,7 @@ package Raylib is
         with Import, Convention => C, External_Name => "SetMouseCursor";
     end Input;
 
-    package rcamera is
+    package RCamera is
         --// Update camera position for selected mode
         procedure Update (Camera : access Camera3D; mode : CameraMode)
         with Import, Convention => C, External_Name => "UpdateCamera";
@@ -824,35 +824,35 @@ package Raylib is
         procedure Camera_Roll (camera : access Camera3D; angle : Float)
         with Import => True, Convention => C, External_Name => "CameraRoll";
 
-    end rcamera;
+    end RCamera;
 
-    package shapes is
+    package Shapes is
         --// Draw a line
-        procedure draw_line
+        procedure Draw_Line
            (start_posX, start_posY, end_posX, end_posy : int; c : Color)
         with Import => True, Convention => C, External_Name => "DrawLine";
 
         --// Draw a line (using gl lines)
-        procedure draw_line_v (start_pos, end_pos : Vector2; c : Color)
+        procedure Draw_Line_V (start_pos, end_pos : Vector2; c : Color)
         with Import => True, Convention => C, External_Name => "DrawLineV";
 
         --// Draw a line (using triangles/quads)
-        procedure draw_line_ex
+        procedure Draw_Line_Ex
            (start_pos, end_pos : Vector2; thick : C_Float; c : Color)
         with Import => True, Convention => C, External_Name => "DrawLineEx";
 
         --// Draw lines sequence (using gl lines)
-        procedure draw_line_strip
+        procedure Draw_Line_Strip
            (points : access Vector2; point_count : int; c : Color)
         with Import => True, Convention => C, External_Name => "DrawLineStrip";
 
         --// Draw line segment cubic-bezier in-out interpolation
-        procedure draw_line_bezier
+        procedure Draw_Line_Bezier
            (start_pos, end_pos : Vector2; thick : Float; c : Color)
         with Import, Convention => C, External_Name => "DrawLineBezier";
 
         --  Draw a color-filled circle
-        procedure draw_circle
+        procedure Draw_Circle
            (centerX, centerY : int; radius : Float; c : Color)
         with Import => True, Convention => C, External_Name => "DrawCircle";
 
@@ -861,28 +861,28 @@ package Raylib is
         with Import, Convention => C, External_Name => "DrawRectangle";
 
         --// Draw a color-filled rectangle (Vector version)
-        procedure draw_rectangle_v (position, size : Vector2; c : Color)
+        procedure Draw_Rectangle_V (position, size : Vector2; c : Color)
         with
            Import        => True,
            Convention    => C,
            External_Name => "DrawRectangleV";
 
         --// Draw a color-filled rectangle
-        procedure draw_rectangle_rec (bounds : Rectangle; c : Color)
+        procedure Draw_Rectangle_Rec (bounds : Rectangle; c : Color)
         with
            Import        => True,
            Convention    => C,
            External_Name => "DrawRectangleRec";
 
         --// Draw a color-filled rectangle with pro parameters
-        procedure draw_rectangle_pro
+        procedure Draw_Rectangle_Pro
            (rec : Rectangle; origin : Vector2; rotation : Float; c : Color)
         with
            Import        => True,
            Convention    => C,
            External_Name => "DrawRectanglePro";
 
-        procedure draw_rectangle_rounded
+        procedure Draw_Rectangle_Rounded
            (rec : Rectangle; roundness : Float; segments : int; c : Color)
         with
            Import        => True,
@@ -890,7 +890,7 @@ package Raylib is
            External_Name => "DrawRectangleRounded";
 
         --// Draw a vertical-gradient-filled rectangle
-        procedure draw_rectangle_gradient_v
+        procedure Draw_Rectangle_Gradient_V
            (posX, posY, width, height : int; color1, color2 : Color)
         with
            Import        => True,
@@ -898,7 +898,7 @@ package Raylib is
            External_Name => "DrawRectangleGradientV";
 
         --// Draw a horizontal-gradient-filled rectangle
-        procedure draw_rectangle_gradient_h
+        procedure Draw_Rectangle_Gradient_H
            (posX, posY, width, height : int; color1, color2 : Color)
         with
            Import        => True,
@@ -906,7 +906,7 @@ package Raylib is
            External_Name => "DrawRectangleGradientH";
 
         --// Draw a gradient-filled rectangle with custom vertex colors
-        procedure draw_rectangle_gradient_ex
+        procedure Draw_Rectangle_Gradient_Ex
            (rec : Rectangle; col1, col2, col3, col4 : Color)
         with
            Import        => True,
@@ -914,7 +914,7 @@ package Raylib is
            External_Name => "DrawRectangleGradientEx";
 
         --// Draw rectangle outline
-        procedure draw_rectangle_lines
+        procedure Draw_Rectangle_Lines
            (posX, posY, width, height : int; c : Color)
         with
            Import        => True,
@@ -922,7 +922,7 @@ package Raylib is
            External_Name => "DrawRectangleLines";
 
         --// Draw rectangle outline with extended parameters
-        procedure draw_rectangle_lines_ex
+        procedure Draw_Rectangle_Lines_Ex
            (rec : Rectangle; line_thick : Float; c : Color)
         with
            Import        => True,
@@ -930,18 +930,18 @@ package Raylib is
            External_Name => "DrawRectangleLinesEx";
 
         --// Draw a color-filled triangle (vertex in counter-clockwise order!)
-        procedure draw_triangle (v1, v2, v3 : Vector2; c : Color)
+        procedure Draw_Triangle (v1, v2, v3 : Vector2; c : Color)
         with Import => True, Convention => C, External_Name => "DrawTriangle";
 
         --// Draw triangle outline (vertex in counter-clockwise order!)
-        procedure draw_triangle_lines (v1, v2, v3 : Vector2; c : Color)
+        procedure Draw_Triangle_Lines (v1, v2, v3 : Vector2; c : Color)
         with
            Import        => True,
            Convention    => C,
            External_Name => "DrawTriangleLines";
 
         --// Draw a triangle fan defined by points (first vertex is the center)
-        procedure draw_triangle_fan
+        procedure Draw_Triangle_Fan
            (points : access Vector2; point_count : int; c : Color)
         with
            Import        => True,
@@ -949,7 +949,7 @@ package Raylib is
            External_Name => "DrawTriangleFan";
 
         --// Draw a triangle strip defined by points
-        procedure draw_triangle_strip
+        procedure Draw_Triangle_Strip
            (points : access Vector2; point_count : int; c : Color)
         with
            Import        => True,
@@ -959,70 +959,70 @@ package Raylib is
         --  [[ Basic shapes collision detection functions ]] --
 
         --// Check collision between two rectangles
-        function check_collision_recs (rec1, rec2 : Rectangle) return Boolean;
+        function Check_Collision_Recs (rec1, rec2 : Rectangle) return Boolean;
 
         --// Check collision between two circles
-        function check_collision_circles
+        function Check_Collision_Circles
            (center1 : Vector2;
             radius1 : Float;
             center2 : Vector2;
             radius2 : Float) return Boolean;
 
         --// Check collision between circle and rectangle
-        function check_collision_circle_rec
+        function Check_Collision_Circle_Rec
            (center : Vector2; radius : Float; rec : Rectangle) return Boolean;
 
         --// Check if point is inside rectangle
-        function check_collision_point_rec
+        function Check_Collision_Point_Rec
            (point : Vector2; rec : Rectangle) return Boolean;
 
         --// Check if point is inside circle
-        function check_collision_point_circle
+        function Check_Collision_Point_Circle
            (point, center : Vector2; radius : Float) return Boolean;
 
         --// Check if point is inside a triangle
-        function check_collision_point_triangle
+        function Check_Collision_Point_Triangle
            (point, p1, p2, p3 : Vector2) return Boolean;
 
         --// Check if point is within a polygon described by array of vertices
-        function check_collision_point_poly
+        function Check_Collision_Point_Poly
            (point : Vector2; points : access Vector2; point_count : int)
             return Boolean;
 
         --// Check the collision between two lines defined by two points each, returns collision point by reference
-        function check_collision_lines
+        function Check_Collision_Lines
            (start_pos1, end_pos1, start_pos2, end_pos2 : Vector2;
             collision_point                            : access Vector2)
             return Boolean;
 
         --// Check if point belongs to line created between two points [p1] and [p2] with defined margin in pixels [threshold]
-        function check_collision_point_line
+        function Check_Collision_Point_Line
            (point, p1, p2 : Vector2; threshold : int) return Boolean;
 
         --// Get collision rectangle for two rectangles collision
-        function Get_collision_rec (rec1, rec2 : Rectangle) return Rectangle
+        function Get_Collision_Rec (rec1, rec2 : Rectangle) return Rectangle
         with
            Import        => True,
            Convention    => C,
            External_Name => "GetCollisionRec";
-    end shapes;
+    end Shapes;
 
-    package colors is
-        function color_to_int (c : Color) return int
+    package Colors is
+        function Color_To_Int (c : Color) return int
         with Import => True, Convention => C, External_Name => "ColorToInt";
-        function get_color (hexvalue : unsigned) return Color
+        function Get_Color (hexvalue : unsigned) return Color
         with Import => True, Convention => C, External_Name => "GetColor";
-        function fade (c : Color; alpha : Float) return Color
+        function Fade (c : Color; alpha : Float) return Color
         with Import => True, Convention => C, External_Name => "Fade";
-    end colors;
+    end Colors;
 
     ------------------------------------------------------------------------------------
     --  Texture Loading and Drawing Functions
     ------------------------------------------------------------------------------------
-    package textures is
+    package Textures is
         --  [[ Image loading functions ]] --
-        function load_image (filename : String) return Image;
-        procedure unload_image (img : Image)
+        function Load_Image (filename : String) return Image;
+        procedure Unload_Image (img : Image)
         with Import => True, Convention => C, External_Name => "UnloadImage";
 
         --  [[ Image generation functions ]] --
@@ -1038,39 +1038,39 @@ package Raylib is
         --  [[ Texture loading functions ]] --
 
         --  Load texture from file into GPU memory (VRAM)
-        function load (filename : String) return Texture2D;
+        function Load (filename : String) return Texture2D;
 
         --// Load texture from image data
-        function load_from_image (source_image : Image) return Texture2D
+        function Load_From_Image (source_image : Image) return Texture2D
         with
            Import        => True,
            Convention    => C,
            External_Name => "LoadTextureFromImage";
 
         --  Unload texture from GPU memory (VRAM)
-        procedure unload (texture : Texture2D)
+        procedure Unload (texture : Texture2D)
         with Import => True, Convention => C, External_Name => "UnloadTexture";
 
         --  [[ Texture2D drawing functions ]]  --
         --// Draw a Texture2D
-        procedure draw_texture
+        procedure Draw_Texture
            (texture : Texture2D; posX, posY : int; tint : Color)
         with Import => True, Convention => C, External_Name => "DrawTexture";
 
         --// Draw a Texture2D with position defined as Vector2
-        procedure draw_texture_v
+        procedure Draw_Texture_V
            (texture : Texture2D; position : Vector2; tint : Color)
         with Import => True, Convention => C, External_Name => "DrawTextureV";
 
         --// Draw a Texture2D with extended parameters
-        procedure draw_texture_ex
+        procedure Draw_Texture_Ex
            (texture         : Texture2D;
             position        : Vector2;
             rotation, scale : Float;
             tint            : Color)
         with Import => True, Convention => C, External_Name => "DrawTextureEx";
 
-        procedure draw_texture_rec
+        procedure Draw_Texture_Rec
            (texture   : Texture2D;
             sourceRec : Rectangle;
             position  : Vector2;
@@ -1080,7 +1080,7 @@ package Raylib is
            Convention    => C,
            External_Name => "DrawTextureRec";
 
-        procedure draw_texture_pro
+        procedure Draw_Texture_Pro
            (texture   : Texture2D;
             sourceRec : Rectangle;
             destRec   : Rectangle;
@@ -1091,25 +1091,25 @@ package Raylib is
            Import        => True,
            Convention    => C,
            External_Name => "DrawTexturePro";
-    end textures;
+    end Textures;
 
     ------------------------------------------------------------------------------------
     -- Font Loading and Text Drawing
     ------------------------------------------------------------------------------------
-    package text is
+    package Text is
         --  Font loading/unloading functions
-        function get_font_default return Font;
-        pragma Import (C, get_font_default, "GetFontDefault");
+        function Get_Font_Default return Font;
+        pragma Import (C, Get_Font_Default, "GetFontDefault");
 
         -- Load font from file into GPU memory (VRAM)
-        function load_font (file : String) return Font;
+        function Load_Font (file : String) return Font;
 
         -- Load font from file with extended parameters, use NULL for fontChars and 0 for glyphCount to load the default character set
-        function load_font_ex
+        function Load_Font_Ex
            (file : String; size : int; chars : access int; glyphCount : int)
             return Font;
 
-        procedure unload_font (f : Font)
+        procedure Unload_Font (f : Font)
         with Import, Convention => C, External_Name => "UnloadFont";
 
         --  Text drawing functions
@@ -1130,7 +1130,7 @@ package Raylib is
             tint              : Color);
 
         --// Draw text using Font and pro parameters (rotation)
-        procedure draw_pro
+        procedure Draw_Pro
            (F                           : Font;
             text                        : String;
             position, origin            : Vector2;
@@ -1141,14 +1141,14 @@ package Raylib is
         --  Text font info functions
 
         --// Set vertical line spacing when drawing with line-breaks
-        procedure set_text_line_spacing (spacing : int)
+        procedure Set_Text_Line_Spacing (spacing : int)
         with Import, Convention => C, External_Name => "SetTextLineSpacing";
 
         --  Measure string width for default font
-        function measure (text : String; fontSize : int) return int;
+        function Measure (text : String; fontSize : int) return int;
 
         --  Measure string size for Font
-        function measure_ex
+        function Measure_Ex
            (f : Font; text : String; fontSize, spacing : Float) return Vector2;
         --  Get index position for a unicode character on font
         --  RLAPI int GetGlyphIndex(Font font, int character);
@@ -1156,7 +1156,7 @@ package Raylib is
         --  RLAPI int GetNextCodepoint(const char *text, int *count);
         --  NOTE: 0x3f(`?`) is returned on failure,
         --  `count` will hold the total number of bytes processed
-    end text;
+    end Text;
 
     ------------------------------------------------------------------------------------
     --  Basic 3d Shapes

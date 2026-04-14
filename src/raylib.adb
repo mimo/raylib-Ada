@@ -14,30 +14,30 @@ package body raylib is
            (filename : char_array; width, height : int) return Image
         with Import, Convention => C, External_Name => "LoadImageSvg";
 
-        function load_image (filename : String) return Image is
+        function Load_Image (filename : String) return Image is
             cfilename : char_array := To_C (filename);
         begin
             return raylib_load_image (cfilename);
-        end load_image;
+        end Load_Image;
 
-        function load_image_SVG
+        function Load_Image_SVG
            (filename : String; width, height : int) return Image
         is
             cfilename : char_array := To_C (filename);
         begin
             return raylib_load_image_SVG (cfilename, width, height);
-        end load_image_SVG;
+        end Load_Image_SVG;
 
         function LoadTexture (filename : char_array) return Texture2D
         with Import, Convention => C, External_Name => "LoadTexture";
 
-        function load (filename : String) return Texture2D is
+        function Load (filename : String) return Texture2D is
             cfilename : char_array := To_C (filename);
         begin
             return LoadTexture (cfilename);
         end load;
 
-    end textures;
+    end Textures;
 
     package body text is
         ---
@@ -58,29 +58,29 @@ package body raylib is
         ---
         -- Wrapping functions
         --
-        function load_font (file : String) return Font is
+        function Load_Font (file : String) return Font is
             ctext : char_array := To_C (file);
         begin
             return LoadFont (ctext);
-        end load_font;
+        end Load_Font;
 
-        function load_font_ex
+        function Load_Font_Ex
            (file : String; size : int; chars : access int; glyphCount : int)
             return Font
         is
             ctext : char_array := To_C (file);
         begin
             return LoadFontEx (ctext, size, chars, glyphCount);
-        end load_font_ex;
+        end Load_Font_Ex;
 
-        procedure draw (text : String; posX, posY, fontSize : Int; c : Color)
+        procedure Draw (text : String; posX, posY, fontSize : Int; c : Color)
         is
             ctext : char_array := To_C (text);
         begin
             DrawText (ctext, int (posX), int (posY), int (fontSize), c);
         end draw;
 
-        procedure draw_ex
+        procedure Draw_Ex
            (F                 : Font;
             text              : String;
             position          : Vector2;
@@ -98,9 +98,9 @@ package body raylib is
             ctext : char_array := To_C (text);
         begin
             DrawTextEx (F, ctext, position, fontSize, spacing, tint);
-        end draw_ex;
+        end Draw_Ex;
 
-        function measure (text : String; fontSize : int) return int is
+        function Measure (text : String; fontSize : int) return int is
             function MeasureText (text : char_array; fontSize : int) return int
             with Import, Convention => C, External_Name => "MeasureText";
 
@@ -109,7 +109,7 @@ package body raylib is
             return MeasureText (ctext, fontSize);
         end measure;
 
-        function measure_ex
+        function Measure_Ex
            (f : Font; text : String; fontSize, spacing : Float) return Vector2
         is
             function MeasureTextEx
@@ -120,20 +120,20 @@ package body raylib is
             ctext : char_array := To_C (text);
         begin
             return MeasureTextEx (f, ctext, fontSize, spacing);
-        end measure_ex;
+        end Measure_Ex;
 
-    end text; ---
+    end Text; ---
 
     package body utils is
-        procedure trace_log (ltype : Log; text : String) is
+        procedure Trace_Log (ltype : Log; text : String) is
             procedure TraceLog (ltype : Log; text : char_array);
             pragma import (C, TraceLog, "TraceLog");
 
             ctext : char_array := To_C (text);
         begin
             TraceLog (ltype, ctext);
-        end trace_log;
-    end utils;
+        end Trace_Log;
+    end Utils;
 
     package body input is
         -- Keyboard functions
@@ -151,36 +151,36 @@ package body raylib is
             return IsKeyPressedRepeat (key) /= 0;
         end Is_Key_Pressed_Repeat;
 
-        function is_key_down (key : Keys) return Boolean is
+        function Is_Key_Down (key : Keys) return Boolean is
             function IsKeyDown (key : Keys) return int;
             pragma import (C, IsKeyDown, "IsKeyDown");
         begin
             return IsKeyDown (key) /= 0;
-        end is_key_down;
+        end Is_Key_Down;
 
-        function is_key_released (key : Keys) return Boolean is
+        function Is_Key_Released (key : Keys) return Boolean is
             function IsKeyReleased (key : Keys) return int;
             pragma import (C, IsKeyReleased, "IsKeyReleased");
         begin
             return IsKeyReleased (key) /= 0;
-        end is_key_released;
+        end Is_Key_Released;
 
-        function is_key_up (key : Keys) return Boolean is
+        function Is_Key_Up (key : Keys) return Boolean is
             function IsKeyUp (key : Keys) return int;
             pragma import (C, IsKeyUp, "IsKeyUp");
         begin
             return IsKeyUp (key) /= 0;
-        end is_key_up;
+        end Is_Key_Up;
 
         -- Gamepad functions
-        function is_gamepad_available (gamepad : int) return Boolean is
+        function Is_Gamepad_Available (gamepad : int) return Boolean is
             function IsGamepadAvailable (gamepad : int) return int;
             pragma import (C, IsGamepadAvailable, "IsGamepadAvailable");
         begin
             return IsGamepadAvailable (gamepad) /= 0;
-        end is_gamepad_available;
+        end Is_Gamepad_Available;
 
-        function get_gamepad_name (gamepad : int) return String is
+        function Get_Gamepad_Name (gamepad : int) return String is
             use Interfaces.C.Strings;
             function GetGamepadName (arg1 : int) return chars_ptr
             with Import, Convention => C, External_Name => "GetGamepadName";
@@ -188,9 +188,9 @@ package body raylib is
         begin
             return
                (if Gamepad_Name /= Null_Ptr then Value (Gamepad_Name) else "");
-        end get_gamepad_name;
+        end Get_Gamepad_Name;
 
-        function is_gamepad_button_pressed
+        function Is_Gamepad_Button_Pressed
            (gamepad, button : int) return Boolean
         is
             function IsGamepadButtonPressed (gamepad, button : int) return int;
@@ -198,9 +198,9 @@ package body raylib is
                import (C, IsGamepadButtonPressed, "IsGamepadButtonPressed");
         begin
             return IsGamepadButtonPressed (gamepad, button) /= 0;
-        end is_gamepad_button_pressed;
+        end Is_Gamepad_Button_Pressed;
 
-        function is_gamepad_button_down
+        function Is_Gamepad_Button_Down
            (gamepad : int; button : Gamepad_Button) return Boolean
         is
             function IsGamepadButtonDown
@@ -208,9 +208,9 @@ package body raylib is
             pragma import (C, IsGamepadButtonDown, "IsGamepadButtonDown");
         begin
             return IsGamepadButtonDown (gamepad, button) /= 0;
-        end is_gamepad_button_down;
+        end Is_Gamepad_Button_Down;
 
-        function is_gamepad_button_released
+        function Is_Gamepad_Button_Released
            (gamepad : int; button : Gamepad_Button) return Boolean
         is
             function IsGamepadButtonReleased
@@ -219,9 +219,9 @@ package body raylib is
                import (C, IsGamepadButtonReleased, "IsGamepadButtonReleased");
         begin
             return IsGamepadButtonReleased (gamepad, button) /= 0;
-        end is_gamepad_button_released;
+        end Is_Gamepad_Button_Released;
 
-        function is_gamepad_button_up
+        function Is_Gamepad_Button_Up
            (gamepad : int; button : Gamepad_Button) return Boolean
         is
             function IsGamepadButtonUp
@@ -229,53 +229,53 @@ package body raylib is
             pragma import (C, IsGamepadButtonUp, "IsGamepadButtonUp");
         begin
             return IsGamepadButtonUp (gamepad, button) /= 0;
-        end is_gamepad_button_up;
+        end Is_Gamepad_Button_Up;
 
         -- Mouse functions
-        function is_mouse_button_pressed (button : Mouse_Button) return Boolean
+        function Is_Mouse_Button_Pressed (button : Mouse_Button) return Boolean
         is
             function IsMouseButtonPressed (button : Mouse_Button) return int;
             pragma import (C, IsMouseButtonPressed, "IsMouseButtonPressed");
         begin
             return IsMouseButtonPressed (button) /= 0;
-        end is_mouse_button_pressed;
+        end Is_Mouse_Button_Pressed;
 
-        function is_mouse_button_down (button : Mouse_Button) return Boolean is
+        function Is_Mouse_Button_Down (button : Mouse_Button) return Boolean is
             function IsMouseButtonDown (button : Mouse_Button) return int;
             pragma import (C, IsMouseButtonDown, "IsMouseButtonDown");
         begin
             return IsMouseButtonDown (button) /= 0;
-        end is_mouse_button_down;
+        end Is_Mouse_Button_Down;
 
-        function is_mouse_button_released
+        function Is_Mouse_Button_Released
            (button : Mouse_Button) return Boolean
         is
             function IsMouseButtonReleased (button : Mouse_Button) return int;
             pragma import (C, IsMouseButtonReleased, "IsMouseButtonReleased");
         begin
             return IsMouseButtonReleased (button) /= 0;
-        end is_mouse_button_released;
+        end Is_Mouse_Button_Released;
 
-        function is_mouse_button_up (button : Mouse_Button) return Boolean is
+        function Is_Mouse_Button_Up (button : Mouse_Button) return Boolean is
             function IsMouseButtonUp (button : Mouse_Button) return int;
             pragma import (C, IsMouseButtonUp, "IsMouseButtonUp");
         begin
             return IsMouseButtonUp (button) /= 0;
-        end is_mouse_button_up;
+        end Is_Mouse_Button_Up;
 
-    end input;
+    end Input;
 
     package body shapes is
         -- Collision detection functions
-        function check_collision_recs (rec1, rec2 : Rectangle) return Boolean
+        function Check_Collision_Recs (rec1, rec2 : Rectangle) return Boolean
         is
             function CheckCollisionRecs (rec1, rec2 : Rectangle) return int;
             pragma import (C, CheckCollisionRecs, "CheckCollisionRecs");
         begin
             return CheckCollisionRecs (rec1, rec2) /= 0;
-        end check_collision_recs;
+        end Check_Collision_Recs;
 
-        function check_collision_circles
+        function Check_Collision_Circles
            (center1 : Vector2;
             radius1 : Float;
             center2 : Vector2;
@@ -290,9 +290,9 @@ package body raylib is
         begin
             return
                CheckCollisionCircles (center1, radius1, center2, radius2) /= 0;
-        end check_collision_circles;
+        end Check_Collision_Circles;
 
-        function check_collision_circle_rec
+        function Check_Collision_Circle_Rec
            (center : Vector2; radius : Float; rec : Rectangle) return Boolean
         is
             function CheckCollisionCircleRec
@@ -301,9 +301,9 @@ package body raylib is
                import (C, CheckCollisionCircleRec, "CheckCollisionCircleRec");
         begin
             return CheckCollisionCircleRec (center, radius, rec) /= 0;
-        end check_collision_circle_rec;
+        end Check_Collision_Circle_Rec;
 
-        function check_collision_point_rec
+        function Check_Collision_Point_Rec
            (point : Vector2; rec : Rectangle) return Boolean
         is
             function CheckCollisionPointRec
@@ -312,9 +312,9 @@ package body raylib is
                import (C, CheckCollisionPointRec, "CheckCollisionPointRec");
         begin
             return CheckCollisionPointRec (point, rec) /= 0;
-        end check_collision_point_rec;
+        end Check_Collision_Point_Rec;
 
-        function check_collision_point_circle
+        function Check_Collision_Point_Circle
            (point, center : Vector2; radius : Float) return Boolean
         is
             function CheckCollisionPointCircle
@@ -324,9 +324,9 @@ package body raylib is
                   (C, CheckCollisionPointCircle, "CheckCollisionPointCircle");
         begin
             return CheckCollisionPointCircle (point, center, radius) /= 0;
-        end check_collision_point_circle;
+        end Check_Collision_Point_Circle;
 
-        function check_collision_point_triangle
+        function Check_Collision_Point_Triangle
            (point, p1, p2, p3 : Vector2) return Boolean
         is
             function CheckCollisionPointTriangle
@@ -338,9 +338,9 @@ package body raylib is
                    "CheckCollisionPointTriangle");
         begin
             return CheckCollisionPointTriangle (point, p1, p2, p3) /= 0;
-        end check_collision_point_triangle;
+        end Check_Collision_Point_Triangle;
 
-        function check_collision_point_poly
+        function Check_Collision_Point_Poly
            (point : Vector2; points : access Vector2; point_count : int)
             return Boolean
         is
@@ -351,9 +351,9 @@ package body raylib is
                import (C, CheckCollisionPointPoly, "CheckCollisionPointPoly");
         begin
             return CheckCollisionPointPoly (point, points, point_count) /= 0;
-        end check_collision_point_poly;
+        end Check_Collision_Point_Poly;
 
-        function check_collision_lines
+        function Check_Collision_Lines
            (start_pos1, end_pos1, start_pos2, end_pos2 : Vector2;
             collision_point                            : access Vector2)
             return Boolean
@@ -368,9 +368,9 @@ package body raylib is
                CheckCollisionLines
                   (start_pos1, end_pos1, start_pos2, end_pos2, collision_point)
                /= 0;
-        end check_collision_lines;
+        end Check_Collision_Lines;
 
-        function check_collision_point_line
+        function Check_Collision_Point_Line
            (point, p1, p2 : Vector2; threshold : int) return Boolean
         is
             function CheckCollisionPointLine
@@ -379,9 +379,9 @@ package body raylib is
                import (C, CheckCollisionPointLine, "CheckCollisionPointLine");
         begin
             return CheckCollisionPointLine (point, p1, p2, threshold) /= 0;
-        end check_collision_point_line;
+        end Check_Collision_Point_Line;
 
-    end shapes;
+    end Shapes;
 
     package body rcamera is
         -- Camera movement functions with Boolean parameters
@@ -447,6 +447,6 @@ package body raylib is
                 Boolean'Pos (rotateUp));
         end Camera_Pitch;
 
-    end rcamera;
+    end RCamera;
 
 end raylib;

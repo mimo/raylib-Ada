@@ -50,11 +50,11 @@ begin
     Raylib.Window.Init (800, 400, "raylib Ada binding - tests");
 
     Raylib.Window.Set_Target_FPS (FPS);
-    --  raylib.window.hide_cursor;
-    raylib.UI.set_alpha (0.90);
+    --  raylib.Window.Hide_Cursor;
+    raylib.UI.Set_Alpha (0.90);
 
-    BOTTOM_MSG_CENTER := Float (window.get_render_width) / 2.0;
-    BOTTOM_MSG_Y := Float (window.get_render_height) - 32.0;
+    BOTTOM_MSG_CENTER := Float (Window.Get_Render_Width) / 2.0;
+    BOTTOM_MSG_Y := Float (Window.Get_Render_Height) - 32.0;
 
     Raylib.Window.Set_Window_Opacity (1.0);
 
@@ -82,47 +82,43 @@ begin
 
         case current_test is
             when Lines       =>
-                text.draw
-                   ("raylib.shapes.draw_line",
+                Text.Draw ("raylib.Shapes.Draw_Line",
                     padding,
                     10,
                     font_size,
                     raylib.BLACK);
 
-                shapes.draw_line
+                Shapes.Draw_Line
                    (start_posX => padding,
                     start_posY => 28,
                     end_posX   => 300,
                     end_posy   => 28,
                     c          => raylib.RED);
                 --
-                text.draw
-                   ("raylib.shapes.draw_line_v",
+                Text.Draw ("raylib.Shapes.Draw_Line_V",
                     padding,
                     38,
                     font_size,
                     BLACK);
-                raylib.shapes.draw_line_v
+                raylib.Shapes.Draw_Line_V
                    (start_pos => (Float (padding), 56.0),
                     end_pos   => (300.0, 56.0),
                     c         => raylib.RED);
 
                 --
-                text.draw
-                   ("raylib.shapes.draw_line_ex",
+                Text.Draw ("raylib.Shapes.Draw_Line_Ex",
                     padding,
                     66,
                     font_size,
                     BLACK);
-                raylib.shapes.draw_line_ex
+                raylib.Shapes.Draw_Line_Ex
                    (start_pos => (Float (padding), 84.0),
                     end_pos   => (300.0, 84.0),
                     thick     => 2.5,
                     c         => RED);
 
             when Perspective =>
-                text.draw
-                   ("Perspective test not yet implemented",
+                Text.Draw ("Perspective test not yet implemented",
                     1,
                     38,
                     font_size,
@@ -200,7 +196,7 @@ begin
                     end if;
 
                     if UI.button (label2_area, "Copy to clipboard") then
-                        raylib.window.set_clipboard_text (buffer_text_area);
+                        raylib.Window.Set_Clipboard_Text (buffer_text_area);
                     end if;
                     cursor_text_area :=
                        UI.textbox_multi
