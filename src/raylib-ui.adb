@@ -11,48 +11,48 @@ package body raylib.UI is
    global_style : array (Controls'Range, Properties'Range) of unsigned;
    global_font : Font;
 
-   function get_state return Control_State is
+   function Get_State return Control_State is
    begin
       return global_state;
-   end get_state;
+   end Get_State;
 
-   procedure set_state (state : Control_State) is
+   procedure Set_State (state : Control_State) is
    begin
       global_state := state;
-   end set_state;
+   end Set_State;
 
-   procedure lock is
+   procedure Lock is
    begin
       global_locked := True;
-   end lock;
+   end Lock;
 
-   procedure unlock is
+   procedure Unlock is
    begin
       global_locked := False;
-   end unlock;
+   end Unlock;
 
-   function get_alpha return Transparency is
+   function Get_Alpha return Transparency is
    begin
       return global_alpha;
-   end get_alpha;
+   end Get_Alpha;
 
-   procedure set_alpha (alpha : Transparency) is
+   procedure Set_Alpha (alpha : Transparency) is
    begin
       global_alpha := Float (alpha);
-   end set_alpha;
+   end Set_Alpha;
 
-   function to_text_alignment (position : unsigned)
+   function To_Text_Alignment (position : unsigned)
       return Text_Alignment_Type is
    begin
       return Text_Alignment_Type'Val (position);
-   end to_text_alignment;
+   end To_Text_Alignment;
 
-   function to_unsigned (value : Text_Alignment_Type) return unsigned is
+   function To_Unsigned (value : Text_Alignment_Type) return unsigned is
    begin
       return Text_Alignment_Type'Pos (value);
-   end to_unsigned;
+   end To_Unsigned;
 
-   function get_property_by_state (
+   function Get_Property_By_State (
       C : Property_Element;
       state : Control_State)
       return Properties
@@ -61,11 +61,11 @@ package body raylib.UI is
    begin
       index := Property_Element'Pos (C) + Control_State'Pos (state) * 3;
       return Properties'Val (index);
-   end get_property_by_state;
+   end Get_Property_By_State;
 
    ---
    --
-   procedure draw_text (
+   procedure Draw_Text (
       text : String;
       bounds : Rectangle;
       alignment : Text_Alignment_Type;
@@ -87,8 +87,8 @@ package body raylib.UI is
          ----------------------------------------------------------------------
          position := (bounds.x, bounds.y);
          --  NOTE: We get text size after icon been processed
-         textWidth  := get_text_width (text);
-         textHeight := int (get_style (DEFAULT, TEXT_SIZE));
+         textWidth  := Get_Text_Width (text);
+         textHeight := int (Get_Style (DEFAULT, TEXT_SIZE));
 
          --  #if defined(RAYGUI_SUPPORT_ICONS)
          --  if (iconId >= 0)
@@ -137,8 +137,8 @@ package body raylib.UI is
          end if;
 
          DRAW_TEXT : declare
-            size    : constant unsigned := get_style (DEFAULT, TEXT_SIZE);
-            spacing : constant unsigned := get_style (DEFAULT, TEXT_SPACING);
+            size    : constant unsigned := Get_Style (DEFAULT, TEXT_SIZE);
+            spacing : constant unsigned := Get_Style (DEFAULT, TEXT_SPACING);
          begin
             raylib.text.draw_ex (
                global_font,
@@ -151,9 +151,9 @@ package body raylib.UI is
          ----------------------------------------------------------------------
       end if;
 
-   end draw_text;
+   end Draw_Text;
 
-   procedure draw_border (
+   procedure Draw_Border (
       rec : Rectangle;
       border_width : int;
       border_color : Color)
@@ -167,28 +167,28 @@ package body raylib.UI is
       top    : constant int := int (rec.y);
       bottom : constant int := top + height;
    begin
-      draw_rectangle (left, top, width, border_width, border_color);
-      draw_rectangle (
+      Draw_Rectangle (left, top, width, border_width, border_color);
+      Draw_Rectangle (
          left,
          top + border_width,
          border_width,
          height - 2 * border_width,
          border_color);
-      draw_rectangle (
+      Draw_Rectangle (
          right - border_width,
          top + border_width,
          border_width,
          height - 2 * border_width,
          border_color);
-      draw_rectangle (
+      Draw_Rectangle (
          left,
          bottom - border_width,
          width,
          border_width,
          border_color);
-   end draw_border;
+   end Draw_Border;
 
-   procedure draw_rectangle (
+   procedure Draw_Rectangle (
       rec : Rectangle;
       border_width : int;
       border_color : Color;
@@ -201,11 +201,11 @@ package body raylib.UI is
       end if;
 
       if Integer (border_width) > 0 then
-         draw_border (rec, border_width, border_color);
+         Draw_Border (rec, border_width, border_color);
       end if;
-   end draw_rectangle;
+   end Draw_Rectangle;
 
-   function get_property_index (P : Properties)
+   function Get_Property_Index (P : Properties)
       return Integer is
    begin
       return (case P is
@@ -240,10 +240,10 @@ package body raylib.UI is
          when TEXT_LINES_PADDING   => 17,
          when COLOR_SELECTED_FG    => 18,
          when COLOR_SELECTED_BG    => 19);
-   end get_property_index;
+   end Get_Property_Index;
 
    --  Get text bounds considering control bounds
-   function get_text_bounds (
+   function Get_Text_Bounds (
       control : Controls;
       bounds : Rectangle)
       return Rectangle
@@ -252,8 +252,8 @@ package body raylib.UI is
       textBounds : Rectangle := bounds;
       alignment : Text_Alignment_Type;
    begin
-      alignment := to_text_alignment (get_style (control, TEXT_ALIGNMENT));
-      control_border_width := Float (get_style (control, BORDER_WIDTH));
+      alignment := To_Text_Alignment (Get_Style (control, TEXT_ALIGNMENT));
+      control_border_width := Float (Get_Style (control, BORDER_WIDTH));
       textBounds.x := bounds.x + control_border_width;
       textBounds.y := bounds.y + control_border_width;
       textBounds.width  := bounds.width  - 2.0 * control_border_width;
@@ -264,32 +264,32 @@ package body raylib.UI is
       case control is
       when COMBOBOX =>
          textBounds.width := textBounds.width
-                         - Float (get_style (control, COMBO_BUTTON_WIDTH))
-                         + Float (get_style (control, COMBO_BUTTON_PADDING));
+                         - Float (Get_Style (control, COMBO_BUTTON_WIDTH))
+                         + Float (Get_Style (control, COMBO_BUTTON_PADDING));
       when VALUEBOX =>
          --  NOTE: ValueBox text value always centered,
-         --  text padding applies to label
+         --  text padding applies to Label
          null;
       when others =>
          if alignment = TEXT_ALIGN_RIGHT
          then textBounds.x := textBounds.x
-                              - Float (get_style (control, TEXT_PADDING));
+                              - Float (Get_Style (control, TEXT_PADDING));
          else
-            textBounds.x := textBounds.x + Float (get_style (control, TEXT_PADDING));
-            textBounds.width := textBounds.width - 2.0 * Float (get_style (control, TEXT_PADDING));
+            textBounds.x := textBounds.x + Float (Get_Style (control, TEXT_PADDING));
+            textBounds.width := textBounds.width - 2.0 * Float (Get_Style (control, TEXT_PADDING));
          end if;
       end case;
 
-      --  TODO: Special cases (no label):
+      --  TODO: Special cases (no Label):
       --    COMBOBOX, DROPDOWNBOX, LISTVIEW (scrollbar?)
-      --  More special cases (label side):
+      --  More special cases (Label side):
       --    CHECKBOX, SLIDER, VALUEBOX, SPINNER
 
       return textBounds;
-   end get_text_bounds;
+   end Get_Text_Bounds;
 
    --  Gui get text width using default font
-   function get_text_width (text : String)
+   function Get_Text_Width (text : String)
       return int
    is
       size : Vector2 := (0.0, 0.0);
@@ -298,32 +298,32 @@ package body raylib.UI is
          size := raylib.text.measure_ex (
             global_font,
             text,
-            Float (get_style (DEFAULT, TEXT_SIZE)),
-            Float (get_style (DEFAULT, TEXT_SPACING)));
+            Float (Get_Style (DEFAULT, TEXT_SIZE)),
+            Float (Get_Style (DEFAULT, TEXT_SPACING)));
       end if;
       --  TODO: Consider text icon width here???
       return int (size.x);
-   end get_text_width;
+   end Get_Text_Width;
 
    ---
    --  UI elements
    ----------------------------------------------------------------------------
 
-procedure label (
+procedure Label (
       bounds : Rectangle;
       text   : String) is
    begin
-         draw_text
+         Draw_Text
            (text      => text,
-            bounds    => get_text_bounds (LABEL, bounds),
-            alignment => Text_Alignment_Type'Val (get_style (LABEL, TEXT_ALIGNMENT)),
-            tint      => colors.get_color (get_style (LABEL, get_property_by_state (UI.TEXT, global_state)))
+            bounds    => Get_Text_Bounds (LABEL, bounds),
+            alignment => Text_Alignment_Type'Val (Get_Style (LABEL, TEXT_ALIGNMENT)),
+            tint      => colors.get_color (Get_Style (LABEL, Get_Property_By_State (UI.TEXT, global_state)))
            );
-      end label;
+      end Label;
 
-   function button (
+   function Button (
       bounds : raylib.Rectangle;
-      label : String)
+      Label : String)
       return Boolean
    is
       button_state : Control_State := global_state;
@@ -332,7 +332,7 @@ procedure label (
    begin
       if global_state /= DISABLED and not global_locked then
          mouse_point := raylib.input.get_mouse_position;
-         --  Check button state
+         --  Check Button state
          if raylib.shapes.check_collision_point_rec (mouse_point, bounds) then
             --
             if raylib.input.is_mouse_button_down (raylib.MOUSE_BUTTON_LEFT)
@@ -364,42 +364,42 @@ procedure label (
          use type int;
          use colors;
       begin
-         border_property := get_property_by_state (BORDER, button_state);
-         fill_property := get_property_by_state (BASE, button_state);
-         text_property := get_property_by_state (TEXT, button_state);
+         border_property := Get_Property_By_State (BORDER, button_state);
+         fill_property := Get_Property_By_State (BASE, button_state);
+         text_property := Get_Property_By_State (TEXT, button_state);
 
-         border_color := get_color (get_style (DEFAULT, border_property));
-         fill_color   := get_color (get_style (DEFAULT, fill_property));
-         text_color   := get_color (get_style (BUTTON, text_property));
+         border_color := get_color (Get_Style (DEFAULT, border_property));
+         fill_color   := get_color (Get_Style (DEFAULT, fill_property));
+         text_color   := get_color (Get_Style (BUTTON, text_property));
 
-         border_width := float (get_style (BUTTON, UI.BORDER_WIDTH));
+         border_width := float (Get_Style (BUTTON, UI.BORDER_WIDTH));
 
          raylib.shapes.draw_rectangle_lines_ex (
             bounds,
             border_width,
             fade (border_color, global_alpha));
 
-         raylib.shapes.draw_rectangle (
+         raylib.shapes.Draw_Rectangle (
             int (bounds.x + border_width),
             int (bounds.y + border_width),
             int (bounds.width)  - int(2.0 * border_width),
             int (bounds.height) - int(2.0 * border_width),
             fade (fill_color, global_alpha));
 
-         draw_text (
-            label,
-            get_text_bounds (BUTTON, bounds),
-            to_text_alignment (get_style (BUTTON, TEXT_ALIGNMENT)),
+         Draw_Text (
+            Label,
+            Get_Text_Bounds (BUTTON, bounds),
+            To_Text_Alignment (Get_Style (BUTTON, TEXT_ALIGNMENT)),
             fade (text_color, global_alpha));
       end;
       ------------------------------------------------------------------
       return pressed;
-   end button;
+   end Button;
 
    -----------------------------------------------------------------------
    --  Check Box control, returns true when active
    --
-   procedure checkbox (
+   procedure Checkbox (
       bounds  : in Rectangle;
       text    : in String;
       checked : in out Boolean)
@@ -415,19 +415,19 @@ procedure label (
       check_padding : unsigned;
       border_width  : unsigned;
    begin
-      border_width  := get_style (CHECKBOX, UI.BORDER_WIDTH);
-      check_padding := get_style (CHECKBOX, UI.CHECK_PADDING);
+      border_width  := Get_Style (CHECKBOX, UI.BORDER_WIDTH);
+      check_padding := Get_Style (CHECKBOX, UI.CHECK_PADDING);
 
-      alignment  := to_text_alignment (get_style (CHECKBOX, TEXT_ALIGNMENT));
-      padding    := Float (get_style (CHECKBOX, TEXT_PADDING));
-      text_size  := Float (get_style (DEFAULT, UI.TEXT_SIZE));
+      alignment  := To_Text_Alignment (Get_Style (CHECKBOX, TEXT_ALIGNMENT));
+      padding    := Float (Get_Style (CHECKBOX, TEXT_PADDING));
+      text_size  := Float (Get_Style (DEFAULT, UI.TEXT_SIZE));
       text_color := colors.get_color (
-                       get_style (LABEL,
-                          get_property_by_state (UI.TEXT, state)));
+                       Get_Style (LABEL,
+                          Get_Property_By_State (UI.TEXT, state)));
 
       if text'Length > 0 then
-         text_bounds.width  := Float (get_text_width (text));
-         text_bounds.height := Float (get_style (DEFAULT, UI.TEXT_SIZE));
+         text_bounds.width  := Float (Get_Text_Width (text));
+         text_bounds.height := Float (Get_Style (DEFAULT, UI.TEXT_SIZE));
 
          text_bounds.x := (if alignment = TEXT_ALIGN_LEFT
                            then bounds.x - text_bounds.width - padding
@@ -449,7 +449,7 @@ procedure label (
          total_bounds.width := bounds.width + text_bounds.width + padding;
          total_bounds.height := bounds.height;
 
-         --  Check checkbox state
+         --  Check Checkbox state
          if shapes.check_collision_point_rec (mouse_point, total_bounds)
          then
             state := (if input.is_mouse_button_down (MOUSE_BUTTON_LEFT)
@@ -469,19 +469,19 @@ procedure label (
          alignment := (if alignment = TEXT_ALIGN_RIGHT
                         then TEXT_ALIGN_LEFT else TEXT_ALIGN_RIGHT);
 
-         draw_rectangle (
+         Draw_Rectangle (
             bounds,
             int (border_width),
             colors.fade (
                colors.get_color (
-                  get_style (CHECKBOX, get_property_by_state (BORDER, state))),
+                  Get_Style (CHECKBOX, Get_Property_By_State (BORDER, state))),
                global_alpha),
             BLANK);
 
          if checked then
             check_color := colors.get_color (
-                  get_style (
-                     CHECKBOX, get_property_by_state (UI.TEXT, state)));
+                  Get_Style (
+                     CHECKBOX, Get_Property_By_State (UI.TEXT, state)));
 
             check := (
                bounds.x + Float (border_width + check_padding),
@@ -489,7 +489,7 @@ procedure label (
                bounds.width - Float (2 * (border_width + check_padding)),
                bounds.height - Float (2 * (border_width + check_padding)));
 
-            UI.draw_rectangle (
+            UI.Draw_Rectangle (
                check,
                0,
                BLANK,
@@ -497,7 +497,7 @@ procedure label (
          end if;
 
          if text'Length > 0 then
-            draw_text (
+            Draw_Text (
                text,
                text_bounds,
                alignment,
@@ -506,10 +506,10 @@ procedure label (
          end if;
       end drawing;
       -------------------------------------------------------------------------
-   end checkbox;
+   end Checkbox;
 
    ----------------------------------------------------------------------
-   procedure panel (bounds : Rectangle) is
+   procedure Panel (bounds : Rectangle) is
       panel_state  : constant Control_State := global_state;
       BG_ELEMENT, BORDER_ELEMENT : Properties;
       bg_color, border_color : Color;
@@ -517,7 +517,7 @@ procedure label (
 
       use colors;
    begin
-      border_width := int (get_style (DEFAULT, UI.BORDER_WIDTH));
+      border_width := int (Get_Style (DEFAULT, UI.BORDER_WIDTH));
       BG_ELEMENT := (if panel_state = DISABLED
                      then BASE_COLOR_DISABLED
                      else BACKGROUND_COLOR);
@@ -527,18 +527,18 @@ procedure label (
       ---
       --  Draw control
       --
-      bg_color := colors.get_color (get_style (DEFAULT, BG_ELEMENT));
-      border_color := colors.get_color (get_style (DEFAULT, BORDER_ELEMENT));
+      bg_color := colors.get_color (Get_Style (DEFAULT, BG_ELEMENT));
+      border_color := colors.get_color (Get_Style (DEFAULT, BORDER_ELEMENT));
 
-      UI.draw_rectangle (
+      UI.Draw_Rectangle (
          bounds,
          border_width,
          fade (border_color, global_alpha),
          fade (bg_color, global_alpha));
-   end panel;
+   end Panel;
 
    -------------------------------------------------------------------------
-   procedure statusbar (
+   procedure Statusbar (
       bounds : Rectangle;
       text : String)
    is
@@ -550,25 +550,25 @@ procedure label (
       bg_bounds : Rectangle;
       use type raylib.unsigned;
    begin
-      border_width := get_style (STATUSBAR, UI.BORDER_WIDTH);
+      border_width := Get_Style (STATUSBAR, UI.BORDER_WIDTH);
       bg_bounds.x := bounds.x + Float (border_width);
       bg_bounds.y := bounds.y + Float (border_width);
       bg_bounds.width  := bounds.width  - Float (border_width * 2);
       bg_bounds.height := bounds.height - Float (border_width * 2);
 
       text_color := colors.get_color (
-                       get_style (STATUSBAR, (if state /= DISABLED
+                       Get_Style (STATUSBAR, (if state /= DISABLED
                                               then TEXT_COLOR_NORMAL
                                               else TEXT_COLOR_DISABLED)));
 
       border_color := colors.get_color (
-                         get_style (STATUSBAR,
+                         Get_Style (STATUSBAR,
                                     (if state /= DISABLED
                                      then BORDER_COLOR_NORMAL
                                      else BORDER_COLOR_DISABLED)));
 
       bg_color := colors.get_color (
-                     get_style (STATUSBAR,
+                     Get_Style (STATUSBAR,
                                 (if state /= DISABLED
                                  then BASE_COLOR_NORMAL
                                  else BASE_COLOR_DISABLED)));
@@ -582,15 +582,15 @@ procedure label (
          bg_bounds,
          colors.fade (bg_color, global_alpha));
 
-      draw_text (
+      Draw_Text (
          text,
-         get_text_bounds (STATUSBAR, bounds),
-         Text_Alignment_Type'Val (get_style (STATUSBAR, TEXT_ALIGNMENT)),
+         Get_Text_Bounds (STATUSBAR, bounds),
+         Text_Alignment_Type'Val (Get_Style (STATUSBAR, TEXT_ALIGNMENT)),
          colors.fade (text_color, global_alpha));
 
-   end statusbar;
+   end Statusbar;
 
-   procedure toggle (
+   procedure Toggle (
       bounds : in Rectangle;
       text   : in String;
       active : in out Boolean)
@@ -624,41 +624,41 @@ procedure label (
          use type int;
          use colors;
       begin
-         line_thickness :=  get_style (TOGGLE, BORDER_WIDTH);
+         line_thickness :=  Get_Style (TOGGLE, BORDER_WIDTH);
          color_property := (if active then BORDER_COLOR_PRESSED
-                            else get_property_by_state (BORDER, toggle_state));
+                            else Get_Property_By_State (BORDER, toggle_state));
 
          bg_color_property := (if active then BASE_COLOR_PRESSED
-                               else get_property_by_state (BASE, toggle_state));
+                               else Get_Property_By_State (BASE, toggle_state));
 
          text_color_property := (if active then TEXT_COLOR_PRESSED
-                                 else get_property_by_state (raylib.ui.TEXT, toggle_state));
+                                 else Get_Property_By_State (raylib.ui.TEXT, toggle_state));
 
-         background := get_color (get_style (TOGGLE, bg_color_property));
-         outline    := get_color (get_style (TOGGLE, color_property));
-         text_color := get_color (get_style (TOGGLE, text_color_property));
+         background := get_color (Get_Style (TOGGLE, bg_color_property));
+         outline    := get_color (Get_Style (TOGGLE, color_property));
+         text_color := get_color (Get_Style (TOGGLE, text_color_property));
          shapes.draw_rectangle_lines_ex (
             bounds,
             float(line_thickness),
             colors.fade (outline, global_alpha));
 
-         shapes.draw_rectangle (
+         shapes.Draw_Rectangle (
             posX => int (bounds.x) + int(line_thickness),
             posY => int (bounds.y) + int(line_thickness),
             width  => int (bounds.width)  - 2 * int(line_thickness),
             height => int (bounds.height) - 2 * int(line_thickness),
             c => colors.fade (background, global_alpha));
 
-         draw_text (
+         Draw_Text (
             text,
             bounds,
-            Text_Alignment_Type'Val (get_style (TOGGLE, TEXT_ALIGNMENT)),
+            Text_Alignment_Type'Val (Get_Style (TOGGLE, TEXT_ALIGNMENT)),
             colors.fade (text_color, global_alpha));
       end drawing;
-   end toggle;
+   end Toggle;
 
    -- return true when validated (enter pressed)
-   function textbox (
+   function Textbox (
       bounds    : in Rectangle;
       text      : in out String;
       edit_mode : in out Boolean)
@@ -761,13 +761,13 @@ procedure label (
       end if;
 
 <<DRAW>>
-      text_color   := get_color (get_style (TEXTBOX, UI.TEXT, state));
-      border_color := get_color (get_style (TEXTBOX, BORDER,  state));
-      bg_color     := get_color (get_style (TEXTBOX, BASE,    state));
-      border_width := int (get_style (TEXTBOX, UI.BORDER_WIDTH));
+      text_color   := get_color (Get_Style (TEXTBOX, UI.TEXT, state));
+      border_color := get_color (Get_Style (TEXTBOX, BORDER,  state));
+      bg_color     := get_color (Get_Style (TEXTBOX, BASE,    state));
+      border_width := int (Get_Style (TEXTBOX, UI.BORDER_WIDTH));
 
       -- Draw border and background
-      draw_rectangle (
+      Draw_Rectangle (
          bounds,
          border_width,
          fade (border_color, global_alpha),
@@ -777,14 +777,14 @@ procedure label (
       if edit_mode and (global_frame_counter / 20) mod 2 = 0 then
          declare
             cursor : Rectangle;
-            text_width : int := get_text_width (transform (text));
+            text_width : int := Get_Text_Width (transform (text));
          begin
-            cursor.x := get_text_bounds (TEXTBOX, bounds).x + Float (text_width) + 2.0; -- 2px cursor offset is an approximation for text spacing
-            cursor.y := bounds.y + Float (get_style (TEXTBOX, TEXT_INNER_PADDING));
+            cursor.x := Get_Text_Bounds (TEXTBOX, bounds).x + Float (text_width) + 2.0; -- 2px cursor offset is an approximation for text spacing
+            cursor.y := bounds.y + Float (Get_Style (TEXTBOX, TEXT_INNER_PADDING));
             cursor.width := 1.5;
-            cursor.height := Float (int (get_style (DEFAULT, TEXT_SIZE)) * 2);
+            cursor.height := Float (int (Get_Style (DEFAULT, TEXT_SIZE)) * 2);
 
-            draw_rectangle (
+            Draw_Rectangle (
                cursor,
                0,
                  text_color,
@@ -793,18 +793,18 @@ procedure label (
       end if;
 
       --  Draw input text
-      draw_text (
+      Draw_Text (
          transform (text),
-         get_text_bounds (TEXTBOX, bounds),
-         to_text_alignment (get_style (TEXTBOX, TEXT_ALIGNMENT)),
+         Get_Text_Bounds (TEXTBOX, bounds),
+         To_Text_Alignment (Get_Style (TEXTBOX, TEXT_ALIGNMENT)),
          colors.fade (text_color, global_alpha));
 
       -- TODO: Would be better to return the cursor position
       -- as edit_mode is an in out parameter
       return is_validated;
-   end textbox;
+   end Textbox;
 
-   function is_activated (bounds : Rectangle)
+   function Is_Activated (bounds : Rectangle)
       return Boolean
    is
       mouse_point  : Vector2 := input.get_mouse_position;
@@ -812,19 +812,19 @@ procedure label (
       mouse_inside : Boolean := Boolean(shapes.check_collision_point_rec (mouse_point, bounds));
    begin
       return mouse_inside and left_click;
-   end is_activated;
+   end Is_Activated;
 
-   function textbox_multi (
+   function Textbox_Multi (
       bounds : Rectangle;
       text : in out String;
       edit_mode : in out Boolean)
       return Vector2
    is
       state : Control_State := global_state;
-      isactive : Boolean := is_activated (bounds);
+      isactive : Boolean := Is_Activated (bounds);
       cursor_position : Vector2 := (0.0, 0.0);
 
-      style_inner_padding : Float := Float (get_style (TEXTBOX, TEXT_INNER_PADDING));
+      style_inner_padding : Float := Float (Get_Style (TEXTBOX, TEXT_INNER_PADDING));
       textAreaBounds : Rectangle := (
          bounds.x + style_inner_padding,
          bounds.y + style_inner_padding,
@@ -836,55 +836,55 @@ procedure label (
       shapes.draw_rectangle_lines_ex (textAreaBounds, 0.8, LIME);
 
       return cursor_position;
-   end textbox_multi;
+   end Textbox_Multi;
 
-   procedure set_style (
+   procedure Set_Style (
       control : Controls;
       property : Properties;
       value : unsigned) is
    begin
       global_style (control, property) := value;
-   end set_style;
+   end Set_Style;
 
-   function get_style (control : Controls; property : Properties)
+   function Get_Style (control : Controls; property : Properties)
       return unsigned is
    begin
       if not global_style_loaded then
-         load_style_default;
+         Load_Style_Default;
       end if;
 
       return global_style (control, property);
-   end get_style;
+   end Get_Style;
 
-   function get_style (
+   function Get_Style (
       control : Controls;
       element : Property_Element;
       state : Control_State)
       return unsigned is
    begin
-      return get_style (control, get_property_by_state (element, state));
-   end get_style;
+      return Get_Style (control, Get_Property_By_State (element, state));
+   end Get_Style;
 
-   procedure load_style_default is
+   procedure Load_Style_Default is
       blank_color : unsigned;
    begin
       blank_color := unsigned (colors.color_to_int (BLANK));
 
-      set_style (DEFAULT, BORDER_COLOR_NORMAL,  16#838383ff#);
-      set_style (DEFAULT, BASE_COLOR_NORMAL,    16#c9c9c9ff#);
-      set_style (DEFAULT, TEXT_COLOR_NORMAL,    16#686868ff#);
-      set_style (DEFAULT, BORDER_COLOR_FOCUSED, 16#5bb2d9ff#);
-      set_style (DEFAULT, BASE_COLOR_FOCUSED,   16#c9effeff#);
-      set_style (DEFAULT, TEXT_COLOR_FOCUSED,   16#6c9bbcff#);
-      set_style (DEFAULT, BORDER_COLOR_PRESSED, 16#0492c7ff#);
-      set_style (DEFAULT, BASE_COLOR_PRESSED,   16#97e8ffff#);
-      set_style (DEFAULT, TEXT_COLOR_PRESSED,   16#368bafff#);
-      set_style (DEFAULT, BORDER_COLOR_DISABLED, 16#b5c1c2ff#);
-      set_style (DEFAULT, BASE_COLOR_DISABLED,  16#e6e9e9ff#);
-      set_style (DEFAULT, TEXT_COLOR_DISABLED,  16#aeb7b8ff#);
-      set_style (DEFAULT, BORDER_WIDTH, 1);
-      set_style (DEFAULT, TEXT_PADDING, 0);
-      set_style (DEFAULT, TEXT_ALIGNMENT, to_unsigned (TEXT_ALIGN_CENTER));
+      Set_Style (DEFAULT, BORDER_COLOR_NORMAL,  16#838383ff#);
+      Set_Style (DEFAULT, BASE_COLOR_NORMAL,    16#c9c9c9ff#);
+      Set_Style (DEFAULT, TEXT_COLOR_NORMAL,    16#686868ff#);
+      Set_Style (DEFAULT, BORDER_COLOR_FOCUSED, 16#5bb2d9ff#);
+      Set_Style (DEFAULT, BASE_COLOR_FOCUSED,   16#c9effeff#);
+      Set_Style (DEFAULT, TEXT_COLOR_FOCUSED,   16#6c9bbcff#);
+      Set_Style (DEFAULT, BORDER_COLOR_PRESSED, 16#0492c7ff#);
+      Set_Style (DEFAULT, BASE_COLOR_PRESSED,   16#97e8ffff#);
+      Set_Style (DEFAULT, TEXT_COLOR_PRESSED,   16#368bafff#);
+      Set_Style (DEFAULT, BORDER_COLOR_DISABLED, 16#b5c1c2ff#);
+      Set_Style (DEFAULT, BASE_COLOR_DISABLED,  16#e6e9e9ff#);
+      Set_Style (DEFAULT, TEXT_COLOR_DISABLED,  16#aeb7b8ff#);
+      Set_Style (DEFAULT, BORDER_WIDTH, 1);
+      Set_Style (DEFAULT, TEXT_PADDING, 0);
+      Set_Style (DEFAULT, TEXT_ALIGNMENT, To_Unsigned (TEXT_ALIGN_CENTER));
 
       for Ctrl in LABEL .. Controls'Last loop
          for Property in Properties'Range loop
@@ -893,32 +893,196 @@ procedure label (
       end loop;
 
       --  Default extended properties
-      set_style (DEFAULT, TEXT_SIZE, 14);
-      set_style (DEFAULT, TEXT_SPACING, 1);
-      set_style (DEFAULT, BACKGROUND_COLOR, 16#f5f5f5ff#);
-      set_style (DEFAULT, LINE_COLOR, 16#90abb5ff#);
+      Set_Style (DEFAULT, TEXT_SIZE, 14);
+      Set_Style (DEFAULT, TEXT_SPACING, 1);
+      Set_Style (DEFAULT, BACKGROUND_COLOR, 16#f5f5f5ff#);
+      Set_Style (DEFAULT, LINE_COLOR, 16#90abb5ff#);
 
-      set_style (LABEL,    TEXT_ALIGNMENT, to_unsigned (TEXT_ALIGN_LEFT));
-      set_style (BUTTON,   TEXT_ALIGNMENT, to_unsigned (TEXT_ALIGN_CENTER));
-      set_style (BUTTON,   BORDER_WIDTH, 2);
-      set_style (SLIDER,   TEXT_PADDING, 5);
-      set_style (SLIDER,   SLIDER_WIDTH, 15);
-      set_style (SLIDER,   SLIDER_PADDING, 1);
-      set_style (CHECKBOX, TEXT_PADDING, 5);
-      set_style (CHECKBOX, TEXT_ALIGNMENT, to_unsigned (TEXT_ALIGN_RIGHT));
-      set_style (CHECKBOX, CHECK_PADDING, 1);
-      set_style (CHECKBOX, BORDER_WIDTH, 1);
-      set_style (TOGGLE,   GROUP_PADDING, 2);
-      set_style (TEXTBOX,  TEXT_PADDING, 5);
-      set_style (TEXTBOX,  TEXT_ALIGNMENT, to_unsigned (TEXT_ALIGN_LEFT));
-      set_style (TEXTBOX,  TEXT_LINES_PADDING, 5);
-      set_style (TEXTBOX,  TEXT_INNER_PADDING, 4);
-      set_style (TEXTBOX,  COLOR_SELECTED_FG, 16#f0fffeff#);
-      set_style (TEXTBOX,  COLOR_SELECTED_BG, 16#839affe0#);
-      set_style (TEXTBOX,  BASE_COLOR_PRESSED, blank_color);
+      Set_Style (LABEL,    TEXT_ALIGNMENT, To_Unsigned (TEXT_ALIGN_LEFT));
+      Set_Style (BUTTON,   TEXT_ALIGNMENT, To_Unsigned (TEXT_ALIGN_CENTER));
+      Set_Style (BUTTON,   BORDER_WIDTH, 2);
+      Set_Style (SLIDER,   TEXT_PADDING, 5);
+      Set_Style (SLIDER,   SLIDER_WIDTH, 15);
+      Set_Style (SLIDER,   SLIDER_PADDING, 1);
+      Set_Style (CHECKBOX, TEXT_PADDING, 5);
+      Set_Style (CHECKBOX, TEXT_ALIGNMENT, To_Unsigned (TEXT_ALIGN_RIGHT));
+      Set_Style (CHECKBOX, CHECK_PADDING, 1);
+      Set_Style (CHECKBOX, BORDER_WIDTH, 1);
+      Set_Style (TOGGLE,   GROUP_PADDING, 2);
+      Set_Style (TEXTBOX,  TEXT_PADDING, 5);
+      Set_Style (TEXTBOX,  TEXT_ALIGNMENT, To_Unsigned (TEXT_ALIGN_LEFT));
+      Set_Style (TEXTBOX,  TEXT_LINES_PADDING, 5);
+      Set_Style (TEXTBOX,  TEXT_INNER_PADDING, 4);
+      Set_Style (TEXTBOX,  COLOR_SELECTED_FG, 16#f0fffeff#);
+      Set_Style (TEXTBOX,  COLOR_SELECTED_BG, 16#839affe0#);
+      Set_Style (TEXTBOX,  BASE_COLOR_PRESSED, blank_color);
 
       global_font := raylib.text.get_font_default;
       global_style_loaded := True;
-   end load_style_default;
+   end Load_Style_Default;
+
+   ---------------------------------------------------------------------------
+   --  Theme system implementation
+   ---------------------------------------------------------------------------
+
+   Active_Theme : Theme := Default_Theme;
+   Loaded_Fonts : array (Font_Role) of Font;
+   Active_Font_Loaded : Boolean := False;
+   Override_Color : Color_Role := Primary;
+   Override_Font : Font_Role := Default;
+   Use_Override_Color : Boolean := False;
+   Use_Override_Font : Boolean := False;
+
+   procedure Load (T : Theme := Default_Theme) is
+      use Ada.Strings.Fixed;
+      font_path : String (1 .. 256);
+      path_length : Natural;
+   begin
+      --  Unload previous fonts if any
+      if Active_Font_Loaded then
+         Unload;
+      end if;
+
+      Active_Theme := T;
+
+      --  Load fonts into VRAM
+      for F in Font_Role loop
+         font_path := T.Fonts (F);
+         path_length := Index_Non_Blank (font_path, Ada.Strings.Backward);
+
+         if path_length > 0 then
+            Loaded_Fonts (F) := raylib.text.load_font (
+               Trim (font_path (1 .. path_length), Ada.Strings.Both));
+         else
+            --  Use default font if path is empty
+            Loaded_Fonts (F) := raylib.text.get_font_default;
+         end if;
+      end loop;
+
+      Active_Font_Loaded := True;
+
+      --  Set the default font as global font
+      global_font := Loaded_Fonts (Default);
+
+      --  Apply theme colors to raygui style
+      Apply_Theme_To_Style;
+   end Load;
+
+   procedure Unload is
+      default_font : constant Font := raylib.text.get_font_default;
+   begin
+      if not Active_Font_Loaded then
+         return;
+      end if;
+
+      --  Free fonts from VRAM (except default font)
+      for F in Font_Role loop
+         --  Don't unload the default font (it's managed by raylib)
+         if Loaded_Fonts (F).base_size /= default_font.base_size or else
+            Loaded_Fonts (F).glyph_count /= default_font.glyph_count
+         then
+            raylib.text.unload_font (Loaded_Fonts (F));
+         end if;
+      end loop;
+
+      Active_Font_Loaded := False;
+      global_font := default_font;
+   end Unload;
+
+   procedure Use_Color (C : Color_Role) is
+   begin
+      Override_Color := C;
+      Use_Override_Color := True;
+   end Use_Color;
+
+   procedure Use_Font (F : Font_Role) is
+   begin
+      Override_Font := F;
+      Use_Override_Font := True;
+   end Use_Font;
+
+   procedure Stop_Override is
+   begin
+      Use_Override_Color := False;
+      Use_Override_Font := False;
+   end Stop_Override;
+
+   function Color_Of (C : Color_Role) return Color is
+   begin
+      return Active_Theme.Colors (C);
+   end Color_Of;
+
+   function Font_Of (F : Font_Role) return Font is
+   begin
+      if not Active_Font_Loaded then
+         return raylib.text.get_font_default;
+      end if;
+      return Loaded_Fonts (F);
+   end Font_Of;
+
+   function Size_Of (S : Size_Role) return Positive is
+   begin
+      return Active_Theme.Sizes (S);
+   end Size_Of;
+
+   --  Apply theme colors to raygui global style
+   procedure Apply_Theme_To_Style is
+      use colors;
+
+      function To_Unsigned (C : Color) return unsigned is
+        (unsigned (color_to_int (C)));
+
+      --  Generate lighter/darker variants for focused/pressed states
+      function Lighten (C : Color; Amount : Float := 0.2) return Color is
+        (r => unsigned_char (Float'Min (255.0, Float (C.r) * (1.0 + Amount))),
+         g => unsigned_char (Float'Min (255.0, Float (C.g) * (1.0 + Amount))),
+         b => unsigned_char (Float'Min (255.0, Float (C.b) * (1.0 + Amount))),
+         a => C.a);
+
+      function Darken (C : Color; Amount : Float := 0.2) return Color is
+        (r => unsigned_char (Float (C.r) * (1.0 - Amount)),
+         g => unsigned_char (Float (C.g) * (1.0 - Amount)),
+         b => unsigned_char (Float (C.b) * (1.0 - Amount)),
+         a => C.a);
+
+      primary : constant Color := Active_Theme.Colors (Primary);
+      secondary : constant Color := Active_Theme.Colors (Secondary);
+      text_primary : constant Color := Active_Theme.Colors (Text_Primary);
+      text_secondary : constant Color := Active_Theme.Colors (Text_Secondary);
+      background : constant Color := Active_Theme.Colors (Background);
+      border : constant Color := Active_Theme.Colors (Border);
+   begin
+      --  Map theme colors to raygui 4-state color system
+      --  NORMAL state
+      Set_Style (DEFAULT, BASE_COLOR_NORMAL, To_Unsigned (primary));
+      Set_Style (DEFAULT, TEXT_COLOR_NORMAL, To_Unsigned (text_primary));
+      Set_Style (DEFAULT, BORDER_COLOR_NORMAL, To_Unsigned (border));
+
+      --  FOCUSED state (lighter)
+      Set_Style (DEFAULT, BASE_COLOR_FOCUSED, To_Unsigned (Lighten (primary)));
+      Set_Style (DEFAULT, TEXT_COLOR_FOCUSED, To_Unsigned (Darken (text_primary)));
+      Set_Style (DEFAULT, BORDER_COLOR_FOCUSED, To_Unsigned (Lighten (border)));
+
+      --  PRESSED state (use secondary color)
+      Set_Style (DEFAULT, BASE_COLOR_PRESSED, To_Unsigned (secondary));
+      Set_Style (DEFAULT, TEXT_COLOR_PRESSED, To_Unsigned (text_secondary));
+      Set_Style (DEFAULT, BORDER_COLOR_PRESSED, To_Unsigned (Darken (border)));
+
+      --  DISABLED state (desaturated)
+      Set_Style (DEFAULT, BASE_COLOR_DISABLED, To_Unsigned (Lighten (primary, 0.3)));
+      Set_Style (DEFAULT, TEXT_COLOR_DISABLED, To_Unsigned (Lighten (text_primary, 0.4)));
+      Set_Style (DEFAULT, BORDER_COLOR_DISABLED, To_Unsigned (Lighten (border, 0.3)));
+
+      --  Background and line colors
+      Set_Style (DEFAULT, BACKGROUND_COLOR, To_Unsigned (background));
+      Set_Style (DEFAULT, LINE_COLOR, To_Unsigned (border));
+
+      --  Copy DEFAULT colors to all controls
+      for Ctrl in LABEL .. Controls'Last loop
+         for Prop in BORDER_COLOR_NORMAL .. TEXT_COLOR_DISABLED loop
+            global_style (Ctrl, Prop) := global_style (DEFAULT, Prop);
+         end loop;
+      end loop;
+   end Apply_Theme_To_Style;
 
 end raylib.UI;
