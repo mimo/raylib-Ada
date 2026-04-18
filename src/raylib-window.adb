@@ -1,7 +1,8 @@
 ---
 -- Window-related functions
 
-with Interfaces.C; use Interfaces.C;
+with Interfaces.C;           use Interfaces.C;
+with Interfaces.C.Extensions; use Interfaces.C.Extensions;
 
 package body Raylib.Window is
 
@@ -17,66 +18,66 @@ package body Raylib.Window is
     end Init;
 
     function Should_Close return Boolean is
-        function WindowShouldClose return int
+        function WindowShouldClose return bool
         with Import, Convention => C, External_Name => "WindowShouldClose";
     begin
-        return WindowShouldClose /= 0;
+        return Boolean (WindowShouldClose);
     end Should_Close;
 
     function Is_Window_Ready return Boolean is
-        function IsWindowReady return int
+        function IsWindowReady return bool
         with Import, Convention => C, External_Name => "IsWindowReady";
     begin
-        return IsWindowReady /= 0;
+        return Boolean (IsWindowReady);
     end Is_Window_Ready;
 
     function Is_Window_Fullscreen return Boolean is
-        function IsWindowFullscreen return int
+        function IsWindowFullscreen return bool
         with Import, Convention => C, External_Name => "IsWindowFullscreen";
     begin
-        return IsWindowFullscreen /= 0;
+        return Boolean (IsWindowFullscreen);
     end Is_Window_Fullscreen;
 
     function Is_Window_Hidden return Boolean is
-        function IsWindowHidden return int
+        function IsWindowHidden return bool
         with Import, Convention => C, External_Name => "IsWindowHidden";
     begin
-        return IsWindowHidden /= 0;
+        return Boolean (IsWindowHidden);
     end Is_Window_Hidden;
 
     function Is_Window_Minimized return Boolean is
-        function IsWindowMinimized return int
+        function IsWindowMinimized return bool
         with Import, Convention => C, External_Name => "IsWindowMinimized";
     begin
-        return IsWindowMinimized /= 0;
+        return Boolean (IsWindowMinimized);
     end Is_Window_Minimized;
 
     function Is_Window_Maximized return Boolean is
-        function IsWindowMaximized return int
+        function IsWindowMaximized return bool
         with Import, Convention => C, External_Name => "IsWindowMaximized";
     begin
-        return IsWindowMaximized /= 0;
+        return Boolean (IsWindowMaximized);
     end Is_Window_Maximized;
 
     function Is_Window_Focused return Boolean is
-        function IsWindowFocused return int
+        function IsWindowFocused return bool
         with Import, Convention => C, External_Name => "IsWindowFocused";
     begin
-        return IsWindowFocused /= 0;
+        return Boolean (IsWindowFocused);
     end Is_Window_Focused;
 
     function Is_Window_Resized return Boolean is
-        function IsWindowResized return int
+        function IsWindowResized return bool
         with Import, Convention => C, External_Name => "IsWindowResized";
     begin
-        return IsWindowResized /= 0;
+        return Boolean (IsWindowResized);
     end Is_Window_Resized;
 
     function Is_Window_State (Flag : unsigned) return Boolean is
-        function IsWindowState (Flag : unsigned) return int
+        function IsWindowState (Flag : unsigned) return bool
         with Import, Convention => C, External_Name => "IsWindowState";
     begin
-        return IsWindowState (Flag) /= 0;
+        return Boolean (IsWindowState (Flag));
     end Is_Window_State;
 
     procedure Set_Window_Title (Title : String) is
@@ -109,17 +110,17 @@ package body Raylib.Window is
     end Get_Clipboard_Text;
 
     function Is_Cursor_Hidden return Boolean is
-        function IsCursorHidden return int
+        function IsCursorHidden return bool
         with Import, Convention => C, External_Name => "IsCursorHidden";
     begin
-        return IsCursorHidden /= 0;
+        return Boolean (IsCursorHidden);
     end Is_Cursor_Hidden;
 
     function Is_Cursor_On_Screen return Boolean is
-        function IsCursorOnScreen return int
+        function IsCursorOnScreen return bool
         with Import, Convention => C, External_Name => "IsCursorOnScreen";
     begin
-        return IsCursorOnScreen /= 0;
+        return Boolean (IsCursorOnScreen);
     end Is_Cursor_On_Screen;
 
     procedure Take_Screenshot (Filename : String) is

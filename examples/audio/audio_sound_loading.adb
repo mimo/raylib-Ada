@@ -12,47 +12,50 @@
 with Raylib.Window;
 with Raylib.Audio;
 
-procedure audio_sound_loading is
-    use raylib;
+procedure Audio_Sound_Loading is
+    use Raylib;
 
-    screenWidth  : constant := 800;
-    screenHeight : constant := 450;
+    Screen_Width  : constant := 800;
+    Screen_Height : constant := 450;
 
-    fxWav, fxOgg : raylib.Sound;
+    FX_Wav, FX_Ogg : Raylib.Sound;
 
 begin
 
-    raylib.Window.Init (screenWidth,
-        screenHeight,
+    Raylib.Window.Init
+       (Screen_Width,
+        Screen_Height,
         "raylib [audio] example - sound loading and playing");
 
-    raylib.Audio.Init_Audio_Device;
+    Raylib.Audio.Init_Audio_Device;
 
-    fxWav := raylib.Audio.Load_Sound ("audio/resources/sound.wav");
-    fxOgg := raylib.Audio.Load_Sound ("audio/resources/target.ogg");
+    FX_Wav := Raylib.Audio.Load_Sound ("audio/resources/sound.wav");
+    FX_Ogg := Raylib.Audio.Load_Sound ("audio/resources/target.ogg");
 
-    raylib.Window.Set_Target_FPS (60);
+    Raylib.Window.Set_Target_FPS (60);
 
-    while not raylib.Window.Should_Close loop
-        if raylib.Input.Is_Key_Pressed (KEY_SPACE) then
-            raylib.Audio.Play_Sound (fxWav);
+    while not Raylib.Window.Should_Close loop
+        if Raylib.Input.Is_Key_Pressed (KEY_SPACE) then
+            Raylib.Audio.Play_Sound (FX_Wav);
         end if;
-        if raylib.Input.Is_Key_Pressed (KEY_ENTER) then
-            raylib.Audio.Play_Sound (fxOgg);
+        if Raylib.Input.Is_Key_Pressed (KEY_ENTER) then
+            Raylib.Audio.Play_Sound (FX_Ogg);
         end if;
 
-        raylib.Window.Begin_Drawing;
-        raylib.Window.Clear_Background (raylib.RAYWHITE);
+        Raylib.Window.Begin_Drawing;
+        Raylib.Window.Clear_Background (Raylib.RAYWHITE);
 
-        raylib.Text.Draw ("Press SPACE to PLAY the WAV sound!", 200, 180, 20, LIGHTGRAY);
-        raylib.Text.Draw ("Press ENTER to PLAY the OGG sound!", 200, 220, 20, LIGHTGRAY);
+        Raylib.Text.Draw
+           ("Press SPACE to PLAY the WAV sound!", 200, 180, 20, LIGHTGRAY);
+        Raylib.Text.Draw
+           ("Press ENTER to PLAY the OGG sound!", 200, 220, 20, LIGHTGRAY);
 
-        raylib.Window.End_Drawing;
+        Raylib.Window.End_Drawing;
     end loop;
 
-    raylib.Audio.Unload_Sound (fxWav);
-    raylib.Audio.Unload_Sound (fxOgg);
-    raylib.Audio.Close_Audio_Device;
-    raylib.Window.Close;
+    Raylib.Audio.Unload_Sound (FX_Wav);
+    Raylib.Audio.Unload_Sound (FX_Ogg);
+    Raylib.Audio.Close_Audio_Device;
+    Raylib.Window.Close;
 
 end audio_sound_loading;

@@ -1,7 +1,8 @@
 ---
 -- Audio Loading and Playing Functions
 
-with Interfaces.C; use Interfaces.C;
+with Interfaces.C;           use Interfaces.C;
+with Interfaces.C.Extensions; use Interfaces.C.Extensions;
 
 package body Raylib.Audio is
 
@@ -10,10 +11,10 @@ package body Raylib.Audio is
     --  [[  Audio device management  ]]  --
 
     function Is_Audio_Device_Ready return Boolean is
-        function IsAudioDeviceReady return int
+        function IsAudioDeviceReady return bool
         with Import, Convention => C, External_Name => "IsAudioDeviceReady";
     begin
-        return IsAudioDeviceReady /= 0;
+        return Boolean (IsAudioDeviceReady);
     end Is_Audio_Device_Ready;
 
     --  [[  Wave loading  ]]  --
@@ -28,29 +29,29 @@ package body Raylib.Audio is
     end Load_Wave;
 
     function Is_Wave_Valid (W : Wave) return Boolean is
-        function IsWaveValid (W : Wave) return int
+        function IsWaveValid (W : Wave) return bool
         with Import, Convention => C, External_Name => "IsWaveValid";
     begin
-        return IsWaveValid (W) /= 0;
+        return Boolean (IsWaveValid (W));
     end Is_Wave_Valid;
 
     function Export_Wave (W : Wave; Filename : String) return Boolean is
-        function C_Export_Wave (W : Wave; Filename : char_array) return int
+        function C_Export_Wave (W : Wave; Filename : char_array) return bool
         with Import, Convention => C, External_Name => "ExportWave";
 
         C_Filename : char_array := To_C (Filename);
     begin
-        return C_Export_Wave (W, C_Filename) /= 0;
+        return Boolean (C_Export_Wave (W, C_Filename));
     end Export_Wave;
 
     function Export_Wave_As_Code (W : Wave; Filename : String) return Boolean is
         function C_Export_Wave_As_Code
-           (W : Wave; Filename : char_array) return int
+           (W : Wave; Filename : char_array) return bool
         with Import, Convention => C, External_Name => "ExportWaveAsCode";
 
         C_Filename : char_array := To_C (Filename);
     begin
-        return C_Export_Wave_As_Code (W, C_Filename) /= 0;
+        return Boolean (C_Export_Wave_As_Code (W, C_Filename));
     end Export_Wave_As_Code;
 
     --  [[  Sound loading  ]]  --
@@ -65,19 +66,19 @@ package body Raylib.Audio is
     end Load_Sound;
 
     function Is_Sound_Valid (S : Sound) return Boolean is
-        function IsSoundValid (S : Sound) return int
+        function IsSoundValid (S : Sound) return bool
         with Import, Convention => C, External_Name => "IsSoundValid";
     begin
-        return IsSoundValid (S) /= 0;
+        return Boolean (IsSoundValid (S));
     end Is_Sound_Valid;
 
     --  [[  Sound management  ]]  --
 
     function Is_Sound_Playing (S : Sound) return Boolean is
-        function IsSoundPlaying (S : Sound) return int
+        function IsSoundPlaying (S : Sound) return bool
         with Import, Convention => C, External_Name => "IsSoundPlaying";
     begin
-        return IsSoundPlaying (S) /= 0;
+        return Boolean (IsSoundPlaying (S));
     end Is_Sound_Playing;
 
     --  [[  Music management  ]]  --
@@ -92,17 +93,17 @@ package body Raylib.Audio is
     end Load_Music_Stream;
 
     function Is_Music_Valid (M : Music) return Boolean is
-        function IsMusicValid (M : Music) return int
+        function IsMusicValid (M : Music) return bool
         with Import, Convention => C, External_Name => "IsMusicValid";
     begin
-        return IsMusicValid (M) /= 0;
+        return Boolean (IsMusicValid (M));
     end Is_Music_Valid;
 
     function Is_Music_Stream_Playing (M : Music) return Boolean is
-        function IsMusicStreamPlaying (M : Music) return int
+        function IsMusicStreamPlaying (M : Music) return bool
         with Import, Convention => C, External_Name => "IsMusicStreamPlaying";
     begin
-        return IsMusicStreamPlaying (M) /= 0;
+        return Boolean (IsMusicStreamPlaying (M));
     end Is_Music_Stream_Playing;
 
 end Raylib.Audio;
