@@ -24,9 +24,16 @@ download_file() {
 
 case $1 in
   clean)
-    gprclean -P raylib.gpr
-    gprclean -P raylib-test.gpr
-    gprclean -P examples/raylib-examples.gpr;;
+    # Nettoyer avec gprbuild si disponible
+    if command -v gprclean >/dev/null 2>&1; then
+      gprclean -P raylib.gpr 2>/dev/null || true
+      gprclean -P raylib-test.gpr 2>/dev/null || true
+      gprclean -P examples/raylib-examples.gpr 2>/dev/null || true
+    fi
+    # Nettoyer avec make (pour OpenBSD)
+    make clean 2>/dev/null || true
+    echo "Nettoyage terminé"
+    ;;
 
   edit)
     gcc -fdump-ada-spec "$RAYLIB_PATH/include/raylib.h"
@@ -86,6 +93,58 @@ case $1 in
     echo ""
     echo "Pour utiliser raylib avec ce projet, mettez à jour config :"
     echo "    RAYLIB_PATH=\"$INSTALL_PREFIX\""
+    ;;
+
+  openbsd)
+    echo "==> Compilation pour OpenBSD"
+    echo "    Compilateur: egcc"
+    echo "    RAYLIB_PATH: $RAYLIB_PATH"
+
+    # Créer les répertoires
+    mkdir -p obj lib
+
+    # Flags de compilation
+    ADAFLAGS="-gnat2012 -gnatwa"
+    INCLUDES="-Isrc -I$RAYLIB_PATH/include"
+
+    echo ""
+    echo "==> Compilation des sources Ada..."
+
+    # Compiler dans l'ordre des dépendances
+    for module in raylib raylib-colors raylib-window raylib-shapes \
+                  raylib-text raylib-input raylib-utils raylib-ui; do
+      echo "  Compiling ${module}..."
+      egcc -c $ADAFLAGS $INCLUDES -o obj/${module}.o src/${module}.adb || {
+        echo "Erreur lors de la compilation de ${module}"
+        exit 1
+      }
+    done
+
+    echo ""
+    echo "==> Création de la bibliothèque statique..."
+    ar rcs lib/libraylib_ada.a obj/*.o
+    ranlib lib/libraylib_ada.a
+    cp obj/*.ali lib/ 2>/dev/null || true
+
+    echo ""
+    echo "==> Compilation de test.adb..."
+    gnatmake test.adb \
+      $ADAFLAGS \
+      -Isrc \
+      -aOlib \
+      -aIlib \
+      -D obj \
+      -o test \
+      -largs \
+      -Llib -lraylib_ada \
+      -L$RAYLIB_PATH/lib -lraylib -lm
+
+    echo ""
+    echo "==> Build terminé !"
+    echo "    Bibliothèque: lib/libraylib_ada.a"
+    echo "    Exécutable:   ./test"
+    echo ""
+    echo "Pour exécuter: ./test"
     ;;
 
   *)
