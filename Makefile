@@ -1,4 +1,4 @@
-# Makefile for raylib-Ada (OpenBSD compatible)
+# Makefile for raylib-Ada (compatible BSD/GNU make)
 
 # Installation prefix
 PREFIX ?= $(HOME)/.local
@@ -10,72 +10,85 @@ OBJ_DIR = obj
 LIB_DIR = lib
 
 # Compilateur
-GNATMAKE = gnatmake
 GCC = gcc
 AR = ar
 RANLIB = ranlib
+GNATMAKE = gnatmake
 
 # Flags (Ada 2012 pour compatibilité OpenBSD)
 ADAFLAGS = -gnat2012 -gnatwae
 INCLUDES = -I$(SRC_DIR) -I$(RAYLIB_PATH)/include
 LDFLAGS = -L$(RAYLIB_PATH)/lib -lraylib -lm
 
-# Sources (ordre important pour compilation)
-SPECS = raylib.ads raylib-colors.ads raylib-window.ads \
-        raylib-shapes.ads raylib-text.ads raylib-input.ads \
-        raylib-utils.ads raylib-ui.ads
+# Liste explicite des sources (dans l'ordre de dépendance)
+ADS_FILES = \
+	$(SRC_DIR)/raylib.ads \
+	$(SRC_DIR)/raylib-colors.ads \
+	$(SRC_DIR)/raylib-window.ads \
+	$(SRC_DIR)/raylib-shapes.ads \
+	$(SRC_DIR)/raylib-text.ads \
+	$(SRC_DIR)/raylib-input.ads \
+	$(SRC_DIR)/raylib-utils.ads \
+	$(SRC_DIR)/raylib-ui.ads
 
-BODIES = raylib.adb raylib-colors.adb raylib-window.adb \
-         raylib-shapes.adb raylib-text.adb raylib-input.adb \
-         raylib-utils.adb raylib-ui.adb
+ADB_FILES = \
+	$(SRC_DIR)/raylib.adb \
+	$(SRC_DIR)/raylib-colors.adb \
+	$(SRC_DIR)/raylib-window.adb \
+	$(SRC_DIR)/raylib-shapes.adb \
+	$(SRC_DIR)/raylib-text.adb \
+	$(SRC_DIR)/raylib-input.adb \
+	$(SRC_DIR)/raylib-utils.adb \
+	$(SRC_DIR)/raylib-ui.adb
 
-# Ajouter le préfixe SRC_DIR
-SPEC_SRCS = $(addprefix $(SRC_DIR)/,$(SPECS))
-BODY_SRCS = $(addprefix $(SRC_DIR)/,$(BODIES))
-
-OBJECTS = $(patsubst $(SRC_DIR)/%.adb,$(OBJ_DIR)/%.o,$(BODY_SRCS)) \
-          $(patsubst $(SRC_DIR)/%.ads,$(OBJ_DIR)/%.o,$(SPEC_SRCS))
+# Fichiers objets correspondants
+OBJ_FILES = \
+	$(OBJ_DIR)/raylib.o \
+	$(OBJ_DIR)/raylib-colors.o \
+	$(OBJ_DIR)/raylib-window.o \
+	$(OBJ_DIR)/raylib-shapes.o \
+	$(OBJ_DIR)/raylib-text.o \
+	$(OBJ_DIR)/raylib-input.o \
+	$(OBJ_DIR)/raylib-utils.o \
+	$(OBJ_DIR)/raylib-ui.o
 
 # Bibliothèque
 LIBNAME = $(LIB_DIR)/libraylib_ada.a
 
-.PHONY: all clean dirs test help
+.PHONY: all clean test help debug
 
-all: dirs $(LIBNAME)
+all: $(LIBNAME)
 
-# Créer les répertoires (seulement si nécessaire)
-dirs:
-	@test -d $(OBJ_DIR) || mkdir -p $(OBJ_DIR)
-	@test -d $(LIB_DIR) || mkdir -p $(LIB_DIR)
+# Créer les répertoires
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
-$(LIBNAME): $(OBJECTS)
-	@echo "Creating static library..."
-	@echo "Target: $@"
-	@echo "Objects: $(OBJECTS)"
-	@test -d $(LIB_DIR) || mkdir -p $(LIB_DIR)
-	@ls -la $(OBJ_DIR)/ | head -20
-	$(AR) rcs $@ $(OBJECTS)
+$(LIB_DIR):
+	mkdir -p $(LIB_DIR)
+
+# Compiler les .ads
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.ads | $(OBJ_DIR)
+	@echo "Compiling $<..."
+	$(GCC) -c $(ADAFLAGS) $(INCLUDES) -o $@ $<
+
+# Compiler les .adb
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.adb | $(OBJ_DIR)
+	@echo "Compiling $<..."
+	$(GCC) -c $(ADAFLAGS) $(INCLUDES) -o $@ $<
+
+# Créer la bibliothèque
+$(LIBNAME): $(OBJ_FILES) | $(LIB_DIR)
+	@echo "Creating static library $@..."
+	$(AR) rcs $@ $(OBJ_FILES)
 	$(RANLIB) $@
+	@echo "Copying .ali files..."
 	@cp $(OBJ_DIR)/*.ali $(LIB_DIR)/ 2>/dev/null || true
-	@echo "Library created: $@"
-	@ls -la $(LIB_DIR)/
-
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.ads
-	@echo "Compiling $<..."
-	@test -d $(OBJ_DIR) || mkdir -p $(OBJ_DIR)
-	$(GCC) -c $(ADAFLAGS) $(INCLUDES) -o $@ $<
-
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.adb
-	@echo "Compiling $<..."
-	@test -d $(OBJ_DIR) || mkdir -p $(OBJ_DIR)
-	$(GCC) -c $(ADAFLAGS) $(INCLUDES) -o $@ $<
+	@echo "Library created successfully: $@"
+	@ls -lh $@
 
 # Compilation du test
 test: $(LIBNAME)
 	@echo "Building test executable..."
-	@echo "Library location: $(LIBNAME)"
-	@echo "LIB_DIR: $(LIB_DIR)"
-	@ls -la $(LIB_DIR)/ || echo "LIB_DIR not found!"
 	$(GNATMAKE) -v test.adb \
 		$(ADAFLAGS) \
 		-I$(SRC_DIR) \
@@ -86,12 +99,12 @@ test: $(LIBNAME)
 		-largs \
 		-L$(LIB_DIR) -lraylib_ada \
 		$(LDFLAGS)
-	@echo "Test executable created: ./test"
+	@echo "Success! Run with: ./test"
 
 clean:
 	@echo "Cleaning build artifacts..."
-	@rm -rf $(OBJ_DIR) $(LIB_DIR)
-	@rm -f test *.o *.ali b~*.ad?
+	rm -rf $(OBJ_DIR) $(LIB_DIR)
+	rm -f test *.o *.ali b~*.ad?
 	@echo "Clean complete"
 
 install: $(LIBNAME)
@@ -105,16 +118,16 @@ install: $(LIBNAME)
 	@echo "Installation complete"
 
 help:
-	@echo "Targets disponibles :"
-	@echo "  make          - Compile la bibliothèque"
-	@echo "  make test     - Compile test.adb"
-	@echo "  make clean    - Nettoie les fichiers générés"
-	@echo "  make install  - Installe dans PREFIX (défaut: $(PREFIX))"
-	@echo "  make debug    - Affiche les variables du Makefile"
+	@echo "Available targets:"
+	@echo "  make          - Build the library"
+	@echo "  make test     - Build test.adb"
+	@echo "  make clean    - Clean build artifacts"
+	@echo "  make install  - Install to PREFIX (default: $(PREFIX))"
+	@echo "  make debug    - Show Makefile variables"
 	@echo ""
-	@echo "Variables :"
-	@echo "  PREFIX        - Préfixe d'installation (défaut: $(PREFIX))"
-	@echo "  RAYLIB_PATH   - Chemin de raylib (défaut: $(RAYLIB_PATH))"
+	@echo "Variables:"
+	@echo "  PREFIX        - Installation prefix (default: $(PREFIX))"
+	@echo "  RAYLIB_PATH   - Raylib location (default: $(RAYLIB_PATH))"
 
 debug:
 	@echo "=== Makefile Variables ==="
@@ -124,10 +137,15 @@ debug:
 	@echo "OBJ_DIR:     $(OBJ_DIR)"
 	@echo "LIB_DIR:     $(LIB_DIR)"
 	@echo "LIBNAME:     $(LIBNAME)"
-	@echo "CURDIR:      $(CURDIR)"
 	@echo ""
-	@echo "=== Directory Structure ==="
-	@ls -la . | grep "^d"
+	@echo "=== Source Files ($(words $(ADS_FILES)) .ads + $(words $(ADB_FILES)) .adb) ==="
+	@echo "$(ADS_FILES)" | tr ' ' '\n' | head -5
+	@echo "..."
 	@echo ""
-	@echo "=== Objects ==="
-	@echo "$(OBJECTS)" | tr ' ' '\n' | head -10
+	@echo "=== Object Files ($(words $(OBJ_FILES)) total) ==="
+	@echo "$(OBJ_FILES)" | tr ' ' '\n' | head -5
+	@echo "..."
+	@echo ""
+	@echo "=== Current Directory ==="
+	@pwd
+	@ls -la | grep "^d" | head -10
