@@ -1,6 +1,10 @@
 # Makefile for raylib-Ada (OpenBSD compatible)
 
-RAYLIB_PATH ?= $(HOME)/.local
+# Installation prefix
+PREFIX ?= $(HOME)/.local
+RAYLIB_PATH ?= $(PREFIX)
+
+# Build directories
 SRC_DIR = src
 OBJ_DIR = obj
 LIB_DIR = lib
@@ -39,8 +43,10 @@ LIBNAME = $(LIB_DIR)/libraylib_ada.a
 
 all: dirs $(LIBNAME)
 
+# Créer les répertoires (seulement si nécessaire)
 dirs:
-	@mkdir -p $(OBJ_DIR) $(LIB_DIR)
+	@test -d $(OBJ_DIR) || mkdir -p $(OBJ_DIR)
+	@test -d $(LIB_DIR) || mkdir -p $(LIB_DIR)
 
 $(LIBNAME): $(OBJECTS)
 	@echo "Creating static library..."
@@ -51,10 +57,12 @@ $(LIBNAME): $(OBJECTS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.ads
 	@echo "Compiling $<..."
+	@test -d $(OBJ_DIR) || mkdir -p $(OBJ_DIR)
 	$(GCC) -c $(ADAFLAGS) $(INCLUDES) -o $@ $<
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.adb
 	@echo "Compiling $<..."
+	@test -d $(OBJ_DIR) || mkdir -p $(OBJ_DIR)
 	$(GCC) -c $(ADAFLAGS) $(INCLUDES) -o $@ $<
 
 # Compilation du test
@@ -72,22 +80,28 @@ test: $(LIBNAME)
 	@echo "Test executable created: ./test"
 
 clean:
-	rm -rf $(OBJ_DIR) $(LIB_DIR)
-	rm -f test *.o *.ali b~*.ad?
-	@echo "Cleaned build artifacts"
+	@echo "Cleaning build artifacts..."
+	@rm -rf $(OBJ_DIR) $(LIB_DIR)
+	@rm -f test *.o *.ali b~*.ad?
+	@echo "Clean complete"
 
 install: $(LIBNAME)
-	install -d $(DESTDIR)/usr/local/lib
-	install -m 644 $(LIBNAME) $(DESTDIR)/usr/local/lib/
-	install -d $(DESTDIR)/usr/local/include/raylib-ada
-	install -m 644 $(SRC_DIR)/*.ads $(DESTDIR)/usr/local/include/raylib-ada/
-	install -d $(DESTDIR)/usr/local/lib/gnat
-	install -m 644 $(LIB_DIR)/*.ali $(DESTDIR)/usr/local/lib/gnat/
-	@echo "Installed to $(DESTDIR)/usr/local"
+	@echo "Installing to $(PREFIX)..."
+	install -d $(PREFIX)/lib
+	install -m 644 $(LIBNAME) $(PREFIX)/lib/
+	install -d $(PREFIX)/include/raylib-ada
+	install -m 644 $(SRC_DIR)/*.ads $(PREFIX)/include/raylib-ada/
+	install -d $(PREFIX)/lib/gnat
+	install -m 644 $(LIB_DIR)/*.ali $(PREFIX)/lib/gnat/
+	@echo "Installation complete"
 
 help:
 	@echo "Targets disponibles :"
 	@echo "  make          - Compile la bibliothèque"
 	@echo "  make test     - Compile test.adb"
 	@echo "  make clean    - Nettoie les fichiers générés"
-	@echo "  make install  - Installe la bibliothèque"
+	@echo "  make install  - Installe dans PREFIX (défaut: $(PREFIX))"
+	@echo ""
+	@echo "Variables :"
+	@echo "  PREFIX        - Préfixe d'installation (défaut: $(PREFIX))"
+	@echo "  RAYLIB_PATH   - Chemin de raylib (défaut: $(RAYLIB_PATH))"
