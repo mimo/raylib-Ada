@@ -978,8 +978,8 @@ procedure Label (
       --  Free fonts from VRAM (except default font)
       for F in Font_Role loop
          --  Don't unload the default font (it's managed by raylib)
-         if Loaded_Fonts (F).base_size /= default_font.base_size or else
-            Loaded_Fonts (F).glyph_count /= default_font.glyph_count
+         if Loaded_Fonts (F).baseSize /= default_font.baseSize or else
+            Loaded_Fonts (F).glyphCount /= default_font.glyphCount
          then
             raylib.text.unload_font (Loaded_Fonts (F));
          end if;
@@ -1029,28 +1029,38 @@ procedure Label (
    procedure Apply_Theme_To_Style is
       use colors;
 
-      function To_Unsigned (C : Color) return unsigned is
-        (unsigned (color_to_int (C)));
-
-      --  Generate lighter/darker variants for focused/pressed states
-      function Lighten (C : Color; Amount : Float := 0.2) return Color is
-        (r => unsigned_char (Float'Min (255.0, Float (C.r) * (1.0 + Amount))),
-         g => unsigned_char (Float'Min (255.0, Float (C.g) * (1.0 + Amount))),
-         b => unsigned_char (Float'Min (255.0, Float (C.b) * (1.0 + Amount))),
-         a => C.a);
-
-      function Darken (C : Color; Amount : Float := 0.2) return Color is
-        (r => unsigned_char (Float (C.r) * (1.0 - Amount)),
-         g => unsigned_char (Float (C.g) * (1.0 - Amount)),
-         b => unsigned_char (Float (C.b) * (1.0 - Amount)),
-         a => C.a);
-
       primary : constant Color := Active_Theme.Colors (Primary);
       secondary : constant Color := Active_Theme.Colors (Secondary);
       text_primary : constant Color := Active_Theme.Colors (Text_Primary);
       text_secondary : constant Color := Active_Theme.Colors (Text_Secondary);
       background : constant Color := Active_Theme.Colors (Background);
       border : constant Color := Active_Theme.Colors (Border);
+
+      function To_Unsigned (C : Color) return unsigned is
+      begin
+         return unsigned (color_to_int (C));
+      end To_Unsigned;
+
+      --  Generate lighter/darker variants for focused/pressed states
+      function Lighten (C : Color; Amount : Float := 0.2) return Color is
+         Result : Color;
+      begin
+         Result.r := unsigned_char (Float'Min (255.0, Float (C.r) * (1.0 + Amount)));
+         Result.g := unsigned_char (Float'Min (255.0, Float (C.g) * (1.0 + Amount)));
+         Result.b := unsigned_char (Float'Min (255.0, Float (C.b) * (1.0 + Amount)));
+         Result.a := C.a;
+         return Result;
+      end Lighten;
+
+      function Darken (C : Color; Amount : Float := 0.2) return Color is
+         Result : Color;
+      begin
+         Result.r := unsigned_char (Float (C.r) * (1.0 - Amount));
+         Result.g := unsigned_char (Float (C.g) * (1.0 - Amount));
+         Result.b := unsigned_char (Float (C.b) * (1.0 - Amount));
+         Result.a := C.a;
+         return Result;
+      end Darken;
    begin
       --  Map theme colors to raygui 4-state color system
       --  NORMAL state
