@@ -110,14 +110,17 @@ case $1 in
     echo ""
     echo "==> Compilation des sources Ada..."
 
-    # Compiler dans l'ordre des dépendances
-    for module in raylib raylib-colors raylib-window raylib-shapes \
-                  raylib-text raylib-input raylib-utils raylib-ui; do
-      echo "  Compiling ${module}..."
-      egcc -c $ADAFLAGS $INCLUDES -o obj/${module}.o src/${module}.adb || {
-        echo "Erreur lors de la compilation de ${module}"
-        exit 1
-      }
+    # Compiler tous les .adb dans src/ (dans l'ordre alphabétique)
+    # Les dépendances seront résolues par gnatmake plus tard
+    for adb_file in src/*.adb; do
+      if [ -f "$adb_file" ]; then
+        module=$(basename "$adb_file" .adb)
+        echo "  Compiling ${module}..."
+        egcc -c $ADAFLAGS $INCLUDES -o obj/${module}.o "$adb_file" || {
+          echo "Erreur lors de la compilation de ${module}"
+          exit 1
+        }
+      fi
     done
 
     echo ""
