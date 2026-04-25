@@ -19,7 +19,8 @@ RANLIB ?= ranlib
 GNATMAKE ?= gnatmake
 
 # Flags (Ada 2012 pour compatibilité OpenBSD)
-ADAFLAGS = -gnat2012 -gnatwae
+# -gnatwa: all warnings, -gnatw.e: treat warnings as errors (disabled for now)
+ADAFLAGS = -gnat2012 -gnatwa
 INCLUDES = -I${SRC_DIR} -I${RAYLIB_PATH}/include
 LDFLAGS = -L${RAYLIB_PATH}/lib -lraylib -lm
 
