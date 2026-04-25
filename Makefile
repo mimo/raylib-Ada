@@ -1,5 +1,8 @@
 # Makefile for raylib-Ada (BSD make compatible)
 
+# Désactiver le comportement objdir de BSD make
+.OBJDIR: ${.CURDIR}
+
 # Installation prefix
 PREFIX ?= ${HOME}/.local
 RAYLIB_PATH ?= ${PREFIX}
