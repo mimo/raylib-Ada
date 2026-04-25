@@ -1030,12 +1030,12 @@ procedure Label (
    procedure Apply_Theme_To_Style is
       use colors;
 
-      primary_color : constant Color := Active_Theme.Colors (Primary);
-      secondary_color : constant Color := Active_Theme.Colors (Secondary);
-      text_primary_color : constant Color := Active_Theme.Colors (Text_Primary);
-      text_secondary_color : constant Color := Active_Theme.Colors (Text_Secondary);
-      background_color : constant Color := Active_Theme.Colors (Background);
-      border_color : constant Color := Active_Theme.Colors (Border);
+      theme_primary : constant Color := Active_Theme.Colors (Primary);
+      theme_secondary : constant Color := Active_Theme.Colors (Secondary);
+      theme_text_primary : constant Color := Active_Theme.Colors (Text_Primary);
+      theme_text_secondary : constant Color := Active_Theme.Colors (Text_Secondary);
+      theme_background : constant Color := Active_Theme.Colors (Background);
+      theme_border : constant Color := Active_Theme.Colors (Border);
 
       function To_Unsigned (C : Color) return unsigned is
       begin
@@ -1065,28 +1065,28 @@ procedure Label (
    begin
       --  Map theme colors to raygui 4-state color system
       --  NORMAL state
-      Set_Style (DEFAULT, BASE_COLOR_NORMAL, To_Unsigned (primary_color));
-      Set_Style (DEFAULT, TEXT_COLOR_NORMAL, To_Unsigned (text_primary_color));
-      Set_Style (DEFAULT, BORDER_COLOR_NORMAL, To_Unsigned (border_color));
+      Set_Style (DEFAULT, BASE_COLOR_NORMAL, To_Unsigned (theme_primary));
+      Set_Style (DEFAULT, TEXT_COLOR_NORMAL, To_Unsigned (theme_text_primary));
+      Set_Style (DEFAULT, BORDER_COLOR_NORMAL, To_Unsigned (theme_border));
 
       --  FOCUSED state (lighter)
-      Set_Style (DEFAULT, BASE_COLOR_FOCUSED, To_Unsigned (Lighten (primary_color)));
-      Set_Style (DEFAULT, TEXT_COLOR_FOCUSED, To_Unsigned (Darken (text_primary_color)));
-      Set_Style (DEFAULT, BORDER_COLOR_FOCUSED, To_Unsigned (Lighten (border_color)));
+      Set_Style (DEFAULT, BASE_COLOR_FOCUSED, To_Unsigned (Lighten (theme_primary)));
+      Set_Style (DEFAULT, TEXT_COLOR_FOCUSED, To_Unsigned (Darken (theme_text_primary)));
+      Set_Style (DEFAULT, BORDER_COLOR_FOCUSED, To_Unsigned (Lighten (theme_border)));
 
       --  PRESSED state (use secondary color)
-      Set_Style (DEFAULT, BASE_COLOR_PRESSED, To_Unsigned (secondary_color));
-      Set_Style (DEFAULT, TEXT_COLOR_PRESSED, To_Unsigned (text_secondary_color));
-      Set_Style (DEFAULT, BORDER_COLOR_PRESSED, To_Unsigned (Darken (border_color)));
+      Set_Style (DEFAULT, BASE_COLOR_PRESSED, To_Unsigned (theme_secondary));
+      Set_Style (DEFAULT, TEXT_COLOR_PRESSED, To_Unsigned (theme_text_secondary));
+      Set_Style (DEFAULT, BORDER_COLOR_PRESSED, To_Unsigned (Darken (theme_border)));
 
       --  DISABLED state (desaturated)
-      Set_Style (DEFAULT, BASE_COLOR_DISABLED, To_Unsigned (Lighten (primary_color, 0.3)));
-      Set_Style (DEFAULT, TEXT_COLOR_DISABLED, To_Unsigned (Lighten (text_primary_color, 0.4)));
-      Set_Style (DEFAULT, BORDER_COLOR_DISABLED, To_Unsigned (Lighten (border_color, 0.3)));
+      Set_Style (DEFAULT, BASE_COLOR_DISABLED, To_Unsigned (Lighten (theme_primary, 0.3)));
+      Set_Style (DEFAULT, TEXT_COLOR_DISABLED, To_Unsigned (Lighten (theme_text_primary, 0.4)));
+      Set_Style (DEFAULT, BORDER_COLOR_DISABLED, To_Unsigned (Lighten (theme_border, 0.3)));
 
       --  Background and line colors
-      Set_Style (DEFAULT, BACKGROUND_COLOR, To_Unsigned (background_color));
-      Set_Style (DEFAULT, LINE_COLOR, To_Unsigned (border_color));
+      Set_Style (DEFAULT, BACKGROUND_COLOR, To_Unsigned (theme_background));
+      Set_Style (DEFAULT, LINE_COLOR, To_Unsigned (theme_border));
 
       --  Copy DEFAULT colors to all controls
       for Ctrl in LABEL .. Controls'Last loop
