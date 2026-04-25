@@ -9,11 +9,11 @@ SRC_DIR = src
 OBJ_DIR = obj
 LIB_DIR = lib
 
-# Compilateur
-GCC = gcc
-AR = ar
-RANLIB = ranlib
-GNATMAKE = gnatmake
+# Compilateur (OpenBSD utilise egcc)
+GCC ?= egcc
+AR ?= ar
+RANLIB ?= ranlib
+GNATMAKE ?= gnatmake
 
 # Flags (Ada 2012 pour compatibilité OpenBSD)
 ADAFLAGS = -gnat2012 -gnatwae
