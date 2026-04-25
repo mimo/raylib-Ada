@@ -25,8 +25,12 @@ BODIES = raylib.adb raylib-colors.adb raylib-window.adb \
          raylib-shapes.adb raylib-text.adb raylib-input.adb \
          raylib-utils.adb raylib-ui.adb
 
-OBJECTS = $(patsubst %.adb,$(OBJ_DIR)/%.o,$(BODIES)) \
-          $(patsubst %.ads,$(OBJ_DIR)/%.o,$(SPECS))
+# Ajouter le préfixe SRC_DIR
+SPEC_SRCS = $(addprefix $(SRC_DIR)/,$(SPECS))
+BODY_SRCS = $(addprefix $(SRC_DIR)/,$(BODIES))
+
+OBJECTS = $(patsubst $(SRC_DIR)/%.adb,$(OBJ_DIR)/%.o,$(BODY_SRCS)) \
+          $(patsubst $(SRC_DIR)/%.ads,$(OBJ_DIR)/%.o,$(SPEC_SRCS))
 
 # Bibliothèque
 LIBNAME = $(LIB_DIR)/libraylib_ada.a

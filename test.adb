@@ -166,52 +166,52 @@ begin
                         Cell_Spacing * 5.0);
 
                 begin
-                    UI.statusbar (status_area, "UI test");
+                    UI.Statusbar (status_area, "UI test");
 
-                    UI.toggle
+                    UI.Toggle
                        (toggle_area,
                         (if gui_ctrl_toggle
                          then "Activate UI"
                          else "Deactivate UI"),
                         gui_ctrl_toggle);
                     if gui_ctrl_toggle then
-                        raylib.UI.set_state (raylib.UI.DISABLED);
+                        raylib.UI.Set_State (raylib.UI.DISABLED);
                     end if;
 
                     show_dialog_box :=
-                       raylib.UI.button (button_area, "Show Dialog Box");
-                    raylib.UI.checkbox
+                       raylib.UI.Button (button_area, "Show Dialog Box");
+                    raylib.UI.Checkbox
                        (bounds  => checkbox_area,
                         text    =>
                            (if gui_ctrl_checkbox
                             then "Checked"
                             else "Unchecked"),
                         checked => gui_ctrl_checkbox);
-                    UI.label (label_area, "Input : " & gui_label_text);
-                    if UI.textbox
+                    UI.Label (label_area, "Input : " & gui_label_text);
+                    if UI.Textbox
                           (textbox_area, gui_value_textbox, gui_textbox_edit)
                     then
                         Ada.Strings.Fixed.Move
                            (gui_value_textbox, gui_label_text);
                     end if;
 
-                    if UI.button (label2_area, "Copy to clipboard") then
+                    if UI.Button (label2_area, "Copy to clipboard") then
                         raylib.Window.Set_Clipboard_Text (buffer_text_area);
                     end if;
                     cursor_text_area :=
-                       UI.textbox_multi
+                       UI.Textbox_Multi
                           (textarea_area,
                            buffer_text_area,
                            is_editing_text_area);
 
                     if show_dialog_box or keep_dialog_box then
                         keep_dialog_box := TRUE;
-                        UI.panel ((200.0, 60.0, 300.0, 240.0));
-                        UI.label
+                        UI.Panel ((200.0, 60.0, 300.0, 240.0));
+                        UI.Label
                            ((200.0 + 300.0 / 2.0 - 70.0, 70.0, 140.0, 32.0),
                             "Dialog Box");
 
-                        if UI.button
+                        if UI.Button
                               ((200.0 + 300.0 / 2.0 - 50.0,
                                 60.0 + 240.0 - 30.0 - 10.0,
                                 100.0,
@@ -222,7 +222,7 @@ begin
                         end if;
                     end if;
 
-                    raylib.UI.set_state (raylib.UI.NORMAL);
+                    raylib.UI.Set_State (raylib.UI.NORMAL);
                 end;
         end case;
 
