@@ -46,40 +46,49 @@ ${LIB_DIR}:
 	mkdir -p ${LIB_DIR}
 
 # Compiler chaque module (BSD make style)
-${OBJ_DIR}/raylib.o: ${SRC_DIR}/raylib.ads ${SRC_DIR}/raylib.adb | ${OBJ_DIR}
+${OBJ_DIR}/raylib.o: ${SRC_DIR}/raylib.ads ${SRC_DIR}/raylib.adb
+	@test -d ${OBJ_DIR} || mkdir -p ${OBJ_DIR}
 	@echo "Compiling raylib..."
 	${GCC} -c ${ADAFLAGS} ${INCLUDES} -o ${OBJ_DIR}/raylib.o ${SRC_DIR}/raylib.adb
 
-${OBJ_DIR}/raylib-colors.o: ${SRC_DIR}/raylib-colors.ads ${SRC_DIR}/raylib-colors.adb ${OBJ_DIR}/raylib.o | ${OBJ_DIR}
+${OBJ_DIR}/raylib-colors.o: ${SRC_DIR}/raylib-colors.ads ${SRC_DIR}/raylib-colors.adb ${OBJ_DIR}/raylib.o
+	@test -d ${OBJ_DIR} || mkdir -p ${OBJ_DIR}
 	@echo "Compiling raylib-colors..."
 	${GCC} -c ${ADAFLAGS} ${INCLUDES} -o ${OBJ_DIR}/raylib-colors.o ${SRC_DIR}/raylib-colors.adb
 
-${OBJ_DIR}/raylib-window.o: ${SRC_DIR}/raylib-window.ads ${SRC_DIR}/raylib-window.adb ${OBJ_DIR}/raylib.o | ${OBJ_DIR}
+${OBJ_DIR}/raylib-window.o: ${SRC_DIR}/raylib-window.ads ${SRC_DIR}/raylib-window.adb ${OBJ_DIR}/raylib.o
+	@test -d ${OBJ_DIR} || mkdir -p ${OBJ_DIR}
 	@echo "Compiling raylib-window..."
 	${GCC} -c ${ADAFLAGS} ${INCLUDES} -o ${OBJ_DIR}/raylib-window.o ${SRC_DIR}/raylib-window.adb
 
-${OBJ_DIR}/raylib-shapes.o: ${SRC_DIR}/raylib-shapes.ads ${SRC_DIR}/raylib-shapes.adb ${OBJ_DIR}/raylib.o | ${OBJ_DIR}
+${OBJ_DIR}/raylib-shapes.o: ${SRC_DIR}/raylib-shapes.ads ${SRC_DIR}/raylib-shapes.adb ${OBJ_DIR}/raylib.o
+	@test -d ${OBJ_DIR} || mkdir -p ${OBJ_DIR}
 	@echo "Compiling raylib-shapes..."
 	${GCC} -c ${ADAFLAGS} ${INCLUDES} -o ${OBJ_DIR}/raylib-shapes.o ${SRC_DIR}/raylib-shapes.adb
 
-${OBJ_DIR}/raylib-text.o: ${SRC_DIR}/raylib-text.ads ${SRC_DIR}/raylib-text.adb ${OBJ_DIR}/raylib.o | ${OBJ_DIR}
+${OBJ_DIR}/raylib-text.o: ${SRC_DIR}/raylib-text.ads ${SRC_DIR}/raylib-text.adb ${OBJ_DIR}/raylib.o
+	@test -d ${OBJ_DIR} || mkdir -p ${OBJ_DIR}
 	@echo "Compiling raylib-text..."
 	${GCC} -c ${ADAFLAGS} ${INCLUDES} -o ${OBJ_DIR}/raylib-text.o ${SRC_DIR}/raylib-text.adb
 
-${OBJ_DIR}/raylib-input.o: ${SRC_DIR}/raylib-input.ads ${SRC_DIR}/raylib-input.adb ${OBJ_DIR}/raylib.o | ${OBJ_DIR}
+${OBJ_DIR}/raylib-input.o: ${SRC_DIR}/raylib-input.ads ${SRC_DIR}/raylib-input.adb ${OBJ_DIR}/raylib.o
+	@test -d ${OBJ_DIR} || mkdir -p ${OBJ_DIR}
 	@echo "Compiling raylib-input..."
 	${GCC} -c ${ADAFLAGS} ${INCLUDES} -o ${OBJ_DIR}/raylib-input.o ${SRC_DIR}/raylib-input.adb
 
-${OBJ_DIR}/raylib-utils.o: ${SRC_DIR}/raylib-utils.ads ${SRC_DIR}/raylib-utils.adb ${OBJ_DIR}/raylib.o | ${OBJ_DIR}
+${OBJ_DIR}/raylib-utils.o: ${SRC_DIR}/raylib-utils.ads ${SRC_DIR}/raylib-utils.adb ${OBJ_DIR}/raylib.o
+	@test -d ${OBJ_DIR} || mkdir -p ${OBJ_DIR}
 	@echo "Compiling raylib-utils..."
 	${GCC} -c ${ADAFLAGS} ${INCLUDES} -o ${OBJ_DIR}/raylib-utils.o ${SRC_DIR}/raylib-utils.adb
 
-${OBJ_DIR}/raylib-ui.o: ${SRC_DIR}/raylib-ui.ads ${SRC_DIR}/raylib-ui.adb ${OBJ_DIR}/raylib.o ${OBJ_DIR}/raylib-colors.o ${OBJ_DIR}/raylib-text.o ${OBJ_DIR}/raylib-shapes.o ${OBJ_DIR}/raylib-input.o | ${OBJ_DIR}
+${OBJ_DIR}/raylib-ui.o: ${SRC_DIR}/raylib-ui.ads ${SRC_DIR}/raylib-ui.adb ${OBJ_DIR}/raylib.o ${OBJ_DIR}/raylib-colors.o ${OBJ_DIR}/raylib-text.o ${OBJ_DIR}/raylib-shapes.o ${OBJ_DIR}/raylib-input.o
+	@test -d ${OBJ_DIR} || mkdir -p ${OBJ_DIR}
 	@echo "Compiling raylib-ui..."
 	${GCC} -c ${ADAFLAGS} ${INCLUDES} -o ${OBJ_DIR}/raylib-ui.o ${SRC_DIR}/raylib-ui.adb
 
 # Créer la bibliothèque
-${LIBNAME}: ${OBJ_DIR}/raylib.o ${OBJ_DIR}/raylib-colors.o ${OBJ_DIR}/raylib-window.o ${OBJ_DIR}/raylib-shapes.o ${OBJ_DIR}/raylib-text.o ${OBJ_DIR}/raylib-input.o ${OBJ_DIR}/raylib-utils.o ${OBJ_DIR}/raylib-ui.o | ${LIB_DIR}
+${LIBNAME}: ${OBJ_DIR}/raylib.o ${OBJ_DIR}/raylib-colors.o ${OBJ_DIR}/raylib-window.o ${OBJ_DIR}/raylib-shapes.o ${OBJ_DIR}/raylib-text.o ${OBJ_DIR}/raylib-input.o ${OBJ_DIR}/raylib-utils.o ${OBJ_DIR}/raylib-ui.o
+	@test -d ${LIB_DIR} || mkdir -p ${LIB_DIR}
 	@echo "Creating static library ${LIBNAME}..."
 	${AR} rcs ${LIBNAME} ${OBJ_DIR}/*.o
 	${RANLIB} ${LIBNAME}
