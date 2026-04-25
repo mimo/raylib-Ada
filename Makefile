@@ -12,6 +12,9 @@ SRC_DIR = src
 OBJ_DIR = obj
 LIB_DIR = lib
 
+# Cible par défaut pour BSD make
+.MAIN: all
+
 # Compilateur (OpenBSD utilise egcc)
 GCC ?= egcc
 AR ?= ar
@@ -41,6 +44,7 @@ LIBNAME = ${LIB_DIR}/libraylib_ada.a
 .PHONY: all clean test help debug install
 
 all: ${LIBNAME}
+	@echo "Build complete: ${LIBNAME}"
 
 # Créer les répertoires
 ${OBJ_DIR}:
