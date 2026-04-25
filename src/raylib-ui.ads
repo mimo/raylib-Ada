@@ -218,10 +218,15 @@ private
       Title_Size,
       Small_Size);
 
+   --  Array types for Theme (required for Ada 2012)
+   type Color_Array is array (Color_Role) of Color;
+   type Font_Array is array (Font_Role) of String (1 .. 256);
+   type Size_Array is array (Size_Role) of Positive;
+
    type Theme is record
-      Colors : array (Color_Role) of Color;
-      Fonts  : array (Font_Role) of String (1 .. 256);
-      Sizes  : array (Size_Role) of Positive;
+      Colors : Color_Array;
+      Fonts  : Font_Array;
+      Sizes  : Size_Array;
    end record;
 
    --  Default theme based on raygui default style
