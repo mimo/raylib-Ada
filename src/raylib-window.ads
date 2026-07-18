@@ -203,6 +203,15 @@ package Raylib.Window is
     procedure End_Texture_Mode
     with Import, Convention => C, External_Name => "EndTextureMode";
 
+    --// Begin scissor mode (define screen area for following drawing)
+    --  Logical coordinates: raylib applies the HighDPI scale itself.
+    procedure Begin_Scissor_Mode (x, y, width, height : int)
+    with Import, Convention => C, External_Name => "BeginScissorMode";
+
+    --// End scissor mode
+    procedure End_Scissor_Mode
+    with Import, Convention => C, External_Name => "EndScissorMode";
+
     --  [[  Screen-space-related functions  ]]  --
 
     function Get_Screen_To_World_Ray
