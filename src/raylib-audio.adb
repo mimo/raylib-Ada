@@ -6,8 +6,6 @@ with Interfaces.C.Extensions; use Interfaces.C.Extensions;
 
 package body Raylib.Audio is
 
-    use type int;
-
     --  [[  Audio device management  ]]  --
 
     function Is_Audio_Device_Ready return Boolean is
@@ -23,7 +21,7 @@ package body Raylib.Audio is
         function C_Load_Wave (Filename : char_array) return Wave
         with Import, Convention => C, External_Name => "LoadWave";
 
-        C_Filename : char_array := To_C (Filename);
+        C_Filename : constant char_array := To_C (Filename);
     begin
         return C_Load_Wave (C_Filename);
     end Load_Wave;
@@ -39,7 +37,7 @@ package body Raylib.Audio is
         function C_Export_Wave (W : Wave; Filename : char_array) return bool
         with Import, Convention => C, External_Name => "ExportWave";
 
-        C_Filename : char_array := To_C (Filename);
+        C_Filename : constant char_array := To_C (Filename);
     begin
         return Boolean (C_Export_Wave (W, C_Filename));
     end Export_Wave;
@@ -49,7 +47,7 @@ package body Raylib.Audio is
            (W : Wave; Filename : char_array) return bool
         with Import, Convention => C, External_Name => "ExportWaveAsCode";
 
-        C_Filename : char_array := To_C (Filename);
+        C_Filename : constant char_array := To_C (Filename);
     begin
         return Boolean (C_Export_Wave_As_Code (W, C_Filename));
     end Export_Wave_As_Code;
@@ -60,7 +58,7 @@ package body Raylib.Audio is
         function C_Load_Sound (Filename : char_array) return Sound
         with Import, Convention => C, External_Name => "LoadSound";
 
-        C_Filename : char_array := To_C (Filename);
+        C_Filename : constant char_array := To_C (Filename);
     begin
         return C_Load_Sound (C_Filename);
     end Load_Sound;

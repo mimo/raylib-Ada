@@ -1,8 +1,14 @@
 #!/bin/sh
 
 set -e
-cd $(dirname $0)
-. "`pwd`/config"
+cd "$(dirname "$0")"
+CONFIG="$(pwd)/config"
+
+if [ ! -f "$CONFIG" ]; then
+    cp "$CONFIG.example" "$CONFIG"
+fi
+
+. "$CONFIG"
 
 # Fonction de téléchargement portable (OpenBSD/Linux)
 download_file() {
@@ -40,7 +46,7 @@ case $1 in
     $EDITOR;;
 
   raylib)
-    RAYLIB_VERSION="5.6"
+    RAYLIB_VERSION="5.5"
     RAYLIB_DIR="raylib-${RAYLIB_VERSION}"
     RAYLIB_ARCHIVE="${RAYLIB_VERSION}.tar.gz"
     RAYLIB_URL="https://github.com/raysan5/raylib/archive/refs/tags/${RAYLIB_VERSION}.tar.gz"

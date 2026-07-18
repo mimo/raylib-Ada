@@ -4,7 +4,7 @@ with Ada.Strings.Fixed;
 procedure core_input_gamepad is
     use raylib;
     use raylib.input;
-    use type raylib.int;
+    use type int;
 
     screenWidth  : constant := 800;
     screenHeight : constant := 450;
@@ -356,7 +356,7 @@ begin
                        Get_Gamepad_Axis_Movement (gamepad_number, axis);
                     Text.Draw ("AXIS " & I'Img & ": " & axis_level'Img,
                         20,
-                        70 + 20 * I,
+                        Integer(70 + 20 * I),
                         10,
                         MAROON);
                 end loop;

@@ -1,7 +1,4 @@
-with Interfaces.C;
 with Interfaces.C.Extensions;
-with Interfaces.C.Strings;
-with System.Address_To_Access_Conversions;
 
 package body Raylib is
 
@@ -12,29 +9,17 @@ package body Raylib is
         function raylib_load_image (filename : char_array) return Image
         with Import, Convention => C, External_Name => "LoadImage";
 
-        function raylib_load_image_SVG
-           (filename : char_array; width, height : int) return Image
-        with Import, Convention => C, External_Name => "LoadImageSvg";
-
         function Load_Image (filename : String) return Image is
-            cfilename : char_array := To_C (filename);
+            cfilename : constant char_array := To_C (filename);
         begin
             return raylib_load_image (cfilename);
         end Load_Image;
-
-        function Load_Image_SVG
-           (filename : String; width, height : int) return Image
-        is
-            cfilename : char_array := To_C (filename);
-        begin
-            return raylib_load_image_SVG (cfilename, width, height);
-        end Load_Image_SVG;
 
         function LoadTexture (filename : char_array) return Texture2D
         with Import, Convention => C, External_Name => "LoadTexture";
 
         function Load (filename : String) return Texture2D is
-            cfilename : char_array := To_C (filename);
+            cfilename : constant char_array := To_C (filename);
         begin
             return LoadTexture (cfilename);
         end load;
@@ -61,7 +46,7 @@ package body Raylib is
         -- Wrapping functions
         --
         function Load_Font (file : String) return Font is
-            ctext : char_array := To_C (file);
+            ctext : constant char_array := To_C (file);
         begin
             return LoadFont (ctext);
         end Load_Font;
@@ -70,14 +55,14 @@ package body Raylib is
            (file : String; size : int; chars : access int; glyphCount : int)
             return Font
         is
-            ctext : char_array := To_C (file);
+            ctext : constant char_array := To_C (file);
         begin
             return LoadFontEx (ctext, size, chars, glyphCount);
         end Load_Font_Ex;
 
-        procedure Draw (text : String; posX, posY, fontSize : Int; c : Color)
+        procedure Draw (Text : String; posX, posY, fontSize : Integer; c : Color)
         is
-            ctext : char_array := To_C (text);
+            ctext : constant char_array := To_C (text);
         begin
             DrawText (ctext, int (posX), int (posY), int (fontSize), c);
         end draw;
@@ -97,7 +82,7 @@ package body Raylib is
                 tint              : Color);
             pragma Import (C, DrawTextEx, "DrawTextEx");
 
-            ctext : char_array := To_C (text);
+            ctext : constant char_array := To_C (text);
         begin
             DrawTextEx (F, ctext, position, fontSize, spacing, tint);
         end Draw_Ex;
@@ -106,7 +91,7 @@ package body Raylib is
             function MeasureText (text : char_array; fontSize : int) return int
             with Import, Convention => C, External_Name => "MeasureText";
 
-            ctext : char_array := To_C (text);
+            ctext : constant char_array := To_C (text);
         begin
             return MeasureText (ctext, fontSize);
         end measure;
@@ -119,7 +104,7 @@ package body Raylib is
                 return Vector2;
             ------
             pragma Import (C, MeasureTextEx, "MeasureTextEx");
-            ctext : char_array := To_C (text);
+            ctext : constant char_array := To_C (text);
         begin
             return MeasureTextEx (f, ctext, fontSize, spacing);
         end Measure_Ex;
@@ -131,7 +116,7 @@ package body Raylib is
             procedure TraceLog (ltype : Log; text : char_array);
             pragma import (C, TraceLog, "TraceLog");
 
-            ctext : char_array := To_C (text);
+            ctext : constant char_array := To_C (text);
         begin
             TraceLog (ltype, ctext);
         end Trace_Log;
@@ -186,7 +171,7 @@ package body Raylib is
             use Interfaces.C.Strings;
             function GetGamepadName (arg1 : int) return chars_ptr
             with Import, Convention => C, External_Name => "GetGamepadName";
-            Gamepad_Name : chars_ptr := GetGamepadName (gamepad);
+            Gamepad_Name : constant chars_ptr := GetGamepadName (gamepad);
         begin
             return
                (if Gamepad_Name /= Null_Ptr then Value (Gamepad_Name) else "");

@@ -5,7 +5,6 @@ with Ada.Text_IO;
 
 procedure Test is
     use Raylib;
-    use Raylib.Input;
 
     package FS renames Ada.Strings.Fixed;
     package TIO renames Ada.Text_IO;
@@ -14,8 +13,8 @@ procedure Test is
     BOTTOM_MSG_CENTER, BOTTOM_MSG_Y : Float;
     BOTTOM_MSG_FONT_SIZE            : constant int := 24;
 
-    padding   : constant int := 10;
-    font_size : constant int := 18;
+    Padding   : constant Integer := 10;
+    Font_Size : constant Integer := 18;
 
     type tests is (Lines, Perspective, GUI);
     current_test : tests := GUI;
@@ -39,7 +38,7 @@ procedure Test is
     cursor_text_area     : Vector2;
     buffer_text_area     : String (1 .. 1024);
 
-    use type raylib.UI.Control_State;
+    use type Raylib.UI.Control_State;
 
     function bottom_msg_text return String
     is ("Press [TAB] to change test - " & current_test'Img);
@@ -47,11 +46,12 @@ begin
     Ada.Strings.Fixed.Move ("Hello !", gui_value_textbox);
     Ada.Strings.Fixed.Move ("Hello !", buffer_text_area);
 
+    Raylib.Window.Set_Config_Flags (Raylib.FLAG_WINDOW_HIGHDPI);
     Raylib.Window.Init (800, 400, "raylib Ada binding - tests");
 
     Raylib.Window.Set_Target_FPS (FPS);
     --  raylib.Window.Hide_Cursor;
-    raylib.UI.Set_Alpha (0.90);
+    Raylib.UI.Set_Alpha (0.90);
 
     BOTTOM_MSG_CENTER := Float (Window.Get_Render_Width) / 2.0;
     BOTTOM_MSG_Y := Float (Window.Get_Render_Height) - 32.0;
@@ -82,36 +82,36 @@ begin
 
         case current_test is
             when Lines       =>
-                Text.Draw ("raylib.Shapes.Draw_Line",
-                    padding,
+                Text.Draw ("Raylib.Shapes.Draw_Line",
+                    Padding,
                     10,
-                    font_size,
-                    raylib.BLACK);
+                    Font_Size,
+                    Raylib.BLACK);
 
                 Shapes.Draw_Line
-                   (start_posX => padding,
+                   (start_posX => int(Padding),
                     start_posY => 28,
                     end_posX   => 300,
                     end_posy   => 28,
-                    c          => raylib.RED);
+                    c          => Raylib.RED);
                 --
-                Text.Draw ("raylib.Shapes.Draw_Line_V",
-                    padding,
+                Text.Draw ("Raylib.Shapes.Draw_Line_V",
+                    Padding,
                     38,
-                    font_size,
+                    Font_Size,
                     BLACK);
-                raylib.Shapes.Draw_Line_V
-                   (start_pos => (Float (padding), 56.0),
+                Raylib.Shapes.Draw_Line_V
+                   (start_pos => (Float (Padding), 56.0),
                     end_pos   => (300.0, 56.0),
-                    c         => raylib.RED);
+                    c         => Raylib.RED);
 
                 --
-                Text.Draw ("raylib.Shapes.Draw_Line_Ex",
-                    padding,
+                Text.Draw ("Raylib.Shapes.Draw_Line_Ex",
+                    Padding,
                     66,
-                    font_size,
+                    Font_size,
                     BLACK);
-                raylib.Shapes.Draw_Line_Ex
+                Raylib.Shapes.Draw_Line_Ex
                    (start_pos => (Float (padding), 84.0),
                     end_pos   => (300.0, 84.0),
                     thick     => 2.5,
@@ -121,7 +121,7 @@ begin
                 Text.Draw ("Perspective test not yet implemented",
                     1,
                     38,
-                    font_size,
+                    Font_Size,
                     BLACK);
 
             when GUI         =>
@@ -179,8 +179,8 @@ begin
                     end if;
 
                     show_dialog_box :=
-                       raylib.UI.Button (button_area, "Show Dialog Box");
-                    raylib.UI.Checkbox
+                       Raylib.UI.Button (button_area, "Show Dialog Box");
+                    Raylib.UI.Checkbox
                        (bounds  => checkbox_area,
                         text    =>
                            (if gui_ctrl_checkbox
@@ -196,7 +196,7 @@ begin
                     end if;
 
                     if UI.Button (label2_area, "Copy to clipboard") then
-                        raylib.Window.Set_Clipboard_Text (buffer_text_area);
+                        Raylib.Window.Set_Clipboard_Text (buffer_text_area);
                     end if;
                     cursor_text_area :=
                        UI.Textbox_Multi
@@ -222,7 +222,7 @@ begin
                         end if;
                     end if;
 
-                    raylib.UI.Set_State (raylib.UI.NORMAL);
+                    Raylib.UI.Set_State (Raylib.UI.NORMAL);
                 end;
         end case;
 

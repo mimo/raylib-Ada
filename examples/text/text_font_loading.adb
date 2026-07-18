@@ -55,7 +55,7 @@ begin
                 MAROON);
             raylib.Text.Draw ("Using BMFont (Angelcode) imported",
                 20,
-                raylib.Window.Get_Screen_Height - 30,
+                Integer (Raylib.Window.Get_Screen_Height) - 30,
                 20,
                 GRAY);
         else
@@ -68,7 +68,7 @@ begin
                 LIME);
             raylib.Text.Draw ("Using TTF font generated",
                 20,
-                raylib.Window.Get_Screen_Height - 30,
+                Integer (raylib.Window.Get_Screen_Height) - 30,
                 20,
                 GRAY);
         end if;

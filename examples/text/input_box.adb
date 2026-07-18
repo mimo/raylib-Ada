@@ -115,8 +115,8 @@ begin
 
         Raylib.Text.Draw
            (To_String (name),
-            int (textBox.x) + 5,
-            int (textBox.y) + 8,
+            Integer (textBox.x) + 5,
+            Integer (textBox.y) + 8,
             40,
             MAROON);
         Raylib.Text.Draw
@@ -133,10 +133,10 @@ begin
                 if ((frameCounter / 20) mod 2) = 0 then
                     Raylib.Text.Draw
                        ("_",
-                        int (textBox.x)
+                        Integer (textBox.x)
                         + 8
-                        + Raylib.Text.Measure (To_String (name), 40),
-                        int (textBox.y) + 12,
+                        + Integer(Raylib.Text.Measure (To_String (name), 40)),
+                        Integer (textBox.y) + 12,
                         40,
                         MAROON);
                 end if;

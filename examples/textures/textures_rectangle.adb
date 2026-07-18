@@ -68,9 +68,9 @@ begin
             int (frame_rec.height),
             RED);
 
-        text.draw ("FRAME SPEED: ", 165, 210, 10, DARKGRAY);
-        text.draw (frames_speed'Img & " FPS", 575, 210, 10, DARKGRAY);
-        text.draw
+        Text.Draw ("FRAME SPEED: ", 165, 210, 10, DARKGRAY);
+        Text.Draw (frames_speed'Img & " FPS", 575, 210, 10, DARKGRAY);
+        Text.Draw
            ("PRESS RIGHT/LEFT KEYS to change SPEED", 290, 240, 10, DARKGRAY);
 
         for i in 0 .. MAX_FRAME_SPEED - 1 loop
@@ -84,10 +84,10 @@ begin
 
         textures.draw_texture_rec (scarfy, frame_rec, position, WHITE);
 
-        text.draw
+        Text.Draw
            ("(c) Scarfy sprite by Eiden Marsal",
-            int (screen_width) - 200,
-            int (screen_height) - 20,
+            screen_width - 200,
+            screen_height - 20,
             10,
             GRAY);
 

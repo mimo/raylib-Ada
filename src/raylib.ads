@@ -1119,7 +1119,7 @@ package Raylib is
         with Import, Convention => C, External_Name => "DrawFPS";
 
         --// Draw text (using default font)
-        procedure Draw (text : String; posX, posY, fontSize : int; c : Color);
+        procedure Draw (Text : String; posX, posY, fontSize : Integer; c : Color);
 
         --//  Draw text using font and additional parameters
         procedure Draw_Ex

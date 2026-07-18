@@ -6,13 +6,11 @@ with Interfaces.C.Extensions; use Interfaces.C.Extensions;
 
 package body Raylib.Window is
 
-    use type int;
-
     procedure Init (Width, Height : Positive; Title : String) is
         procedure InitWindow (W, H : int; Title : char_array)
         with Import, Convention => C, External_Name => "InitWindow";
 
-        C_Title : char_array := To_C (Title);
+        C_Title : constant char_array := To_C (Title);
     begin
         InitWindow (int (Width), int (Height), C_Title);
     end Init;
@@ -84,7 +82,7 @@ package body Raylib.Window is
         procedure C_Set_Window_Title (Title : char_array)
         with Import, Convention => C, External_Name => "SetWindowTitle";
 
-        C_Title : char_array := To_C (Title);
+        C_Title : constant char_array := To_C (Title);
     begin
         C_Set_Window_Title (C_Title);
     end Set_Window_Title;
@@ -93,7 +91,7 @@ package body Raylib.Window is
         procedure C_Set_Clipboard_Text (Text : char_array)
         with Import, Convention => C, External_Name => "SetClipboardText";
 
-        C_Text : char_array := To_C (Text);
+        C_Text : constant char_array := To_C (Text);
     begin
         C_Set_Clipboard_Text (C_Text);
     end Set_Clipboard_Text;
@@ -127,7 +125,7 @@ package body Raylib.Window is
         procedure C_Take_Screenshot (Filename : char_array)
         with Import, Convention => C, External_Name => "TakeScreenshot";
 
-        C_Filename : char_array := To_C (Filename);
+        C_Filename : constant char_array := To_C (Filename);
     begin
         C_Take_Screenshot (C_Filename);
     end Take_Screenshot;
@@ -136,7 +134,7 @@ package body Raylib.Window is
         procedure C_Open_URL (URL : char_array)
         with Import, Convention => C, External_Name => "OpenURL";
 
-        C_URL : char_array := To_C (URL);
+        C_URL : constant char_array := To_C (URL);
     begin
         C_Open_URL (C_URL);
     end Open_URL;
